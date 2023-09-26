@@ -50,37 +50,54 @@ section {
 }
 
 #table-container {
-    margin-top: 20px;
-    padding: 10px;
+    margin: 20px auto;
+    padding: 5px;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
+    display: flex;           /* Change to flex */
+    flex-direction: column;  /* Stack the tables vertically */
+    align-items: center;
 }
 
-#entries-table {
+#entries-table, 
+#totals-table {
     width: 100%;
     border-collapse: collapse;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
-#entries-table th,
-#entries-table td {
+#totals-table {
+    width: fit-content;
+}
+
+#entries-table th, 
+#totals-table th,
+#entries-table td, 
+#totals-table td {
     padding: 8px 12px;
     border: 1px solid #ccc;
     text-align: center;
 }
 
-#entries-table th {
+#entries-table th, 
+#totals-table th {
     background-color: #333;
     color: white;
     font-weight: bold;
+}
+
+#totals-table td:nth-child(3), #totals-table th:nth-child(3) {
+    background-color: rgb(234, 212, 91);
 }
 
 #entries-table tbody tr:nth-child(odd) {
     background-color: #d0c9c9;
 }
 
-#entries-table tbody tr:hover {
+#entries-table tbody tr:hover, 
+#totals-table tbody tr:hover {
     background-color: #5a5050;
 }
 
@@ -90,6 +107,7 @@ section {
     display: grid;
     grid-template-rows: 1fr 1fr 1fr 1fr auto; 
     row-gap: 10px;
+    align-items: center;
 }
 
 .form-row {
@@ -119,6 +137,7 @@ section {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 50%;
 }
 
 #section-4d-view button:hover,
@@ -178,8 +197,8 @@ section {
         padding: 5px;
     }
 
-    #entries-table th,
-    #entries-table td {
+    #entries-table th, #totals-table th,
+    #entries-table td, #totals-table td {
         padding: 2px 4px;
     }
 
@@ -257,3 +276,5 @@ body.effect-active {
     0% {background-color: rgba(0, 255, 0, 0.1);}
     100% {background-color: transparent;}
 }
+
+

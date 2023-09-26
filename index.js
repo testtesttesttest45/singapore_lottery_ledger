@@ -62,6 +62,7 @@ document.getElementById('4d-form').addEventListener('submit', function (event) {
     </tr>`;
     tableBody.innerHTML += newRow;
     showSuccessEffect('4D');
+    updateTotals();
 });
 
 // Add Toto Entry to Table
@@ -92,6 +93,7 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     </tr>`;
     tableBody.innerHTML += newRow;
     showSuccessEffect('Toto');
+    updateTotals();
 });
 
 document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
@@ -99,6 +101,7 @@ document.querySelector("#entries-table tbody").addEventListener('click', functio
         const shouldDelete = confirm('Are you sure you want to delete this entry?');
         if (shouldDelete) {
             event.target.closest('tr').remove();
+            updateTotals();
         }
     }
 
@@ -109,31 +112,71 @@ document.querySelector("#entries-table tbody").addEventListener('click', functio
     }
 });
 
+let isAnimating = false;  // Flag to check if animation is currently playing
+let timeouts = [];  // Store active timeout IDs to clear them if needed
+
+function clearExistingTimeouts() {
+    for (let timeout of timeouts) {
+        clearTimeout(timeout);
+    }
+    timeouts = [];
+}
+
 function showSuccessEffect(gameType) {
+    if (isAnimating) return;  // If animation is playing, ignore button clicks
+
+    isAnimating = true;  // Set the flag to true
+
+    clearExistingTimeouts();  // Clear any existing timeouts
+
     const successElement = document.getElementById('success-message');
     const tickElement = successElement.querySelector('.tick-wrapper');
     const successTextElement = successElement.querySelector('.success-text');
-    
+
     successElement.classList.remove('hidden');
-    
-    setTimeout(() => {
+
+    timeouts.push(setTimeout(() => {
         tickElement.style.transform = 'scale(1)';
         successTextElement.style.opacity = '1';
-        successTextElement.innerText = `${gameType} entry added!`
-    }, 100);
+        successTextElement.innerText = `${gameType} entry added!`;
+    }, 100));
 
     // Flash the background
     document.body.classList.add('effect-active');
-    setTimeout(() => {
+    timeouts.push(setTimeout(() => {
         document.body.classList.remove('effect-active');
-    }, 500);
+    }, 500));
 
     // Hide the success message after a short duration
-    setTimeout(() => {
+    timeouts.push(setTimeout(() => {
         tickElement.style.transform = 'scale(0)';
         successTextElement.style.opacity = '0';
-        setTimeout(() => {
+        timeouts.push(setTimeout(() => {
             successElement.classList.add('hidden');
-        }, 700);
-    }, 1000);
+            isAnimating = false;  // Reset the flag
+        }, 700));
+    }, 1000));
+}
+
+function updateTotals() {
+    const rows = document.querySelectorAll("#entries-table tbody tr:not(.no-entry-row)");
+    let total4D = 0;
+    let totalToto = 0;
+
+    rows.forEach(row => {
+        const lotteryName = row.children[0].textContent; // the first td
+        const costValue = parseFloat(row.children[6].textContent.replace("$", "")); // the 7th td and remove the $ sign
+
+        if (lotteryName === "4D") {
+            total4D += costValue;
+        } else if (lotteryName === "Toto") {
+            totalToto += costValue;
+        }
+    });
+
+    const totalAll = total4D + totalToto;
+
+    document.getElementById("total-cost-4d").textContent = `$${total4D}`;
+    document.getElementById("total-cost-toto").textContent = `$${totalToto}`;
+    document.getElementById("total-cost-all").textContent = `$${totalAll}`;
 }
