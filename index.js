@@ -1,48 +1,108 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Handle 4D form submission
-    const form4D = document.getElementById('4d-form');
-    form4D.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const number = document.getElementById('4d-number').value;
-        const type = document.getElementById('4d-type').value;
-        const amount = document.getElementById('4d-amount').value;
-        
-        if (number.length !== 4 || isNaN(number)) {
-            alert("Please enter a valid 4D number.");
-            return;
-        }
-        
-        addEntryToTable('4D', number, type, amount);
-    });
+// Calculate Cost
+function calculateCost(entryType, boards) {
+    let costPerBoard = 1;
 
-    // Handle Toto form submission
-    const formToto = document.getElementById('toto-form');
-    formToto.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const number = document.getElementById('toto-number').value;
-        const type = document.getElementById('toto-type').value;
-        const boards = document.getElementById('toto-boards').value;
-        
-        const numbers = number.split(',').map(num => num.trim());
-        if (numbers.length !== 6 || numbers.some(num => isNaN(num))) {
-            alert("Please enter 6 valid Toto numbers.");
-            return;
-        }
-        
-        addEntryToTable('Toto', numbers.join(', '), type, boards);
-    });
+    switch (entryType) {
+        case "System 7":
+            costPerBoard = 7;
+            break;
+        case "System 8":
+            costPerBoard = 28;
+            break;
+        case "System 9":
+            costPerBoard = 84;
+            break;
+        case "System 10":
+            costPerBoard = 210;
+            break;
+        case "System 11":
+            costPerBoard = 462;
+            break;
+        case "System 12":
+            costPerBoard = 924;
+            break;
+        default:
+            break;
+    }
+
+    return costPerBoard * boards;
+}
+
+// Add 4D Entry to Table
+document.getElementById('4d-form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent form from submitting
+
+    const bigBet = parseInt(document.getElementById('4d-bet-big').value || 0);
+    const smallBet = parseInt(document.getElementById('4d-bet-small').value || 0);
+    const numberOfBoards = document.getElementById('4d-boards').value;
+    const entryType4D = document.getElementById('4d-entry-type').value;
+    const pickType4D = document.getElementById('4d-pick-type').value;
+    const outlet4D = document.getElementById('4d-outlet').value;
+
+    if (!bigBet && !smallBet) {
+        alert('At least one of Big Bet or Small Bet must have a value.');
+        return;
+    }
+
+    const tableBody = document.querySelector("#entries-table tbody");
+    // Check if the no-entry-row exists and remove it
+    const noEntryRow = tableBody.querySelector('.no-entry-row');
+    if (noEntryRow) {
+        noEntryRow.remove();
+    }
+    const newRow = `<tr>
+        <td>4D</td>
+        <td>${entryType4D}</td>
+        <td>${pickType4D}</td>
+        <td>$${bigBet}(Big), $${smallBet}(Small)</td>
+        <td>${outlet4D}</td>
+        <td>${numberOfBoards}</td>
+        <td>$${parseInt(bigBet || 0) * numberOfBoards + parseInt(smallBet || 0) * numberOfBoards}</td>
+        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+    tableBody.innerHTML += newRow;
 });
 
-// Utility function to add entries to the table
-function addEntryToTable(type, numbers, entryType, amount) {
-    const table = document.getElementById('entries-table').getElementsByTagName('tbody')[0];
-    const newRow = table.insertRow(table.rows.length);
+// Add Toto Entry to Table
+document.getElementById('toto-form').addEventListener('submit', function (event) {
+    event.preventDefault();
 
-    const typeCell = newRow.insertCell(0);
-    const numberCell = newRow.insertCell(1);
-    const amountCell = newRow.insertCell(2);
+    const entryType = document.getElementById('toto-entry-type').value;
+    const numberOfBoards = document.getElementById('toto-boards').value;
+    const entryTypeToto = document.getElementById('toto-entry-type').value;
+    const pickTypeToto = document.getElementById('toto-pick-type').value;
+    const outletToto = document.getElementById('toto-outlet').value;
+    const cost = calculateCost(entryType, numberOfBoards);
 
-    typeCell.innerHTML = `${type} - ${entryType}`;
-    numberCell.innerHTML = numbers;
-    amountCell.innerHTML = `$${amount}`;
-}
+    const tableBody = document.querySelector("#entries-table tbody");
+    const noEntryRow = tableBody.querySelector('.no-entry-row');
+    if (noEntryRow) {
+        noEntryRow.remove();
+    }
+    const newRow = `<tr>
+        <td>Toto</td>
+        <td>${entryTypeToto}</td>
+        <td>${pickTypeToto}</td>
+        <td style="text-align: center">-</td>
+        <td>${outletToto}</td>
+        <td>${numberOfBoards}</td>
+        <td>$${cost}</td>
+        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+    tableBody.innerHTML += newRow;
+});
+
+document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
+    if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
+        const shouldDelete = confirm('Are you sure you want to delete this entry?');
+        if (shouldDelete) {
+            event.target.closest('tr').remove();
+        }
+    }
+
+    const tableBody = document.querySelector("#entries-table tbody");
+    if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+        const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>`;
+        tableBody.innerHTML = noEntryRow;
+    }
+});

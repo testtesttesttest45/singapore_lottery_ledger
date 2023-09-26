@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toto & 4D Tracker</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -18,58 +19,115 @@
             <section id="section-4d-view">
                 <h2>4D Entry</h2>
                 <form id="4d-form">
-                    <label for="4d-number">Enter 4D Number:</label>
-                    <input type="text" id="4d-number" placeholder="e.g., 1234" maxlength="4">
-
-                    <label for="4d-type">Type:</label>
-                    <select id="4d-type">
-                        <option value="ordinary">Ordinary</option>
-                        <option value="self-pick">Self Pick</option>
-                        <!-- Add more types if needed -->
-                    </select>
-
-                    <label for="4d-amount">Amount:</label>
-                    <input type="number" id="4d-amount" placeholder="e.g., $1">
-
-                    <button type="submit">Add 4D Entry</button>
+                    
+                    <div class="form-row">
+                        <label for="4d-entry-type">Entry Type:</label>
+                        <select id="4d-entry-type">
+                            <option value="Ordinary">Ordinary</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="4d-pick-type">Pick Type:</label>
+                        <select id="4d-pick-type">
+                            <option value="Quick Pick">Quick Pick</option>
+                            <option value="Self Pick">Self Pick</option>
+                            <option value="ChatGPT">ChatGPT</option>
+                            <option value="Online Sites">Online Sites</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="4d-bet-big">Bet Amount (Big):</label>
+                        <input type="number" id="4d-bet-big" placeholder="e.g., $2" min="0">
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="4d-bet-small">Bet Amount (Small):</label>
+                        <input type="number" id="4d-bet-small" placeholder="e.g., $1" min="0">
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="4d-outlet">Outlet:</label>
+                        <select id="4d-outlet">
+                            <option value="Woodlands N8">Woodlands N8</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="4d-boards">Number of Boards:</label>
+                        <input type="number" id="4d-boards" placeholder="e.g., 1" min="1" required>
+                    </div>
+            
+                    <button type="submit">Add Entry</button>
                 </form>
             </section>
+            
 
             <section id="section-toto-view">
                 <h2>Toto Entry</h2>
                 <form id="toto-form">
-                    <label for="toto-number">Enter Toto Number:</label>
-                    <input type="text" id="toto-number" placeholder="e.g., 1, 2, 3, 4, 5, 6, Additional 7">
-
-                    <label for="toto-type">Type:</label>
-                    <select id="toto-type">
-                        <option value="ordinary">Ordinary</option>
-                        <option value="system7">System 7</option>
-                        <!-- Add more types if needed -->
-                    </select>
-
-                    <label for="toto-boards">Number of Boards:</label>
-                    <input type="number" id="toto-boards" placeholder="e.g., 1">
-
-                    <button type="submit">Add Toto Entry</button>
+                    <div class="form-row">
+                        <label for="toto-entry-type">Entry Type:</label>
+                        <select id="toto-entry-type">
+                            <option value="Ordinary">Ordinary</option>
+                            <option value="System 7">System 7</option>
+                            <option value="System 8">System 8</option>
+                            <option value="System 9">System 9</option>
+                            <option value="System 10">System 10</option>
+                            <option value="System 11">System 11</option>
+                            <option value="System 12">System 12</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="toto-pick-type">Pick Type:</label>
+                        <select id="toto-pick-type">
+                            <option value="Quick Pick">Quick Pick</option>
+                            <option value="Self Pick">Self Pick</option>
+                            <option value="ChatGPT">ChatGPT</option>
+                            <option value="Online Sites">Online Sites</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="toto-outlet">Outlet:</label>
+                        <select id="toto-outlet">
+                            <option value="Woodlands N8">Woodlands N8</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-row">
+                        <label for="toto-boards">Number of Boards:</label>
+                        <input type="number" id="toto-boards" placeholder="e.g., 1" min="1" required>
+                    </div>
+            
+                    <button type="submit">Add Entry</button>
                 </form>
             </section>
         </div>
-
-        <table id="entries-table">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Numbers</th>
-                    <th>Amount</th>
-                    <!-- Add other relevant columns -->
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Entries will be populated here -->
-            </tbody>
-        </table>
-
+        <section id="table-container">
+            <h2>Today's Entries</h2>
+            <table id="entries-table">
+                <thead>
+                    <tr>
+                        <th>Lottery Name</th>
+                        <th>Entry Type</th>
+                        <th>Pick Type</th>
+                        <th>Bet Amount</th>
+                        <th>Outlet</th>
+                        <th>Number of Boards</th>
+                        <th>Cost</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>
+                </tbody>
+            </table>
+        </section>
 
         <section id="transaction-history">
             <!-- Transaction history table goes here -->
@@ -81,7 +139,9 @@
 
         <section id="notes">
             <h2>Notes to self</h2>
-            <textarea id="self-notes" placeholder="Write your notes here..."></textarea>
+            <div id="notes-container">
+                <textarea id="self-notes" placeholder="Write your notes here..."></textarea>
+            </div>
         </section>
     </main>
     <script src="index.js"></script>

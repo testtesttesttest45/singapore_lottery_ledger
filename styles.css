@@ -13,7 +13,7 @@ header {
 }
 
 main {
-    padding: 20px;
+    padding: 10px;
 }
 
 section {
@@ -23,19 +23,198 @@ section {
 #self-notes {
     width: 100%;
     height: 100px;
-    padding: 10px;
+    padding: 0;
+    border: none;
+    outline: none;
+    resize: vertical;
     box-sizing: border-box;
 }
 
 #entry-sections {
     display: flex;
-    justify-content: space-between;
-    gap: 20px; /* provides a gap between sections */
+    justify-content: center;
+    align-items: stretch;
+    gap: 20px;
 }
 
-#section-4d-view, #section-toto-view {
+#section-4d-view,
+#section-toto-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     flex: 1;
+    padding: 25px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+}
+
+#table-container {
+    margin-top: 20px;
     padding: 10px;
     border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+#entries-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#entries-table th,
+#entries-table td {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+#entries-table th {
+    background-color: #333;
+    color: white;
+    font-weight: bold;
+}
+
+#entries-table tbody tr:nth-child(odd) {
+    background-color: #d0c9c9;
+}
+
+#entries-table tbody tr:hover {
+    background-color: #5a5050;
+}
+
+#section-4d-view form,
+#section-toto-view form {
+    width: 100%;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr auto; 
+    row-gap: 10px;
+}
+
+.form-row {
+    width: 60%;
+}
+
+.form-row label,
+.form-row input,
+.form-row select,
+#section-4d-view label,
+#section-toto-view label {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#section-4d-view button,
+#section-toto-view button {
+    grid-row-start: 5;
+    grid-column: span 2;
+    justify-self: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#section-4d-view button:hover,
+#section-toto-view button:hover {
+    background-color: gold;
+}
+
+#section-4d-view input,
+#section-4d-view select,
+#section-toto-view input,
+#section-toto-view select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#section-4d-view input:hover,
+#section-4d-view select:hover,
+#section-toto-view input:hover,
+#section-toto-view select:hover,
+#section-4d-view input:focus,
+#section-4d-view select:focus,
+#section-toto-view input:focus,
+#section-toto-view select:focus {
+    border-color: gold;
+}
+
+#section-4d-view input:focus,
+#section-4d-view select:focus,
+#section-toto-view input:focus,
+#section-toto-view select:focus {
+    box-shadow: 0 0 5px gold;
+}
+
+#table-container h2 {
+    text-align: center;
+}
+
+.delete-btn {
+    background-color: red;
+    color: white;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    body {
+        font-size: 12px;
+    }
+
+    header {
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    main {
+        padding: 5px;
+    }
+
+    #entries-table th,
+    #entries-table td {
+        padding: 2px 4px;
+    }
+
+    #section-4d-view button,
+    #section-toto-view button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    #section-4d-view input,
+    #section-4d-view select,
+    #section-toto-view input,
+    #section-toto-view select {
+        padding: 5px;
+    }
+
+    #entry-sections {
+        flex-direction: column;
+    }
+
+    #section-4d-view,
+    #section-toto-view {
+        margin-bottom: 10px;
+        min-height: auto;
+    }
+
+    #section-4d-view form,
+    #section-toto-view form {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #section-4d-view button,
+    #section-toto-view button {
+        margin-top: 10px;
+        grid-row-start: auto;
+    }
 }
