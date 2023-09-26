@@ -61,6 +61,7 @@ document.getElementById('4d-form').addEventListener('submit', function (event) {
         <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
     </tr>`;
     tableBody.innerHTML += newRow;
+    showSuccessEffect('4D');
 });
 
 // Add Toto Entry to Table
@@ -90,6 +91,7 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
         <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
     </tr>`;
     tableBody.innerHTML += newRow;
+    showSuccessEffect('Toto');
 });
 
 document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
@@ -106,3 +108,32 @@ document.querySelector("#entries-table tbody").addEventListener('click', functio
         tableBody.innerHTML = noEntryRow;
     }
 });
+
+function showSuccessEffect(gameType) {
+    const successElement = document.getElementById('success-message');
+    const tickElement = successElement.querySelector('.tick-wrapper');
+    const successTextElement = successElement.querySelector('.success-text');
+    
+    successElement.classList.remove('hidden');
+    
+    setTimeout(() => {
+        tickElement.style.transform = 'scale(1)';
+        successTextElement.style.opacity = '1';
+        successTextElement.innerText = `${gameType} entry added!`
+    }, 100);
+
+    // Flash the background
+    document.body.classList.add('effect-active');
+    setTimeout(() => {
+        document.body.classList.remove('effect-active');
+    }, 500);
+
+    // Hide the success message after a short duration
+    setTimeout(() => {
+        tickElement.style.transform = 'scale(0)';
+        successTextElement.style.opacity = '0';
+        setTimeout(() => {
+            successElement.classList.add('hidden');
+        }, 700);
+    }, 1000);
+}

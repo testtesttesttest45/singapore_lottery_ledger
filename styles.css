@@ -218,3 +218,42 @@ section {
         grid-row-start: auto;
     }
 }
+
+.hidden {
+    display: none;
+}
+
+#success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    text-align: center;
+}
+
+.tick-wrapper {
+    font-size: 60px;
+    color: green;
+    background-color: rgba(14, 232, 14, 0.1);
+    border-radius: 100px;
+    transform: scale(0);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-text {
+    margin-top: 10px;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    color: rgb(18, 216, 18);
+}
+
+body.effect-active {
+    animation: flashEffect 0.5s;
+}
+
+@keyframes flashEffect {
+    0% {background-color: rgba(0, 255, 0, 0.1);}
+    100% {background-color: transparent;}
+}
