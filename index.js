@@ -96,21 +96,109 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     updateTotals();
 });
 
-document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
-    if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
-        const shouldDelete = confirm('Are you sure you want to delete this entry?');
-        if (shouldDelete) {
-            event.target.closest('tr').remove();
-            updateTotals();
-        }
-    }
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const year = date.getFullYear();
 
-    const tableBody = document.querySelector("#entries-table tbody");
-    if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-        const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>`;
-        tableBody.innerHTML = noEntryRow;
+    return `${day}/${month}/${year}`;
+}
+const date = new Date();
+
+document.getElementById('winnings-form-4d').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent form from submitting
+
+    const winningEntryType4D = document.getElementById('winnings-entry-type-4d').value;
+    const winningPickType4D = document.getElementById('winnings-pick-type-4d').value;
+    const winningOutlet4D = document.getElementById('winnings-outlet-4d').value;
+    const winningPrize4D = document.getElementById('winnings-prize-4d').value;
+    const winningDate4D = formatDate(date);
+    const tableBody = document.querySelector("#prizes-history-table tbody");
+    // Check if the no-entry-row exists and remove it
+    const noEntryRow = tableBody.querySelector('.no-entry-row');
+    if (noEntryRow) {
+        noEntryRow.remove();
     }
+    const newRow = `<tr>
+        <td>4D</td>
+        <td>${winningEntryType4D}</td>
+        <td>${winningPickType4D}</td>
+        <td>${winningOutlet4D}</td>
+        <td>${winningPrize4D}</td>
+        <td>$${winningDate4D}</td>
+        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+    tableBody.innerHTML += newRow;
+    showSuccessEffect('4D');
+    updateWinnings();
 });
+
+document.getElementById('winnings-form-toto').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent form from submitting
+
+    const winningEntryTypeToto = document.getElementById('winnings-entry-type-toto').value;
+    const winningPickTypeToto = document.getElementById('winnings-pick-type-toto').value;
+    const winningOutletToto = document.getElementById('winnings-outlet-toto').value;
+    const winningPrizeToto = document.getElementById('winnings-prize-toto').value;
+    const winningDateToto = formatDate(date);
+    const tableBody = document.querySelector("#prizes-history-table tbody");
+    // Check if the no-entry-row exists and remove it
+    const noEntryRow = tableBody.querySelector('.no-entry-row');
+    if (noEntryRow) {
+        noEntryRow.remove();
+    }
+    const newRow = `<tr>
+        <td>Toto</td>
+        <td>${winningEntryTypeToto}</td>
+        <td>${winningPickTypeToto}</td>
+        <td>${winningOutletToto}</td>
+        <td>${winningPrizeToto}</td>
+        <td>$${winningDateToto}</td>
+        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+    tableBody.innerHTML += newRow;
+    showSuccessEffect('Toto');
+    updateWinnings();
+});
+
+function setUpTableListener(tableSelector, type = 'entry') {
+    document.querySelector(tableSelector + " tbody").addEventListener('click', function(event) {
+        if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
+            const message = (type === 'winning') ? 
+                'Are you sure you want to delete this winning?' : 
+                'Are you sure you want to delete this entry?';
+            const shouldDelete = confirm(message);
+            if (shouldDelete) {
+                event.target.closest('tr').remove();
+                updateTotals();
+            }
+        }
+
+        const tableBody = document.querySelector(tableSelector + " tbody");
+        if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+            const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>`;
+            tableBody.innerHTML = noEntryRow;
+        }
+    });
+}
+setUpTableListener("#entries-table");
+setUpTableListener("#prizes-history-table", 'winning');
+// document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
+//     if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
+//         const shouldDelete = confirm('Are you sure you want to delete this entry?');
+//         if (shouldDelete) {
+//             event.target.closest('tr').remove();
+//             updateTotals();
+//         }
+//     }
+
+//     const tableBody = document.querySelector("#entries-table tbody");
+//     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+//         const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>`;
+//         tableBody.innerHTML = noEntryRow;
+//     }
+// });
+
 
 let isAnimating = false;  // Flag to check if animation is currently playing
 let timeouts = [];  // Store active timeout IDs to clear them if needed
@@ -121,6 +209,8 @@ function clearExistingTimeouts() {
     }
     timeouts = [];
 }
+
+
 
 function showSuccessEffect(gameType) {
     if (isAnimating) return;  // If animation is playing, ignore button clicks
@@ -180,3 +270,45 @@ function updateTotals() {
     document.getElementById("total-cost-toto").textContent = `$${totalToto}`;
     document.getElementById("total-cost-all").textContent = `$${totalAll}`;
 }
+
+function updateWinnings() {
+    const rows = document.querySelectorAll("#prizes-history-table tbody tr:not(.no-entry-row)");
+    let total4D = 0;
+    let totalToto = 0;
+
+    rows.forEach(row => {
+        const lotteryName = row.children[0].textContent; // the first td
+        const costValue = parseFloat(row.children[4].textContent.replace("$", "")); // the 5th td and remove the $ sign
+
+        if (lotteryName === "4D") {
+            total4D += costValue;
+        } else if (lotteryName === "Toto") {
+            totalToto += costValue;
+        }
+    });
+
+    const totalAll = total4D + totalToto;
+
+    document.getElementById("total-winnings-4d").textContent = `$${total4D}`;
+    document.getElementById("total-winnings-toto").textContent = `$${totalToto}`;
+    document.getElementById("total-winnings-all").textContent = `$${totalAll}`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButtons = document.querySelectorAll('.toggle-form');
+
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetFormId = btn.getAttribute('data-target');
+            const targetForm = document.getElementById(targetFormId);
+
+            if (targetForm.style.display === 'none' || !targetForm.style.display) {
+                targetForm.style.display = 'block';
+                btn.textContent = 'Hide Form ⬅️'; // Change the arrow and text
+            } else {
+                targetForm.style.display = 'none';
+                btn.textContent = 'Show Form ➡️';
+            }
+        });
+    });
+});

@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toto & 4D Tracker</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -20,14 +22,14 @@
             <section id="section-4d-view">
                 <h2>4D Entry</h2>
                 <form id="4d-form">
-                    
+
                     <div class="form-row">
                         <label for="4d-entry-type">Entry Type:</label>
                         <select id="4d-entry-type">
                             <option value="Ordinary">Ordinary</option>
                         </select>
                     </div>
-            
+
                     <div class="form-row">
                         <label for="4d-pick-type">Pick Type:</label>
                         <select id="4d-pick-type">
@@ -37,17 +39,17 @@
                             <option value="Online Sites">Online Sites</option>
                         </select>
                     </div>
-            
+
                     <div class="form-row">
                         <label for="4d-bet-big">Bet Amount (Big):</label>
                         <input type="number" id="4d-bet-big" placeholder="e.g., $2" min="0">
                     </div>
-            
+
                     <div class="form-row">
                         <label for="4d-bet-small">Bet Amount (Small):</label>
                         <input type="number" id="4d-bet-small" placeholder="e.g., $1" min="0">
                     </div>
-            
+
                     <div class="form-row">
                         <label for="4d-outlet">Outlet:</label>
                         <select id="4d-outlet">
@@ -55,16 +57,16 @@
                             <option value="Online">Online</option>
                         </select>
                     </div>
-            
+
                     <div class="form-row">
                         <label for="4d-boards">Number of Boards:</label>
                         <input type="number" id="4d-boards" placeholder="e.g., 1" min="1" required>
                     </div>
-            
+
                     <button type="submit">Add Entry</button>
                 </form>
             </section>
-            
+
 
             <section id="section-toto-view">
                 <h2>Toto Entry</h2>
@@ -81,7 +83,7 @@
                             <option value="System 12">System 12</option>
                         </select>
                     </div>
-            
+
                     <div class="form-row">
                         <label for="toto-pick-type">Pick Type:</label>
                         <select id="toto-pick-type">
@@ -91,7 +93,7 @@
                             <option value="Online Sites">Online Sites</option>
                         </select>
                     </div>
-            
+
                     <div class="form-row">
                         <label for="toto-outlet">Outlet:</label>
                         <select id="toto-outlet">
@@ -99,17 +101,17 @@
                             <option value="Online">Online</option>
                         </select>
                     </div>
-            
+
                     <div class="form-row">
                         <label for="toto-boards">Number of Boards:</label>
                         <input type="number" id="toto-boards" placeholder="e.g., 1" min="1" required>
                     </div>
-            
+
                     <button type="submit">Add Entry</button>
                 </form>
             </section>
         </div>
-        <section id="table-container">
+        <section id="section-today-entry">
             <h2>Today's Entries</h2>
             <table id="entries-table">
                 <thead>
@@ -125,25 +127,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>
-                </tbody>
-            </table>
-            <table id="today-totals-table">
-                <thead>
-                    <tr>
-                        <th>Total Cost 4D</th>
-                        <th>Total Cost Toto</th>
-                        <th>Total Cost All</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="total-cost-4d">$0</td>
-                        <td id="total-cost-toto">$0</td>
-                        <td id="total-cost-all">$0</td>
+                    <tr class="no-entry-row">
+                        <td colspan="8">No entries added today!</td>
                     </tr>
                 </tbody>
             </table>
+            <div id="today-totals-container">
+                <table id="today-totals-table">
+                    <thead>
+                        <tr>
+                            <th>Total Cost 4D</th>
+                            <th>Total Cost Toto</th>
+                            <th>Total Cost All</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="total-cost-4d">$0</td>
+                            <td id="total-cost-toto">$0</td>
+                            <td id="total-cost-all">$0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button id="save-entries-btn" type="button" aria-label="Save today's lottery entries">Save
+                    entries</button>
+            </div>
         </section>
 
         <section id="section-total-spendings">
@@ -168,6 +176,148 @@
                     </tr>
                 </tbody>
             </table>
+        </section>
+
+        <section id="section-total-winnings">
+            <h2>Winnings</h2>
+            <h3>Total Winnings</h3>
+            <div style="display: grid; grid-template-rows: auto auto; align-items: center; justify-items: center;">
+                <table id="winnings-table">
+                    <thead>
+                        <tr>
+                            <th>Total Winnings 4D</th>
+                            <th>Total Winnings Toto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="total-winnings-4d">$0</td>
+                            <td id="total-winnings-toto">$0</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="color: white; font-weight: bold">Total Winnings All</td>
+                        </tr>
+                        <tr>
+                            <td id="total-winnings-all" colspan="2">$0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="prizes-history-header">
+                <h3>Prizes History</h3>
+                <button id="save-winnings-btn" type="button" style="color: limegreen" aria-label="Save winning entries">Save winnings</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="prizes-history-table">
+                    <thead>
+                        <tr>
+                            <th>Lottery Name</th>
+                            <th>Entry Type</th>
+                            <th>Pick Type</th>
+                            <th>Outlet</th>
+                            <th>Winning Prize</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="no-entry-row">
+                            <td colspan="8">No prizes won.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-wrapper">
+                <div class="individual-form">
+                    <h2 class="form-title">4D</h2>
+                    <p class="toggle-form" data-target="winnings-form-4d">Show Form ➡️</p>
+                    <form id="winnings-form-4d" class="winnings-form">
+
+                        <div class="form-row">
+                            <label for="winnings-entry-type-4d">Entry Type:</label>
+                            <select id="winnings-entry-type-4d">
+                                <option value="Ordinary">Ordinary</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="winnings-pick-type-4d">Pick Type:</label>
+                            <select id="winnings-pick-type-4d">
+                                <option value="Quick Pick">Quick Pick</option>
+                                <option value="Self Pick">Self Pick</option>
+                                <option value="ChatGPT">ChatGPT</option>
+                                <option value="Online Sites">Online Sites</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="winnings-outlet-4d">Outlet:</label>
+                            <select id="winnings-outlet-4d">
+                                <option value="Woodlands N8">Woodlands N8</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="winnings-prize-4d">Winning Prize:</label>
+                            <input type="number" id="winnings-prize-4d" placeholder="Minimum $60" min="60">
+                        </div>
+
+                        <div class="form-row button-row">
+                            <button type="submit" class="submit-btn">Add Winnings</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="individual-form">
+                    <h2 class="form-title">Toto</h2>
+                    <p class="toggle-form" data-target="winnings-form-toto">Show Form ➡️</p>
+                    <form id="winnings-form-toto" class="winnings-form">
+
+                        <div class="form-row">
+                            <label for="winnings-entry-type-toto">Entry Type:</label>
+                            <select id="winnings-entry-type-toto">
+                                <option value="Ordinary">Ordinary</option>
+                                <option value="System 7">System 7</option>
+                                <option value="System 8">System 8</option>
+                                <option value="System 9">System 9</option>
+                                <option value="System 10">System 10</option>
+                                <option value="System 11">System 11</option>
+                                <option value="System 12">System 12</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="winnings-pick-type-toto">Pick Type:</label>
+                            <select id="winnings-pick-type-toto">
+                                <option value="Quick Pick">Quick Pick</option>
+                                <option value="Self Pick">Self Pick</option>
+                                <option value="ChatGPT">ChatGPT</option>
+                                <option value="Online Sites">Online Sites</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="winnings-outlet-toto">Outlet:</label>
+                            <select id="winnings-outlet-toto">
+                                <option value="Woodlands N8">Woodlands N8</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="winnings-prize-toto">Winning Prize:</label>
+                            <input type="number" id="winnings-prize-toto" placeholder="Minimum $10" min="10" required>
+                        </div>
+
+                        <div class="form-row button-row">
+                            <button type="submit" class="submit-btn">Add Winnings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+
+
         </section>
 
         <section id="transaction-history">
