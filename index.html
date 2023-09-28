@@ -205,7 +205,8 @@
             </div>
             <div class="prizes-history-header">
                 <h3>Prizes History</h3>
-                <button id="save-winnings-btn" type="button" style="color: limegreen" aria-label="Save winning entries">Save winnings</button>
+                <button id="save-winnings-btn" type="button" style="color: limegreen"
+                    aria-label="Save winning entries">Save winnings</button>
             </div>
             <div style="overflow-x: auto;">
                 <table id="prizes-history-table">
@@ -230,7 +231,8 @@
             <div class="form-wrapper">
                 <div class="individual-form">
                     <h2 class="form-title">4D</h2>
-                    <p class="toggle-form" data-target="winnings-form-4d">Show Form ➡️</p>
+                    <p class="toggle-form" data-target="winnings-form-4d">Show Form <i
+                            class="fa-solid fa-caret-right"></i></p>
                     <form id="winnings-form-4d" class="winnings-form">
 
                         <div class="form-row">
@@ -270,7 +272,8 @@
                 </div>
                 <div class="individual-form">
                     <h2 class="form-title">Toto</h2>
-                    <p class="toggle-form" data-target="winnings-form-toto">Show Form ➡️</p>
+                    <p class="toggle-form" data-target="winnings-form-toto">Show Form <i
+                            class="fa-solid fa-caret-right"></i></p>
                     <form id="winnings-form-toto" class="winnings-form">
 
                         <div class="form-row">
@@ -320,6 +323,21 @@
 
         </section>
 
+        <section id="notes">
+            <h2>
+                Notes to self 
+                <span id="lock-icon">
+                    <i class="fa-solid fa-lock" style="color: gold"></i>
+                </span>
+                <span id="editing-text" style="display:none;background-color:#333;color:limegreen;padding:10px;border-radius:10px;">Editing...</span>
+            </h2>
+            <div id="notes-container">
+                <textarea id="self-notes" placeholder="Write your notes here..." readonly></textarea>
+                <i class="fa-solid fa-pen-to-square edit-icon" id="edit-note-button"></i>
+                <i class="fa-solid fa-xmark cancel-icon" id="cancel-note-button" style="display: none;"></i>
+            </div>
+        </section>
+
         <section id="transaction-history">
             <!-- Transaction history table goes here -->
         </section>
@@ -328,12 +346,7 @@
             <!-- "Did I win?" functionality goes here -->
         </section>
 
-        <section id="notes">
-            <h2>Notes to self</h2>
-            <div id="notes-container">
-                <textarea id="self-notes" placeholder="Write your notes here..."></textarea>
-            </div>
-        </section>
+
     </main>
     <script src="index.js"></script>
     <div id="success-message" class="hidden">

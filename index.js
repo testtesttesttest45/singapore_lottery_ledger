@@ -312,3 +312,67 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('edit-note-button');
+    const cancelBtn = document.getElementById('cancel-note-button');
+    const selfNotes = document.getElementById('self-notes');
+    const lockIcon = document.getElementById('lock-icon');
+    const editingText = document.getElementById('editing-text');
+    let originalContent = selfNotes.value;
+
+    // Hide cancel button initially
+    cancelBtn.style.display = 'none';
+
+    editBtn.addEventListener('click', function() {
+        if (selfNotes.hasAttribute('readonly')) {
+            // Show editing text and hide lock icon
+            lockIcon.style.display = 'none';
+            editingText.style.display = 'inline';
+
+            // Store the current content
+            originalContent = selfNotes.value;
+
+            // Make textarea editable
+            selfNotes.removeAttribute('readonly');
+            selfNotes.focus();
+
+            // Show the cancel button and change the edit button to save (floppy disk)
+            editBtn.classList.remove('fa-pen-to-square');
+            editBtn.classList.add('fa-regular', 'fa-floppy-disk');
+            cancelBtn.style.display = 'inline';
+        } else {
+            // Hide editing text and show lock icon
+            editingText.style.display = 'none';
+            lockIcon.style.display = 'inline';
+
+            // Make textarea non-editable
+            selfNotes.setAttribute('readonly', true);
+
+            // Show saved alert
+            alert('Saved!');
+
+            // Hide the cancel button and change the save button back to edit
+            editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
+            editBtn.classList.add('fa-pen-to-square');
+            cancelBtn.style.display = 'none';
+        }
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        // Restore the original content
+        selfNotes.value = originalContent;
+
+        // Hide editing text and show lock icon
+        editingText.style.display = 'none';
+        lockIcon.style.display = 'inline';
+
+        // Make textarea non-editable
+        selfNotes.setAttribute('readonly', true);
+
+        // Hide the cancel button and change the save button back to edit
+        editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
+        editBtn.classList.add('fa-pen-to-square');
+        cancelBtn.style.display = 'none';
+    });
+});
