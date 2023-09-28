@@ -5,19 +5,21 @@ body {
     background-color: #f4f4f4;
 }
 
+header,
+main {
+    padding: 10px;
+    text-align: center;
+}
+
 header {
     background-color: #333;
     color: white;
-    text-align: center;
-    padding: 10px;
-}
-
-main {
-    padding: 10px;
 }
 
 section {
     margin-bottom: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #self-notes {
@@ -44,23 +46,21 @@ section {
     align-items: center;
     flex: 1;
     padding: 25px;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     min-height: 400px;
 }
 
-#table-container {
+#table-container,
+#section-total-spendings {
     margin: 20px auto;
     padding: 5px;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
-    display: flex;           /* Change to flex */
-    flex-direction: column;  /* Stack the tables vertically */
-    align-items: center;
+    display: grid;
+    justify-items: center;
+    align-items: start;
 }
 
-#entries-table, 
+#entries-table,
+#today-totals-table,
 #totals-table {
     width: 100%;
     border-collapse: collapse;
@@ -68,27 +68,34 @@ section {
     margin-bottom: 20px;
 }
 
+#today-totals-table,
 #totals-table {
     width: fit-content;
 }
 
-#entries-table th, 
+#entries-table th,
+#entries-table td,
+#today-totals-table th,
+#today-totals-table td,
 #totals-table th,
-#entries-table td, 
 #totals-table td {
     padding: 8px 12px;
     border: 1px solid #ccc;
     text-align: center;
 }
 
-#entries-table th, 
+#entries-table th,
+#today-totals-table th,
 #totals-table th {
     background-color: #333;
     color: white;
     font-weight: bold;
 }
 
-#totals-table td:nth-child(3), #totals-table th:nth-child(3) {
+#today-totals-table td:nth-child(3),
+#today-totals-table th:nth-child(3),
+#totals-table tbody tr td[colspan="2"]:first-child,
+#totals-table tbody #total-spend-all {
     background-color: rgb(234, 212, 91);
 }
 
@@ -96,7 +103,8 @@ section {
     background-color: #d0c9c9;
 }
 
-#entries-table tbody tr:hover, 
+#entries-table tbody tr:hover,
+#today-totals-table tbody tr:hover,
 #totals-table tbody tr:hover {
     background-color: #5a5050;
 }
@@ -105,7 +113,7 @@ section {
 #section-toto-view form {
     width: 100%;
     display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr auto; 
+    grid-template-rows: 1fr 1fr 1fr 1fr auto;
     row-gap: 10px;
     align-items: center;
 }
@@ -173,71 +181,6 @@ section {
     box-shadow: 0 0 5px gold;
 }
 
-#table-container h2 {
-    text-align: center;
-}
-
-.delete-btn {
-    background-color: red;
-    color: white;
-}
-
-/* Mobile adjustments */
-@media (max-width: 600px) {
-    body {
-        font-size: 12px;
-    }
-
-    header {
-        padding: 5px;
-        font-size: 14px;
-    }
-
-    main {
-        padding: 5px;
-    }
-
-    #entries-table th, #totals-table th,
-    #entries-table td, #totals-table td {
-        padding: 2px 4px;
-    }
-
-    #section-4d-view button,
-    #section-toto-view button {
-        padding: 5px 10px;
-        font-size: 14px;
-    }
-
-    #section-4d-view input,
-    #section-4d-view select,
-    #section-toto-view input,
-    #section-toto-view select {
-        padding: 5px;
-    }
-
-    #entry-sections {
-        flex-direction: column;
-    }
-
-    #section-4d-view,
-    #section-toto-view {
-        margin-bottom: 10px;
-        min-height: auto;
-    }
-
-    #section-4d-view form,
-    #section-toto-view form {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    #section-4d-view button,
-    #section-toto-view button {
-        margin-top: 10px;
-        grid-row-start: auto;
-    }
-}
-
 .hidden {
     display: none;
 }
@@ -273,8 +216,64 @@ body.effect-active {
 }
 
 @keyframes flashEffect {
-    0% {background-color: rgba(0, 255, 0, 0.1);}
-    100% {background-color: transparent;}
+    0% {
+        background-color: rgba(0, 255, 0, 0.1);
+    }
+
+    100% {
+        background-color: transparent;
+    }
 }
 
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    body {
+        font-size: 12px;
+    }
 
+    header {
+        padding: 5px;
+        font-size: 14px;
+    }
+
+    #entries-table th,
+    #today-totals-table th,
+    #entries-table td,
+    #today-totals-table td {
+        padding: 2px 4px;
+    }
+
+    #section-4d-view button,
+    #section-toto-view button {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    #section-4d-view input,
+    #section-4d-view select,
+    #section-toto-view input,
+    #section-toto-view select {
+        padding: 5px;
+    }
+
+    #entry-sections {
+        flex-direction: column;
+    }
+
+    #section-4d-view,
+    #section-toto-view {
+        margin-bottom: 10px;
+        min-height: auto;
+    }
+
+    #section-4d-view form,
+    #section-toto-view form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #section-4d-view button,
+    #section-toto-view button {
+        margin-top: 10px;
+    }
+}
