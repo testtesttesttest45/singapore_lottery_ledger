@@ -124,8 +124,8 @@ document.getElementById('winnings-form-4d').addEventListener('submit', function 
         <td>${winningEntryType4D}</td>
         <td>${winningPickType4D}</td>
         <td>${winningOutlet4D}</td>
-        <td>${winningPrize4D}</td>
-        <td>$${winningDate4D}</td>
+        <td>$${winningPrize4D}</td>
+        <td>${winningDate4D}</td>
         <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
     </tr>`;
     tableBody.innerHTML += newRow;
@@ -152,8 +152,8 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
         <td>${winningEntryTypeToto}</td>
         <td>${winningPickTypeToto}</td>
         <td>${winningOutletToto}</td>
-        <td>${winningPrizeToto}</td>
-        <td>$${winningDateToto}</td>
+        <td>$${winningPrizeToto}</td>
+        <td>${winningDateToto}</td>
         <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
     </tr>`;
     tableBody.innerHTML += newRow;
@@ -161,7 +161,7 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
     updateWinnings();
 });
 
-function setUpTableListener(tableSelector, type = 'entry') {
+function setUpTableListener(tableSelector, type = 'entry', text) {
     document.querySelector(tableSelector + " tbody").addEventListener('click', function(event) {
         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
             const message = (type === 'winning') ? 
@@ -176,13 +176,13 @@ function setUpTableListener(tableSelector, type = 'entry') {
 
         const tableBody = document.querySelector(tableSelector + " tbody");
         if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-            const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>`;
+            const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No ${text}.</td></tr>`;
             tableBody.innerHTML = noEntryRow;
         }
     });
 }
-setUpTableListener("#entries-table");
-setUpTableListener("#prizes-history-table", 'winning');
+setUpTableListener("#entries-table", 'entry', 'entries added today');
+setUpTableListener("#prizes-history-table", 'winning', 'prizes won' );
 // document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
 //     if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
 //         const shouldDelete = confirm('Are you sure you want to delete this entry?');
@@ -304,10 +304,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (targetForm.style.display === 'none' || !targetForm.style.display) {
                 targetForm.style.display = 'block';
-                btn.textContent = 'Hide Form ⬅️'; // Change the arrow and text
+                btn.innerHTML = 'Hide Form <i class="fa-solid fa-caret-right"></i>';
             } else {
                 targetForm.style.display = 'none';
-                btn.textContent = 'Show Form ➡️';
+                btn.innerHTML = 'Show Form <i class="fa-solid fa-caret-right"></i>';
             }
         });
     });

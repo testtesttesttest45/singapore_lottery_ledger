@@ -57,7 +57,8 @@ table {
 #today-totals-table,
 #totals-table,
 #winnings-table,
-#prizes-history-table {
+#prizes-history-table,
+#purchase-history-table {
     width: 100%;
     border-collapse: collapse;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -79,7 +80,9 @@ table {
 #winnings-table th,
 #winnings-table td,
 #prizes-history-table th,
-#prizes-history-table td {
+#prizes-history-table td,
+#purchase-history-table th,
+#purchase-history-table td {
     padding: 8px 12px;
     border: 1px solid #ccc;
     text-align: center;
@@ -89,7 +92,8 @@ table {
 #today-totals-table th,
 #totals-table th,
 #winnings-table th,
-#prizes-history-table th {
+#prizes-history-table th,
+#purchase-history-table th {
     background-color: #333;
     color: white;
     font-weight: bold;
@@ -103,7 +107,7 @@ table {
     background-color: rgb(234, 212, 91);
 }
 
-#entries-table tbody tr:nth-child(odd), #prizes-history-table tbody tr:nth-child(odd) {
+#entries-table tbody tr:nth-child(odd), #prizes-history-table tbody tr:nth-child(odd), #purchase-history-table tbody tr:nth-child(odd) {
     background-color: #d0c9c9;
 }
 
@@ -111,7 +115,8 @@ table {
 #today-totals-table tbody tr td:hover:not(:nth-child(3)),
 #totals-table tbody tr td:hover,
 #winnings-table tbody tr td:hover,
-#prizes-history-table tbody tr:hover {
+#prizes-history-table tbody tr:hover,
+#purchase-history-table tbody tr:hover {
     background-color: #5a5050;
 }
 
@@ -144,7 +149,8 @@ table {
 #section-toto-view button,
 #save-entries-btn,
 .submit-btn,
-#save-winnings-btn  {
+#save-winnings-btn,
+#sorting-btn {
     grid-row-start: 5;
     grid-column: span 2;
     justify-self: center;
@@ -156,10 +162,9 @@ table {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-bottom: 10px;
 }
 
-.prizes-history-header {
+.prizes-history-header, .purchase-history-header {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -170,7 +175,9 @@ table {
 #section-toto-view button:hover,
 #save-entries-btn:hover,
 .submit-btn:hover,
-#save-winnings-btn:hover {
+#save-winnings-btn:hover,
+.pagination button:not(:disabled):hover,
+#sorting-btn:hover {
     background-color: gold;
 }
 
@@ -287,12 +294,14 @@ body.effect-active {
     margin-bottom: 20px;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px
 }
 
 .form-title {
     flex: 0 0 5%;
-    margin: 0;
+    margin: 10px;
     min-width: 50px;
+    text-align: start;
 }
 
 .winnings-form .form-row.button-row {
@@ -343,6 +352,34 @@ body.effect-active {
     color: rgb(16, 16, 211);
 }
 
+.long-table-container {
+    overflow-x: auto;
+    margin: 20px auto;
+    padding: 5px;
+}
+
+.pagination {
+    text-align: center;
+    margin: 20px;
+}
+
+.pagination button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.page-number {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #f5f5f5;
+}
 /* Mobile adjustments */
 @media (max-width: 600px) {
     body {
@@ -357,7 +394,9 @@ body.effect-active {
     #entries-table th,
     #today-totals-table th,
     #entries-table td,
-    #today-totals-table td {
+    #today-totals-table td,
+    #purchase-history-table th,
+    #purchase-history-table td {
         padding: 2px 4px;
     }
 
@@ -366,7 +405,8 @@ body.effect-active {
     #today-totals-container button,
     #save-entries-btn,
     .submit-btn,
-    #save-winnings-btn {
+    #save-winnings-btn,
+    #sorting-btn {
         padding: 5px 10px;
         font-size: 14px;
     }
@@ -402,22 +442,14 @@ body.effect-active {
     #section-toto-view button,
     #save-entries-btn,
     .submit-btn,
-    #save-winnings-btn {
+    #save-winnings-btn,
+    #sorting-btn {
         margin-top: 10px;
         width: fit-content;
     }
 
     .form-wrapper {
         flex-direction: column;
-    }
-
-    .winnings-form {
-        display: none;
-    }
-    
-    .toggle-form {
-        cursor: pointer;
-        color: blue;  /* or any desired color */
     }
     
 }
