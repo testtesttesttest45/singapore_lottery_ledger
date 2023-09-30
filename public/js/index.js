@@ -162,10 +162,10 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
 });
 
 function setUpTableListener(tableSelector, type = 'entry', text) {
-    document.querySelector(tableSelector + " tbody").addEventListener('click', function(event) {
+    document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
-            const message = (type === 'winning') ? 
-                'Are you sure you want to delete this winning?' : 
+            const message = (type === 'winning') ?
+                'Are you sure you want to delete this winning?' :
                 'Are you sure you want to delete this entry?';
             const shouldDelete = confirm(message);
             if (shouldDelete) {
@@ -182,7 +182,7 @@ function setUpTableListener(tableSelector, type = 'entry', text) {
     });
 }
 setUpTableListener("#entries-table", 'entry', 'entries added today');
-setUpTableListener("#prizes-history-table", 'winning', 'prizes won' );
+setUpTableListener("#prizes-history-table", 'winning', 'prizes won');
 // document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
 //     if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
 //         const shouldDelete = confirm('Are you sure you want to delete this entry?');
@@ -210,7 +210,61 @@ function clearExistingTimeouts() {
     timeouts = [];
 }
 
+document.getElementById('upload4D').addEventListener('click', function () {
+    addPlaceholderImage('4d');
+});
 
+document.getElementById('uploadToto').addEventListener('click', function () {
+    addPlaceholderImage('toto');
+});
+
+function addPlaceholderImage(type) {
+    const imgContainer = document.getElementById(`${type}-image-container`);
+    const divChildrenCount = imgContainer.querySelectorAll('div.image-div').length;
+
+    if (divChildrenCount < 5) {
+        const imageDiv = document.createElement('div');
+        imageDiv.classList.add('image-div');
+
+        // Create and append a placeholder image
+        const placeholderImg = document.createElement('img');
+        placeholderImg.src = "https://via.placeholder.com/300x200.png?text=Uploaded+Betslip";
+        imageDiv.appendChild(placeholderImg);
+
+        const checkedButton = document.createElement('button');
+        checkedButton.innerHTML = `Checked finish <i class="fa-solid fa-check"></i>`;
+        checkedButton.classList.add('checked-btn');
+        checkedButton.addEventListener('click', function () {
+            const confirmDelete = confirm(`Delete this ${type} betslip?`);
+            if (confirmDelete) {
+                imgContainer.removeChild(imageDiv);
+                updateCount(type, imgContainer.children.length);
+                if (divChildrenCount.length === 0) {
+                    const placeholderText = document.createElement('p');
+                    placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
+                    imgContainer.appendChild(placeholderText);
+                }
+            }
+        });
+        imageDiv.appendChild(checkedButton);
+
+        imgContainer.appendChild(imageDiv);
+        updateCount(type, divChildrenCount + 1);
+    } else {
+        alert(`Maximum of 5 images allowed for ${type}!`);
+    }
+
+    // If there were placeholder text, remove it
+    const placeholderText = imgContainer.querySelector('p');
+    if (placeholderText) {
+        imgContainer.removeChild(placeholderText);
+    }
+}
+
+function updateCount(type, count) {
+    const countElement = document.getElementById(`${type}-count`);
+    countElement.textContent = count;
+}
 
 function showSuccessEffect(gameType) {
     if (isAnimating) return;  // If animation is playing, ignore button clicks
@@ -294,11 +348,11 @@ function updateWinnings() {
     document.getElementById("total-winnings-all").textContent = `$${totalAll}`;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const toggleButtons = document.querySelectorAll('.toggle-form');
 
     toggleButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const targetFormId = btn.getAttribute('data-target');
             const targetForm = document.getElementById(targetFormId);
 
@@ -313,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const editBtn = document.getElementById('edit-note-button');
     const cancelBtn = document.getElementById('cancel-note-button');
     const selfNotes = document.getElementById('self-notes');
@@ -324,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hide cancel button initially
     cancelBtn.style.display = 'none';
 
-    editBtn.addEventListener('click', function() {
+    editBtn.addEventListener('click', function () {
         if (selfNotes.hasAttribute('readonly')) {
             // Show editing text and hide lock icon
             lockIcon.style.display = 'none';
@@ -359,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    cancelBtn.addEventListener('click', function() {
+    cancelBtn.addEventListener('click', function () {
         // Restore the original content
         selfNotes.value = originalContent;
 
@@ -375,4 +429,22 @@ document.addEventListener('DOMContentLoaded', function() {
         editBtn.classList.add('fa-pen-to-square');
         cancelBtn.style.display = 'none';
     });
+});
+
+document.getElementById('sorting-btn').addEventListener('click', function () {
+    const sortingMenu = document.getElementById('sorting-menu');
+    const isHidden = sortingMenu.style.display === 'none';
+    sortingMenu.style.display = isHidden ? 'block' : 'none';
+    this.textContent = isHidden ? 'Hide Menu' : 'Sort';
+});
+
+document.getElementById('sorting-menu').addEventListener('click', function (e) {
+    const button = e.target.closest('BUTTON');
+    if (button) {
+        const siblingButtons = button.parentElement.querySelectorAll('button');
+
+        siblingButtons.forEach(btn => btn.classList.remove('selected'));
+
+        button.classList.add('selected');
+    }
 });

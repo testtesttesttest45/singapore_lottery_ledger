@@ -114,25 +114,27 @@
         </div>
         <section id="section-today-entry">
             <h2>Today's Entries</h2>
-            <table id="entries-table">
-                <thead>
-                    <tr>
-                        <th>Lottery Name</th>
-                        <th>Entry Type</th>
-                        <th>Pick Type</th>
-                        <th>Bet Amount</th>
-                        <th>Outlet</th>
-                        <th>Number of Boards</th>
-                        <th>Cost</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="no-entry-row">
-                        <td colspan="8">No entries added.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="long-table-container">
+                <table id="entries-table">
+                    <thead>
+                        <tr>
+                            <th>Lottery Name</th>
+                            <th>Entry Type</th>
+                            <th>Pick Type</th>
+                            <th>Bet Amount</th>
+                            <th>Outlet</th>
+                            <th>Number of Boards</th>
+                            <th>Cost</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="no-entry-row">
+                            <td colspan="8">No entries added.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div id="today-totals-container">
                 <table id="today-totals-table">
                     <thead>
@@ -331,7 +333,7 @@
                     <i class="fa-solid fa-lock" style="color: gold"></i>
                 </span>
                 <span id="editing-text"
-                    style="display:none;background-color:#333;color:limegreen;padding:10px;border-radius:10px;">Editing...</span>
+                    style="display:none;background-color:#333;color:limegreen;padding:5px;border-radius:10px;font-size:15px;">Editing...</span>
             </h2>
             <div id="notes-container">
                 <textarea id="self-notes" placeholder="Write your notes here..." readonly></textarea>
@@ -345,6 +347,20 @@
                 <h2>Purchase History</h2>
                 <button id="sorting-btn" type="button" style="color: limegreen"
                     aria-label="sorting button">Sort</button>
+
+            </div>
+            <div id="sorting-menu" class="sorting-dropdown" style="display:none;">
+                <div class="menu-row">
+                    <span class="menu-label">Showing:</span>
+                    <button data-filter="4D">4D</button>
+                    <button data-filter="Toto">Toto</button>
+                    <button data-filter="All" class="selected">All</button>
+                </div>
+                <div class="menu-row">
+                    <span class="menu-label">Sorting:</span>
+                    <button data-sort="latest" class="selected">By Date (Latest first)</button>
+                    <button data-sort="oldest">By Date (Oldest first)</button>
+                </div>
             </div>
             <div class="long-table-container">
 
@@ -376,11 +392,27 @@
             </div>
         </section>
 
-        <section id="win-checker">
-            <!-- "Did I win?" functionality goes here -->
+        <section id="current-betslips">
+            <h2>Current Betslips</h2>
+
+            <div class="betslip-section" id="4d-betslip-section">
+                <h3>4D Betslip</h3>
+                <p><span id="4d-count">0</span> 4D betslips uploaded</p>
+                <div class="image-container" id="4d-image-container">
+                    <p>You have not uploaded a 4D betslip for the upcoming draw!</p>
+                </div>
+                <button id="upload4D" class="upload-betslip">Upload 4D Betslip</button>
+            </div>
+
+            <div class="betslip-section" id="toto-betslip-section">
+                <h3>Toto Betslip</h3>
+                <p><span id="toto-count">0</span> Toto betslips uploaded</p>
+                <div class="image-container" id="toto-image-container">
+                    <p>You have not uploaded a Toto betslip for the upcoming draw!</p>
+                </div>
+                <button id="uploadToto" class="upload-betslip">Upload Toto Betslip</button>
+            </div>
         </section>
-
-
     </main>
     <script src="/js/index.js"></script>
     <div id="success-message" class="hidden">
@@ -390,5 +422,10 @@
         <p class="success-text">Added Successfully</p>
     </div>
 </body>
+
+<footer>
+    <p>Made by Wei Lin from Singapore</p>
+    <img src="/assets/treasure.png" alt="treasure image">
+</footer>
 
 </html>
