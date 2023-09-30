@@ -241,7 +241,9 @@ function addPlaceholderImage(type) {
                 updateCount(type, imgContainer.children.length);
                 if (imgContainer.querySelectorAll('div.image-div').length === 0) {
                     const placeholderText = document.createElement('p');
-                    placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
+                    // placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
+                    // if type =  "toto" use "toto" else "4D"
+                    placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" : "4D"} betslip for the upcoming draw!`;
                     imgContainer.appendChild(placeholderText);
                 }
             }

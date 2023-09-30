@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toto & 4D Tracker</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <header>
+        <h1>Toto & 4D Tracker</h1>
+        <span>Please Login!</span>
+    </header>
+
+    <main>
+        <div class="container">
+            <section id="login-section">
+                <h3 id="login-heading">Login as</h3>
+                <ul class="user-list">
+                    <li><button class="user-button"><span class="user-name">Tom</span></button></li>
+                    <li><button class="user-button"><span class="user-name">James</span></button></li>
+                    <li><button class="user-button"><span class="user-name">Admin</span></button></li>
+                </ul>
+                <button id="back-btn" style="display: none;"><i class="fa-solid fa-arrow-left" style="color:limegreen;"></i></button>
+                <div class="login-input" style="display: none;">
+                    <label for="login-username">Enter Username:</label>
+                    <input type="text" id="login-username">
+                    <label for="login-password">Enter Password:</label>
+                    <input type="password" id="login-password">
+                    <button id="login-btn">Login</button>
+                </div>
+            </section>
+
+            <section id="register-section">
+                <h3>Register and start keeping track of your bettings!</h3>
+                <p class="toggle-form" data-target="register-input">Show Form <i class="fa-solid fa-caret-right"></i>
+                </p>
+                <div class="register-input" id="register-input" style="display:none">
+                    <label for="register-fullname">Enter Full name:</label>
+                    <input type="text" id="register-fullname">
+                    <label for="first-day-betting">First day of betting:</label>
+                    <input type="date" id="first-day-betting">
+                    <label for="register-username">Enter Username:</label>
+                    <input type="text" id="register-username">
+                    <label for="register-password">Enter Password:</label>
+                    <input type="password" id="register-password">
+                    <button id="register-btn">Register</button>
+                </div>
+            </section>
+
+
+
+        </div>
+    </main>
+
+    <script src="/js/login.js"></script>
+</body>
+
+</html>
