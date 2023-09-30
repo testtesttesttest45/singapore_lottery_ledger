@@ -161,13 +161,15 @@ button:hover:not(:disabled):not(.selected) {
 #save-winnings-btn,
 #sorting-btn,
 .upload-betslip,
-.checked-btn {
+.checked-btn,
+#reset-order-btn {
     grid-row-start: 5;
     grid-column: span 2;
     justify-self: center;
     background-color: #333;
     color: #fff;
     padding: 10px 20px;
+    margin-bottom: 5px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
@@ -175,7 +177,7 @@ button:hover:not(:disabled):not(.selected) {
     transition: background-color 0.3s ease;
 }
 
-.prizes-history-header, .purchase-history-header {
+.sections-header {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -188,7 +190,8 @@ button:hover:not(:disabled):not(.selected) {
 .submit-btn:hover,
 #save-winnings-btn:hover,
 .pagination button:not(:disabled):hover,
-#sorting-btn:hover {
+#sorting-btn:hover,
+#reset-order-btn:hover {
     background-color: gold;
 }
 
@@ -511,7 +514,8 @@ footer img {
     #sorting-btn,
     .menu-row button,
     .pagination button,
-    .upload-betslip {
+    .upload-betslip,
+    #reset-order-btn {
         padding: 5px 10px;
         font-size: 14px;
         margin-bottom: 5px;

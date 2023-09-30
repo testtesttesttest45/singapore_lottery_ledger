@@ -448,3 +448,51 @@ document.getElementById('sorting-menu').addEventListener('click', function (e) {
         button.classList.add('selected');
     }
 });
+
+const defaultOrder = [
+    "entry-sections",
+    "section-today-entry",
+    "section-total-spendings",
+    "section-total-winnings",
+    "notes",
+    "purchase-history",
+    "current-betslips"
+];
+
+// Initialize SortableJS
+const sortable = new Sortable(document.getElementById('sortable-container'), {
+    animation: 700,
+    onUpdate: function (evt) {
+        const newOrder = [];
+        const items = document.getElementById('sortable-container').children;
+        for (let item of items) {
+            newOrder.push(item.id);
+        }
+        localStorage.setItem('sectionOrder', JSON.stringify(newOrder));
+    }
+});
+
+// Set default order or load from saved preference
+function setOrder(order) {
+    const container = document.getElementById('sortable-container');
+    order.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            container.appendChild(element);
+        }
+    });
+}
+
+document.getElementById('reset-order-btn').addEventListener('click', function () {
+    setOrder(defaultOrder);
+    localStorage.removeItem('sectionOrder'); // reset the saved order as well
+});
+
+// Check for saved order or use default
+const savedOrder = JSON.parse(localStorage.getItem('sectionOrder'));
+if (savedOrder) {
+    setOrder(savedOrder);
+} else {
+    setOrder(defaultOrder);
+}
+
