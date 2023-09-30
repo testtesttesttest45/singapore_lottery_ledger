@@ -239,7 +239,7 @@ function addPlaceholderImage(type) {
             if (confirmDelete) {
                 imgContainer.removeChild(imageDiv);
                 updateCount(type, imgContainer.children.length);
-                if (divChildrenCount.length === 0) {
+                if (imgContainer.querySelectorAll('div.image-div').length === 0) {
                     const placeholderText = document.createElement('p');
                     placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
                     imgContainer.appendChild(placeholderText);
@@ -441,7 +441,7 @@ document.getElementById('sorting-btn').addEventListener('click', function () {
 document.getElementById('sorting-menu').addEventListener('click', function (e) {
     const button = e.target.closest('BUTTON');
     if (button) {
-        const siblingButtons = button.parentElement.querySelectorAll('button');
+        const siblingButtons = button.closest('.menu-row').querySelectorAll('button');
 
         siblingButtons.forEach(btn => btn.classList.remove('selected'));
 

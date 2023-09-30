@@ -413,10 +413,6 @@ body.effect-active {
     border-radius: 5px;
 }
 
-.menu-row button:focus {
-    outline: none;
-}
-
 .selected {
     background-color: #333;
     color: limegreen;
@@ -476,7 +472,7 @@ footer {
     align-items: center;     /* Centers children horizontally */
     justify-content: center; /* Centers children vertically */
     height: 100%;
-    background: radial-gradient(circle, limegreen, rgb(234, 212, 91));
+    background: radial-gradient(circle, rgb(234, 212, 91), limegreen);
     padding: 20px;
 }
 
@@ -512,7 +508,10 @@ footer img {
     #save-entries-btn,
     .submit-btn,
     #save-winnings-btn,
-    #sorting-btn {
+    #sorting-btn,
+    .menu-row button,
+    .pagination button,
+    .upload-betslip {
         padding: 5px 10px;
         font-size: 14px;
         margin-bottom: 5px;

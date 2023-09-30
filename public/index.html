@@ -130,7 +130,7 @@
                     </thead>
                     <tbody>
                         <tr class="no-entry-row">
-                            <td colspan="8">No entries added.</td>
+                            <td colspan="8">No entries added today.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -352,14 +352,19 @@
             <div id="sorting-menu" class="sorting-dropdown" style="display:none;">
                 <div class="menu-row">
                     <span class="menu-label">Showing:</span>
-                    <button data-filter="4D">4D</button>
-                    <button data-filter="Toto">Toto</button>
-                    <button data-filter="All" class="selected">All</button>
+                    <div style="margin:10px;">
+                        <button data-filter="4D">4D</button>
+                        <button data-filter="Toto">Toto</button>
+                        <button data-filter="All" class="selected">All</button>
+                    </div>
                 </div>
                 <div class="menu-row">
                     <span class="menu-label">Sorting:</span>
-                    <button data-sort="latest" class="selected">By Date (Latest first)</button>
-                    <button data-sort="oldest">By Date (Oldest first)</button>
+                    <div style="margin:10px;">
+                        <button data-sort="latest" class="selected">By Date (Latest first)</button>
+                        <button data-sort="oldest">By Date (Oldest first)</button>
+                    </div>
+
                 </div>
             </div>
             <div class="long-table-container">
@@ -421,11 +426,12 @@
         </div>
         <p class="success-text">Added Successfully</p>
     </div>
-</body>
 
-<footer>
-    <p>Made by Wei Lin from Singapore</p>
-    <img src="/assets/treasure.png" alt="treasure image">
-</footer>
+    <footer>
+        <p>Made by Wei Lin from Singapore</p>
+        <img src="/assets/treasure.png" alt="treasure image">
+    </footer>
+
+</body>
 
 </html>
