@@ -139,7 +139,7 @@ button:hover:not(:disabled):not(.selected) {
 }
 
 .form-row {
-    width: 60%;
+    width: 80%;
 }
 
 .form-row label,
