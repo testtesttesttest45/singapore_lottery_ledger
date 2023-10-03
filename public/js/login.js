@@ -26,38 +26,45 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('/users')
         .then(response => response.json())
         .then(users => {
-            users.forEach(user => {
-                const userButton = document.createElement('button');
-                userButton.classList.add('user-button');
-                userButton.innerHTML = `<span class="user-name" data-full-name="${user.full_name}">${user.username}</span>`;
-                userList.appendChild(userButton);
-            });
+            if (users.length === 0) {
+                const noUsersMessage = document.createElement('p');
+                noUsersMessage.textContent = "No users yet! Register now and be the first!";
+                userList.appendChild(noUsersMessage);
+            } else {
+                users.forEach(user => {
+                    const userButton = document.createElement('button');
+                    userButton.classList.add('user-button');
+                    userButton.innerHTML = `<span class="user-name" data-full-name="${user.full_name}">${user.username}</span>`;
+                    userList.appendChild(userButton);
+                });
+            }
         })
         .catch(error => {
             console.error('Error fetching users:', error);
         });
 
-        document.addEventListener('click', function (event) {
-            if (event.target && (event.target.classList.contains('user-button') || event.target.classList.contains('user-name'))) {
-                
-                // Determine the relevant element to fetch data from:
-                const userNameElement = event.target.classList.contains('user-name') ? event.target : event.target.querySelector('.user-name');
-                
-                if (!userNameElement) return; // In case there's no such element, exit.
-        
-                const userName = userNameElement.textContent;
-                const fullName = userNameElement.getAttribute('data-full-name');
-                loginHeading.textContent = `Login as ${fullName}`;
-        
-                // Set the username input's value to the clicked username
-                document.getElementById('login-username').value = userName;
-        
-                userList.style.display = 'none';
-                loginInput.style.display = 'block';
-                backButton.style.display = 'block';
-            }
-        });
-        
+    document.addEventListener('click', function (event) {
+        if (event.target && (event.target.classList.contains('user-button') || event.target.classList.contains('user-name'))) {
+
+            // Determine the relevant element to fetch data from:
+            const userNameElement = event.target.classList.contains('user-name') ? event.target : event.target.querySelector('.user-name');
+
+            if (!userNameElement) return; // In case there's no such element, exit.
+
+            const userName = userNameElement.textContent;
+            const fullName = userNameElement.getAttribute('data-full-name');
+            loginHeading.textContent = `Login as ${fullName}`;
+
+            // Set the username input's value to the clicked username
+            document.getElementById('login-username').value = userName;
+
+            userList.style.display = 'none';
+            document.getElementById('login-password').value = '';
+            loginInput.style.display = 'block';
+            backButton.style.display = 'block';
+        }
+    });
+
 
     backButton.addEventListener('click', function () {
         loginHeading.textContent = 'Login as';

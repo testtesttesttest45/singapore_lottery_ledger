@@ -47,19 +47,16 @@ main {
 
 .user-list {
     list-style-type: none;
-    padding: 10px;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
     max-height: 140px;
+    display: grid;
+    padding: 20px;
 }
 
 span {
     font-size: 22px;
-}
-
-.user-list {
-    display: grid;
 }
 
 .user-button, #login-btn, #register-btn {

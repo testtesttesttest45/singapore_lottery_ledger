@@ -5,15 +5,34 @@ const app = express();
 const PORT = 3000;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-
-
-app.use(express.static(path.join(__dirname, 'public')));
+const session = require('express-session');
+const ensureAuthenticated = require('./middleware.js');
 
 app.use(bodyParser.json());  // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));  // to support URL-encoded bodies
 
+app.use(express.json());
+app.use(session({
+  secret: 'password',
+  resave: false,
+  saveUninitialized: false
+}));
+
 app.get('/', (req, res) => {
+  res.redirect('/login');
+});
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/index', ensureAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use('/index.html', (req, res, next) => {
+    // This middleware redirects direct accesses to `/index.html` to the `/index` route.
+    return res.redirect('/index');
 });
 
 app.get('/users', (req, res) => {
@@ -83,11 +102,14 @@ app.post('/login', (req, res) => {
         return res.status(401).send({ message: 'Password is incorrect.' });
       }
 
+      req.session.isAuthenticated = true;
       res.status(200).send({ message: 'Logged in successfully.' });
     });
   });
 });
 
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
