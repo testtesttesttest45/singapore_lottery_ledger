@@ -27,7 +27,7 @@ app.get('/users', (req, res) => {
   });
 });
 
-app.post('/users', (req, res) => {
+app.post('/register', (req, res) => {
   const { full_name, username, password, first_day_betting } = req.body;
   console.log(req.body);
   if (!full_name || !username || !password) {
@@ -48,6 +48,42 @@ app.post('/users', (req, res) => {
         return res.status(500).send({ message: 'Server error. Please try again later.' });
       }
       res.status(201).send({ message: 'User added successfully' });
+    });
+  });
+});
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send({ message: 'Missing required fields.' });
+  }
+
+  const sql = 'SELECT password FROM users WHERE username = ?';
+  connection.query(sql, [username], (err, results) => {
+    if (err) {
+      console.error('Error fetching user:', err.stack);
+      return res.status(500).send({ message: 'Server error. Please try again later.' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send({ message: 'User not found.' });
+    }
+
+    const storedHashedPassword = results[0].password;
+
+    // Compare provided password with stored hashed password
+    bcrypt.compare(password, storedHashedPassword, (err, isMatch) => {
+      if (err) {
+        console.error('Error comparing password:', err.stack);
+        return res.status(500).send({ message: 'Server error. Please try again later.' });
+      }
+
+      if (!isMatch) {
+        return res.status(401).send({ message: 'Password is incorrect.' });
+      }
+
+      res.status(200).send({ message: 'Logged in successfully.' });
     });
   });
 });

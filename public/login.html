@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toto & 4D Tracker</title>
+    <title>SG Lottery Ledger</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
@@ -14,7 +14,7 @@
 
 <body>
     <header>
-        <h1>Toto & 4D Tracker</h1>
+        <h1>SG Lottery Ledger</h1>
         <span>Please Login!</span>
     </header>
 
@@ -23,14 +23,11 @@
             <section id="login-section">
                 <h3 id="login-heading">Login as</h3>
                 <ul class="user-list">
-                    <li><button class="user-button"><span class="user-name">Tom</span></button></li>
-                    <li><button class="user-button"><span class="user-name">James</span></button></li>
-                    <li><button class="user-button"><span class="user-name">Admin</span></button></li>
+                    <!-- list of user's usernames from the database will be placed here -->
                 </ul>
                 <button id="back-btn" style="display: none;"><i class="fa-solid fa-arrow-left" style="color:limegreen;"></i></button>
                 <div class="login-input" style="display: none;">
-                    <label for="login-username">Enter Username:</label>
-                    <input type="text" id="login-username">
+                    <input type="hidden" id="login-username">
                     <label for="login-password">Enter Password:</label>
                     <input type="password" id="login-password">
                     <button id="login-btn">Login</button>
@@ -60,6 +57,12 @@
     </main>
 
     <script src="/js/login.js"></script>
+    <div id="success-message" class="hidden">
+        <div class="tick-wrapper">
+            <i class="fas fa-check"></i>
+        </div>
+        <p class="success-text">Added Successfully</p>
+    </div>
 </body>
 
 </html>
