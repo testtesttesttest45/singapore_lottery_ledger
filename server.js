@@ -103,11 +103,37 @@ app.post('/login', (req, res) => {
       }
 
       req.session.isAuthenticated = true;
+      req.session.username = username;
       res.status(200).send({ message: 'Logged in successfully.' });
     });
   });
 });
 
+app.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error during session destroy:', err);
+      return res.status(500).send({ message: 'Internal server error.' });
+    }
+    res.status(200).send({ message: 'Logged out successfully.' });
+  });
+});
+
+app.get('/current-user', ensureAuthenticated, (req, res) => {
+  const username = req.session.username;
+  connection.query('SELECT full_name FROM users WHERE username = ?', [username], (err, results) => {
+      if (err) {
+          return res.status(500).send('Error fetching user');
+      }
+
+      if (results.length === 0) {
+          return res.status(404).send('User not found');
+      }
+
+      // Return the user's full name as JSON
+      res.json({ fullName: results[0].full_name });
+  });
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 

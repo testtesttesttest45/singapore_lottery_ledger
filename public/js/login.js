@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Redirect to index.html on login button click
     loginButton.addEventListener('click', function () {
+        event.preventDefault();
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
         fetch('/login', {

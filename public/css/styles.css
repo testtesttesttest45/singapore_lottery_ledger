@@ -162,7 +162,8 @@ button:hover:not(:disabled):not(.selected) {
 #sorting-btn,
 .upload-betslip,
 .checked-btn,
-#reset-order-btn {
+#reset-order-btn,
+#logout-btn {
     grid-row-start: 5;
     grid-column: span 2;
     justify-self: center;
@@ -190,7 +191,8 @@ button:hover:not(:disabled):not(.selected) {
 #save-winnings-btn:hover,
 .pagination button:not(:disabled):hover,
 #sorting-btn:hover,
-#reset-order-btn:hover {
+#reset-order-btn:hover,
+#logout-btn:hover {
     background-color: gold;
 }
 

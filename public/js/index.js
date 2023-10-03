@@ -28,6 +28,46 @@ function calculateCost(entryType, boards) {
     return costPerBoard * boards;
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('/current-user')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Populate user's full name on the page
+            const userNameElement = document.getElementById('user-name');
+            userNameElement.textContent = data.fullName;
+        })
+        .catch(error => {
+            console.error('Error fetching current user:', error);
+        });
+});
+
+document.getElementById('logout-btn').addEventListener('click', function () {
+    fetch('/logout', {
+        method: 'POST',
+    })
+    .then(response => {
+        if(response.status === 200) {
+            // Redirect the user to the login page after successful logout
+            window.location.href = '/login';
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if(data && data.message) {
+            alert(data.message); // You can notify the user about the error in any other way you prefer
+        }
+    })
+    .catch(error => {
+        console.error('Error during logout:', error);
+    });
+});
+
 // Add 4D Entry to Table
 document.getElementById('4d-form').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent form from submitting
