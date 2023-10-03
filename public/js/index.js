@@ -50,22 +50,22 @@ document.getElementById('logout-btn').addEventListener('click', function () {
     fetch('/logout', {
         method: 'POST',
     })
-    .then(response => {
-        if(response.status === 200) {
-            // Redirect the user to the login page after successful logout
-            window.location.href = '/login';
-        } else {
-            return response.json();
-        }
-    })
-    .then(data => {
-        if(data && data.message) {
-            alert(data.message); // You can notify the user about the error in any other way you prefer
-        }
-    })
-    .catch(error => {
-        console.error('Error during logout:', error);
-    });
+        .then(response => {
+            if (response.status === 200) {
+                // Redirect the user to the login page after successful logout
+                window.location.href = '/login';
+            } else {
+                return response.json();
+            }
+        })
+        .then(data => {
+            if (data && data.message) {
+                alert(data.message); // You can notify the user about the error in any other way you prefer
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+        });
 });
 
 // Add 4D Entry to Table
@@ -135,6 +135,72 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     showSuccessEffect('Toto');
     updateTotals();
 });
+
+document.getElementById('save-entries-btn').addEventListener('click', function () {
+    const table = document.getElementById('entries-table');
+    const rows = table.querySelectorAll('tbody tr');
+    const entries = [];
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 7) {
+            const entry = {
+                lottery_name: cells[0].innerText,
+                entry_type: cells[1].innerText,
+                pick_type: cells[2].innerText,
+                bet_amount: cells[3].innerText,
+                outlet: cells[4].innerText,
+                number_of_boards: parseInt(cells[5].innerText),
+                cost: parseFloat(cells[6].innerText.replace("$", "")),
+            };
+            entries.push(entry);
+        } else {
+            console.warn('Row with insufficient cells detected and ignored.');
+        }
+    });
+
+    if (entries.length) { // means not empty
+        saveEntries(entries);
+    } else {
+        alert('No valid entries to save.');
+    }
+});
+
+function saveEntries(entries) {
+    fetch('/save-entries', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ entries }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Entries saved successfully!');
+                const tableBody = document.querySelector('#entries-table tbody');
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                }
+                checkForNoEntries("#entries-table", 'entry', 'entries added');
+                updateTotals();
+            } else {
+                alert('Error saving entries: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was a problem saving the entries.');
+        });
+}
+
+function checkForNoEntries(tableSelector, type, text) {
+    const tableBody = document.querySelector(tableSelector + " tbody");
+    if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+        const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No ${text}.</td></tr>`;
+        tableBody.innerHTML = noEntryRow;
+    }
+}
 
 function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
@@ -221,7 +287,7 @@ function setUpTableListener(tableSelector, type = 'entry', text) {
         }
     });
 }
-setUpTableListener("#entries-table", 'entry', 'entries added today');
+setUpTableListener("#entries-table", 'entry', 'entries added');
 setUpTableListener("#prizes-history-table", 'winning', 'prizes won');
 // document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
 //     if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {

@@ -31,8 +31,8 @@ app.get('/index', ensureAuthenticated, (req, res) => {
 });
 
 app.use('/index.html', (req, res, next) => {
-    // This middleware redirects direct accesses to `/index.html` to the `/index` route.
-    return res.redirect('/index');
+  // This middleware redirects direct accesses to `/index.html` to the `/index` route.
+  return res.redirect('/index');
 });
 
 app.get('/users', (req, res) => {
@@ -78,7 +78,7 @@ app.post('/login', (req, res) => {
     return res.status(400).send({ message: 'Missing required fields.' });
   }
 
-  const sql = 'SELECT password FROM users WHERE username = ?';
+  const sql = 'SELECT * FROM users WHERE username = ?';
   connection.query(sql, [username], (err, results) => {
     if (err) {
       console.error('Error fetching user:', err.stack);
@@ -104,6 +104,7 @@ app.post('/login', (req, res) => {
 
       req.session.isAuthenticated = true;
       req.session.username = username;
+      req.session.userId = results[0].ID;
       res.status(200).send({ message: 'Logged in successfully.' });
     });
   });
@@ -122,16 +123,57 @@ app.post('/logout', (req, res) => {
 app.get('/current-user', ensureAuthenticated, (req, res) => {
   const username = req.session.username;
   connection.query('SELECT full_name FROM users WHERE username = ?', [username], (err, results) => {
-      if (err) {
-          return res.status(500).send('Error fetching user');
-      }
+    if (err) {
+      return res.status(500).send('Error fetching user');
+    }
 
-      if (results.length === 0) {
-          return res.status(404).send('User not found');
-      }
+    if (results.length === 0) {
+      return res.status(404).send('User not found');
+    }
 
-      // Return the user's full name as JSON
-      res.json({ fullName: results[0].full_name });
+    // Return the user's full name as JSON
+    res.json({ fullName: results[0].full_name });
+  });
+});
+
+app.post('/save-entries', ensureAuthenticated, (req, res) => {
+  const entries = req.body.entries;
+  if (!entries || !entries.length) {
+    return res.status(400).json({ success: false, message: 'No entries provided.' });
+  }
+  // Preparing the data for bulk insert
+  const values = [];
+  entries.forEach(entry => {
+    values.push([
+      req.session.userId,
+      entry.lottery_name,
+      entry.entry_type,
+      entry.pick_type,
+      entry.bet_amount,
+      entry.outlet,
+      entry.number_of_boards,
+      entry.cost
+    ]);
+  });
+
+  const placeholder = "(?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+  const placeholders = new Array(entries.length).fill(placeholder).join(', ');
+
+  const sql = `
+      INSERT INTO records 
+      (fk_user_id, lottery_name, entry_type, pick_type, bet_amount, outlet, number_of_boards, cost, date_of_entry) 
+      VALUES ${placeholders}
+  `;
+
+  // Flatten the values array for the query
+  const flattenedValues = [].concat(...values);
+
+  connection.query(sql, flattenedValues, (err, results) => {
+    if (err) {
+      console.error('Error with bulk insert:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+    res.json({ success: true, message: 'Entries added successfully!' });
   });
 });
 

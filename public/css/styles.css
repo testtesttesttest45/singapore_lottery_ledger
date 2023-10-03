@@ -30,9 +30,7 @@ button:hover:not(:disabled):not(.selected) {
     background-color: gold;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
     transition: background-color 0.3s ease;
-    padding: 10px 20px;
 }
 
 #entry-sections {
@@ -117,7 +115,7 @@ button:hover:not(:disabled):not(.selected) {
 }
 
 #entries-table tbody tr:nth-child(odd), #prizes-history-table tbody tr:nth-child(odd), #purchase-history-table tbody tr:nth-child(odd) {
-    background-color: #d0c9c9;
+    background-color: #857f7f;
 }
 
 #entries-table tbody tr:hover,
