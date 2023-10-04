@@ -51,7 +51,7 @@ function setupDatabase() {
                 username VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 first_day_betting DATE,
-                date_joined DATE
+                date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             `;
 
@@ -72,7 +72,7 @@ function setupDatabase() {
                 outlet VARCHAR(255),
                 number_of_boards INT,
                 cost INT,
-                date_of_entry DATE,
+                date_of_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (fk_user_id) REFERENCES users(ID)
             );
             `;

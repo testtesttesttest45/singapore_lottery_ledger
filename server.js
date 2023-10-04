@@ -48,7 +48,6 @@ app.get('/users', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { full_name, username, password, first_day_betting } = req.body;
-  console.log(req.body);
   if (!full_name || !username || !password) {
     return res.status(400).send('Missing required fields.');
   }
@@ -60,7 +59,7 @@ app.post('/register', (req, res) => {
       return res.status(500).send({ message: 'Server error. Please try again later.' });
     }
 
-    const sql = 'INSERT INTO users (full_name, username, password, first_day_betting, date_joined) VALUES (?, ?, ?, ?, NOW())';
+    const sql = 'INSERT INTO users (full_name, username, password, first_day_betting) VALUES (?, ?, ?, ?)';
     connection.query(sql, [full_name, username, hashedPassword, first_day_betting], (err, results) => {
       if (err) {
         console.error('Error inserting new user:', err.stack);
@@ -156,12 +155,12 @@ app.post('/save-entries', ensureAuthenticated, (req, res) => {
     ]);
   });
 
-  const placeholder = "(?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+  const placeholder = "(?, ?, ?, ?, ?, ?, ?, ?)";
   const placeholders = new Array(entries.length).fill(placeholder).join(', ');
 
   const sql = `
       INSERT INTO records 
-      (fk_user_id, lottery_name, entry_type, pick_type, bet_amount, outlet, number_of_boards, cost, date_of_entry) 
+      (fk_user_id, lottery_name, entry_type, pick_type, bet_amount, outlet, number_of_boards, cost) 
       VALUES ${placeholders}
   `;
 
