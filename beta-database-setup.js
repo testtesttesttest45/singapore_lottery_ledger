@@ -73,6 +73,7 @@ function setupDatabase() {
                 number_of_boards INT,
                 cost INT,
                 date_of_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                isDeleted BOOLEAN DEFAULT FALSE,
                 FOREIGN KEY (fk_user_id) REFERENCES users(ID)
             );
             `;

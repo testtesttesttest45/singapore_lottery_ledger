@@ -90,7 +90,9 @@ document.getElementById('4d-form').addEventListener('submit', function (event) {
     if (noEntryRow) {
         noEntryRow.remove();
     }
+    const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
     const newRow = `<tr>
+        <td>${nextRowNumber}</td>
         <td>4D</td>
         <td>${entryType4D}</td>
         <td>${pickType4D}</td>
@@ -121,7 +123,9 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     if (noEntryRow) {
         noEntryRow.remove();
     }
+    const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
     const newRow = `<tr>
+        <td>${nextRowNumber}</td>
         <td>Toto</td>
         <td>${entryTypeToto}</td>
         <td>${pickTypeToto}</td>
@@ -136,6 +140,13 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     updateTotals();
 });
 
+function updateRowNumbers(tableSelector) {
+    const rows = document.querySelectorAll(`${tableSelector} tbody tr:not(.no-entry-row)`);
+    rows.forEach((row, index) => {
+        row.cells[0].innerText = index + 1;  // Update the first cell with the row number
+    });
+}
+
 document.getElementById('save-entries-btn').addEventListener('click', function () {
     const table = document.getElementById('entries-table');
     const rows = table.querySelectorAll('tbody tr');
@@ -145,13 +156,13 @@ document.getElementById('save-entries-btn').addEventListener('click', function (
         const cells = row.querySelectorAll('td');
         if (cells.length >= 7) {
             const entry = {
-                lottery_name: cells[0].innerText,
-                entry_type: cells[1].innerText,
-                pick_type: cells[2].innerText,
-                bet_amount: cells[3].innerText,
-                outlet: cells[4].innerText,
-                number_of_boards: parseInt(cells[5].innerText),
-                cost: parseFloat(cells[6].innerText.replace("$", "")),
+                lottery_name: cells[1].innerText,
+                entry_type: cells[2].innerText,
+                pick_type: cells[3].innerText,
+                bet_amount: cells[4].innerText,
+                outlet: cells[5].innerText,
+                number_of_boards: parseInt(cells[6].innerText),
+                cost: parseFloat(cells[7].innerText.replace("$", "")),
             };
             entries.push(entry);
         } else {
@@ -275,6 +286,7 @@ function setUpTableListener(tableSelector, options = {}) {
             const shouldDelete = confirm(message);
             if (shouldDelete) {
                 const row = event.target.closest('tr');
+                const tableBody = document.querySelector(tableSelector + " tbody");
                 if (options.serverDelete) {
                     const recordId = row.getAttribute('data-id').replace('purchase-', '');
                     options.deleteMethod(recordId).then((success) => {
@@ -291,6 +303,7 @@ function setUpTableListener(tableSelector, options = {}) {
                                 }
                                 displayPurchaseHistory(purchaseHistoryData);
                             }
+                            updatePurchaseHistoryTotals();
                             updatePaginationControls();
                         } else {
                             alert('Error deleting. Please try again later.');
@@ -301,8 +314,11 @@ function setUpTableListener(tableSelector, options = {}) {
                     if (options.afterDelete) {
                         options.afterDelete();
                     }
-
-                    const tableBody = document.querySelector(tableSelector + " tbody");
+                    const rows = tableBody.querySelectorAll('tr:not(.no-entry-row)');
+                    rows.forEach((row, index) => {
+                        const firstCell = row.querySelector('td:first-child');
+                        firstCell.textContent = index + 1;
+                    });
                     const colspan = options.colspan || 8;
                     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
                         const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
@@ -439,8 +455,8 @@ function updateTotals() {
     let totalToto = 0;
 
     rows.forEach(row => {
-        const lotteryName = row.children[0].textContent; // the first td
-        const costValue = parseFloat(row.children[6].textContent.replace("$", "")); // the 7th td and remove the $ sign
+        const lotteryName = row.children[1].textContent; // the first td
+        const costValue = parseFloat(row.children[7].textContent.replace("$", "")); // the 7th td and remove the $ sign
 
         if (lotteryName === "4D") {
             total4D += costValue;
@@ -562,6 +578,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function updatePurchaseHistoryTotals() {
+    const purchaseTable = document.getElementById('purchase-history-table');
+    const rows = purchaseTable.querySelectorAll('tbody tr:not(.no-entry-row)');
+    
+    let total4D = 0;
+    let totalToto = 0;
+
+    rows.forEach(row => {
+        const lotteryName = row.querySelector('td:nth-child(2)').textContent.trim();
+        const cost = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('$', ''));
+        
+        if (lotteryName === '4D') {
+            total4D += cost;
+        } else if (lotteryName === 'Toto') {
+            totalToto += cost;
+        }
+    });
+
+    const totalAll = total4D + totalToto;
+
+    document.getElementById('total-spend-4d').textContent = `$${total4D}`;
+    document.getElementById('total-spend-toto').textContent = `$${totalToto}`;
+    document.getElementById('total-spend-all').textContent = `$${totalAll}`;
+}
 
 const ROWS_PER_PAGE = 5;
 let currentPage = 1;
@@ -587,6 +627,7 @@ function fetchPurchaseHistory() {
             if (data.success) {
                 purchaseHistoryData = data.data;
                 updateView();
+                updatePurchaseHistoryTotals();
             } else {
                 console.error('Error retrieving purchase history:', data.message);
             }
@@ -687,7 +728,7 @@ function displayPurchaseHistory(history) {
         `;
         tableBody.appendChild(row);
     });
-
+    updatePurchaseHistoryTotals();
     updatePaginationControls();
 }
 

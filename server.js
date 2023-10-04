@@ -178,7 +178,7 @@ app.post('/save-entries', ensureAuthenticated, (req, res) => {
 
 app.get('/get-purchase-history', ensureAuthenticated, (req, res) => {
   const userId = req.session.userId;
-  const sql = 'SELECT * FROM records WHERE fk_user_id = ? ORDER BY date_of_entry DESC';
+  const sql = 'SELECT * FROM records WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_entry DESC';
   connection.query(sql, [userId], (err, results) => {
     if (err) {
       console.error('Error fetching purchase history:', err.stack);
@@ -196,7 +196,7 @@ app.delete('/delete-purchase/:recordId', (req, res) => {
       return res.status(400).json({ success: false, message: 'Record ID is required.' });
   }
 
-  const sql = 'DELETE FROM records WHERE id = ?';
+  const sql = 'UPDATE records SET isDeleted = 1 WHERE id = ?';
   connection.query(sql, [recordId], (err, results) => {
       if (err) {
           console.error('Error deleting purchase:', err.stack);
