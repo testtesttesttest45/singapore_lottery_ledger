@@ -177,6 +177,41 @@ app.post('/save-entries', ensureAuthenticated, (req, res) => {
   });
 });
 
+app.get('/get-purchase-history', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userId;
+  const sql = 'SELECT * FROM records WHERE fk_user_id = ? ORDER BY date_of_entry DESC';
+  connection.query(sql, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching purchase history:', err.stack);
+      return res.status(500).send({ message: 'Server error. Please try again later.' });
+    }
+
+    res.json({ success: true, data: results });
+  });
+});
+
+app.delete('/delete-purchase/:recordId', (req, res) => {
+  const recordId = req.params.recordId;
+
+  if (!recordId) {
+      return res.status(400).json({ success: false, message: 'Record ID is required.' });
+  }
+
+  const sql = 'DELETE FROM records WHERE id = ?';
+  connection.query(sql, [recordId], (err, results) => {
+      if (err) {
+          console.error('Error deleting purchase:', err.stack);
+          return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+      }
+
+      if (results.affectedRows === 0) {
+          return res.status(404).json({ success: false, message: 'Purchase not found.' });
+      }
+
+      res.json({ success: true, message: 'Purchase deleted successfully.' });
+  });
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {

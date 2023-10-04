@@ -184,6 +184,7 @@ function saveEntries(entries) {
                 }
                 checkForNoEntries("#entries-table", 'entry', 'entries added');
                 updateTotals();
+                fetchPurchaseHistory();
             } else {
                 alert('Error saving entries: ' + data.message);
             }
@@ -267,44 +268,63 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
     updateWinnings();
 });
 
-function setUpTableListener(tableSelector, type = 'entry', text) {
+function setUpTableListener(tableSelector, options = {}) {
     document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
-            const message = (type === 'winning') ?
-                'Are you sure you want to delete this winning?' :
-                'Are you sure you want to delete this entry?';
+            const message = options.confirmMessage || 'Are you sure you want to delete this entry?';
             const shouldDelete = confirm(message);
             if (shouldDelete) {
-                event.target.closest('tr').remove();
-                updateTotals();
-            }
-        }
+                const row = event.target.closest('tr');
+                if (options.serverDelete) {
+                    const recordId = row.getAttribute('data-id').replace('purchase-', '');
+                    options.deleteMethod(recordId).then((success) => {
+                        if (success) {
+                            row.remove();
 
-        const tableBody = document.querySelector(tableSelector + " tbody");
-        if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-            const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No ${text}.</td></tr>`;
-            tableBody.innerHTML = noEntryRow;
+                            // Check for empty table after row removal
+                            const tableBody = document.querySelector(tableSelector + " tbody");
+                            const colspan = options.colspan || 8;
+                            if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+                                const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
+                                tableBody.innerHTML = noEntryRow;
+                            }
+
+                        } else {
+                            alert('Error deleting. Please try again later.');
+                        }
+                    });
+                } else {
+                    row.remove();
+                    if (options.afterDelete) {
+                        options.afterDelete();
+                    }
+
+                    const tableBody = document.querySelector(tableSelector + " tbody");
+                    const colspan = options.colspan || 8;
+                    if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+                        const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
+                        tableBody.innerHTML = noEntryRow;
+                    }
+                }
+            }
         }
     });
 }
-setUpTableListener("#entries-table", 'entry', 'entries added');
-setUpTableListener("#prizes-history-table", 'winning', 'prizes won');
-// document.querySelector("#entries-table tbody").addEventListener('click', function (event) {
-//     if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
-//         const shouldDelete = confirm('Are you sure you want to delete this entry?');
-//         if (shouldDelete) {
-//             event.target.closest('tr').remove();
-//             updateTotals();
-//         }
-//     }
 
-//     const tableBody = document.querySelector("#entries-table tbody");
-//     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-//         const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No entries added today!</td></tr>`;
-//         tableBody.innerHTML = noEntryRow;
-//     }
-// });
+setUpTableListener("#entries-table", {
+    confirmMessage: 'Are you sure you want to delete this entry?',
+    afterDelete: updateTotals,
+    noDataText: 'entries added',
+    colspan: 8
+});
 
+setUpTableListener("#purchase-history-table", {
+    confirmMessage: 'Are you sure you want to delete this purchase?',
+    serverDelete: true,
+    deleteMethod: deletePurchase,
+    noDataText: 'purchases found',
+    colspan: 9
+});
 
 let isAnimating = false;  // Flag to check if animation is currently playing
 let timeouts = [];  // Store active timeout IDs to clear them if needed
@@ -538,6 +558,70 @@ document.addEventListener('DOMContentLoaded', function () {
         cancelBtn.style.display = 'none';
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchPurchaseHistory();
+});
+
+function fetchPurchaseHistory() {
+    fetch('/get-purchase-history')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayPurchaseHistory(data.data);
+            } else {
+                console.error('Error retrieving purchase history:', data.message);
+            }
+        });
+}
+
+function displayPurchaseHistory(history) {
+    const tableBody = document.querySelector('#purchase-history-table tbody');
+    tableBody.innerHTML = '';
+
+    if (history.length === 0) {
+        tableBody.innerHTML = '<tr class="no-entry-row"><td colspan="9">No purchases found.</td></tr>';
+        return;
+    }
+
+    history.forEach(record => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-id', 'purchase-' + record.ID);
+
+        row.innerHTML = `
+            <td>${record.lottery_name}</td>
+            <td>${record.entry_type}</td>
+            <td>${record.pick_type}</td>
+            <td>${record.bet_amount}</td>
+            <td>${record.outlet}</td>
+            <td>${record.number_of_boards}</td>
+            <td>$${record.cost}</td>
+            <td>${new Date(record.date_of_entry).toISOString().split('T')[0]}</td>
+            <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
+function deletePurchase(recordId) {
+    return fetch(`/delete-purchase/${recordId}`, {
+        method: 'DELETE',
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return true;
+            } else {
+                console.error('Error deleting purchase:', data.message);
+                return false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            return false;
+        });
+}
 
 document.getElementById('sorting-btn').addEventListener('click', function () {
     const sortingMenu = document.getElementById('sorting-menu');
