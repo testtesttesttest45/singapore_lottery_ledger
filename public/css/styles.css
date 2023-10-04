@@ -115,7 +115,7 @@ button:hover:not(:disabled):not(.selected) {
 }
 
 #entries-table tbody tr:nth-child(odd), #prizes-history-table tbody tr:nth-child(odd), #purchase-history-table tbody tr:nth-child(odd) {
-    background-color: #857f7f;
+    background-color: #c5b4b4;
 }
 
 #entries-table tbody tr:hover,
@@ -387,12 +387,6 @@ body.effect-active {
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-bottom: 10px;
-}
-
-.page-number {
-    display: inline-block;
-    padding: 5px 10px;
-    background: #f5f5f5;
 }
 
 #sorting-menu {

@@ -198,7 +198,7 @@ function saveEntries(entries) {
 function checkForNoEntries(tableSelector, type, text) {
     const tableBody = document.querySelector(tableSelector + " tbody");
     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-        const noEntryRow = `<tr class="no-entry-row"><td colspan="8">No ${text}.</td></tr>`;
+        const noEntryRow = `<tr class="no-entry-row"><td colspan="9">No ${text}.</td></tr>`;
         tableBody.innerHTML = noEntryRow;
     }
 }
@@ -280,15 +280,18 @@ function setUpTableListener(tableSelector, options = {}) {
                     options.deleteMethod(recordId).then((success) => {
                         if (success) {
                             row.remove();
-
                             // Check for empty table after row removal
                             const tableBody = document.querySelector(tableSelector + " tbody");
-                            const colspan = options.colspan || 8;
+                            const colspan = options.colspan || 9;
                             if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
                                 const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
                                 tableBody.innerHTML = noEntryRow;
+                                if (currentPage > 1) {
+                                    currentPage--; // Go back to the previous page if the current one is empty
+                                }
+                                displayPurchaseHistory(purchaseHistoryData);
                             }
-
+                            updatePaginationControls();
                         } else {
                             alert('Error deleting. Please try again later.');
                         }
@@ -315,7 +318,7 @@ setUpTableListener("#entries-table", {
     confirmMessage: 'Are you sure you want to delete this entry?',
     afterDelete: updateTotals,
     noDataText: 'entries added',
-    colspan: 8
+    colspan: 9
 });
 
 setUpTableListener("#purchase-history-table", {
@@ -323,7 +326,7 @@ setUpTableListener("#purchase-history-table", {
     serverDelete: true,
     deleteMethod: deletePurchase,
     noDataText: 'purchases found',
-    colspan: 9
+    colspan: 10
 });
 
 let isAnimating = false;  // Flag to check if animation is currently playing
@@ -559,36 +562,119 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetchPurchaseHistory();
-});
+
+const ROWS_PER_PAGE = 5;
+let currentPage = 1;
+let totalRows = 0;
+let purchaseHistoryData = [];
+let filteredAndSortedData = [];
+let currentFilter = 'All'; // Default
+let currentSort = 'latest'; // Default
+
+// Initial data fetch
+document.addEventListener('DOMContentLoaded', fetchPurchaseHistory);
+
+// Bindings for sorting and filtering
+bindSortingAndFiltering();
+
+// Bindings for pagination
+bindPaginationControls();
 
 function fetchPurchaseHistory() {
     fetch('/get-purchase-history')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                displayPurchaseHistory(data.data);
+                purchaseHistoryData = data.data;
+                updateView();
             } else {
                 console.error('Error retrieving purchase history:', data.message);
             }
         });
 }
 
+function bindSortingAndFiltering() {
+    document.querySelectorAll('#sorting-menu button[data-filter]').forEach(btn => btn.addEventListener('click', handleFilterClick));
+    document.querySelectorAll('#sorting-menu button[data-sort]').forEach(btn => btn.addEventListener('click', handleSortClick));
+}
+
+function bindPaginationControls() {
+    document.querySelector('.prev').addEventListener('click', handlePrevClick);
+    document.querySelector('.next').addEventListener('click', handleNextClick);
+}
+
+function handleFilterClick() {
+    currentFilter = this.getAttribute('data-filter');
+    updateButtonSelection('#sorting-menu button[data-filter]', this);
+    updateView();
+}
+
+function handleSortClick() {
+    currentSort = this.getAttribute('data-sort');
+    updateButtonSelection('#sorting-menu button[data-sort]', this);
+    updateView();
+}
+
+function handlePrevClick() {
+    if (currentPage > 1) {
+        currentPage--;
+        displayPurchaseHistoryPaginated();
+    }
+}
+
+function handleNextClick() {
+    if (currentPage * ROWS_PER_PAGE < totalRows) {
+        currentPage++;
+        displayPurchaseHistoryPaginated();
+    }
+}
+
+function updateButtonSelection(selector, currentButton) {
+    document.querySelectorAll(selector).forEach(btn => btn.classList.remove('selected'));
+    currentButton.classList.add('selected');
+}
+
+function updateView() {
+    filteredAndSortedData = (currentFilter === 'All')
+        ? [...purchaseHistoryData]
+        : purchaseHistoryData.filter(entry => entry.lottery_name === currentFilter);
+
+    if (currentSort === 'oldest') {
+        filteredAndSortedData.sort((a, b) => new Date(a.date_of_entry) - new Date(b.date_of_entry));
+    } else { // latest
+        filteredAndSortedData.sort((a, b) => new Date(b.date_of_entry) - new Date(a.date_of_entry));
+    }
+
+    currentPage = 1;
+    totalRows = filteredAndSortedData.length;
+
+    displayPurchaseHistoryPaginated();
+}
+
+function displayPurchaseHistoryPaginated() {
+    totalRows = filteredAndSortedData.length;
+    const startIndex = (currentPage - 1) * ROWS_PER_PAGE;
+    const paginatedData = filteredAndSortedData.slice(startIndex, startIndex + ROWS_PER_PAGE);
+
+    displayPurchaseHistory(paginatedData);
+    updatePaginationControls();
+}
+
 function displayPurchaseHistory(history) {
     const tableBody = document.querySelector('#purchase-history-table tbody');
     tableBody.innerHTML = '';
 
-    if (history.length === 0) {
-        tableBody.innerHTML = '<tr class="no-entry-row"><td colspan="9">No purchases found.</td></tr>';
+    if (!history.length) {
+        tableBody.innerHTML = '<tr class="no-entry-row"><td colspan="10">No purchases found.</td></tr>';
         return;
     }
 
-    history.forEach(record => {
+    history.forEach((record, index) => {
         const row = document.createElement('tr');
+        const rowNumber = (currentPage - 1) * ROWS_PER_PAGE + index + 1;
         row.setAttribute('data-id', 'purchase-' + record.ID);
-
         row.innerHTML = `
+            <td>${rowNumber}</td>
             <td>${record.lottery_name}</td>
             <td>${record.entry_type}</td>
             <td>${record.pick_type}</td>
@@ -596,26 +682,49 @@ function displayPurchaseHistory(history) {
             <td>${record.outlet}</td>
             <td>${record.number_of_boards}</td>
             <td>$${record.cost}</td>
-            <td>${new Date(record.date_of_entry).toISOString().split('T')[0]}</td>
+            <td>${formatDateToLocalDateString(record.date_of_entry)}</td>
             <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
         `;
-
         tableBody.appendChild(row);
     });
+
+    updatePaginationControls();
+}
+
+function formatDateToLocalDateString(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JS
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function updatePaginationControls() {
+    const totalPages = totalRows === 0 ? 1 : Math.ceil(totalRows / ROWS_PER_PAGE);
+    document.querySelector('.prev').disabled = currentPage === 1;
+    document.querySelector('.next').disabled = currentPage === totalPages;
+
+    document.querySelector('.page-number').textContent = currentPage;
+    document.querySelector('.total-pages').textContent = totalPages;
 }
 
 function deletePurchase(recordId) {
-    return fetch(`/delete-purchase/${recordId}`, {
-        method: 'DELETE',
-    })
+    return fetch(`/delete-purchase/${recordId}`, { method: 'DELETE' })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                return true;
-            } else {
-                console.error('Error deleting purchase:', data.message);
-                return false;
-            }
+            if (!data.success) throw new Error(data.message);
+
+            purchaseHistoryData = purchaseHistoryData.filter(item => item.ID !== parseInt(recordId));
+            filteredAndSortedData = filteredAndSortedData.filter(item => item.ID !== parseInt(recordId));
+
+            totalRows = filteredAndSortedData.length;
+
+            const totalPages = Math.ceil(totalRows / ROWS_PER_PAGE);
+            if (currentPage > totalPages) currentPage--;
+            if (currentPage < 1) currentPage = 1;
+            displayPurchaseHistoryPaginated();
+
+            return true;
         })
         .catch(error => {
             console.error('Error:', error);
