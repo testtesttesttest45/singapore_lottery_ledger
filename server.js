@@ -176,6 +176,43 @@ app.post('/save-entries', ensureAuthenticated, (req, res) => {
   });
 });
 
+app.post('/save-notes', ensureAuthenticated, (req, res) => {
+  const notes = req.body.notes || ""; // If no note content is provided, use an empty string
+
+  const sql = `
+      INSERT INTO notes (fk_user_id, notes_content)
+      VALUES (?, ?)
+      ON DUPLICATE KEY UPDATE notes_content = VALUES(notes_content);
+  `;
+
+  connection.query(sql, [req.session.userId, notes], (err, results) => {
+      if (err) {
+          console.error('Error saving notes:', err.stack);
+          return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+      }
+      res.json({ success: true, message: 'Note saved successfully!' });
+  });
+});
+
+app.get('/get-notes', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userId;
+
+  const sql = `SELECT notes_content FROM notes WHERE fk_user_id = ?`;
+
+  connection.query(sql, [userId], (err, results) => {
+      if (err) {
+          console.error('Error fetching notes:', err.stack);
+          return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+      }
+      
+      if (results.length) {
+          return res.json({ success: true, notes: results[0].notes_content });
+      } else {
+          return res.json({ success: true, notes: "" }); // Default to empty string if no notes found
+      }
+  });
+});
+
 app.get('/get-purchase-history', ensureAuthenticated, (req, res) => {
   const userId = req.session.userId;
   const sql = 'SELECT * FROM records WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_entry DESC';

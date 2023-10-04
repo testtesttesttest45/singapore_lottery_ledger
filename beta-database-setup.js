@@ -87,8 +87,8 @@ function setupDatabase() {
             const createNotesTable = `
             CREATE TABLE IF NOT EXISTS notes (
                 ID INT AUTO_INCREMENT PRIMARY KEY,
-                fk_user_id INT,
-                notes TEXT,
+                fk_user_id INT UNIQUE,
+                notes_content TEXT,
                 FOREIGN KEY (fk_user_id) REFERENCES users(ID)
             );
             `;

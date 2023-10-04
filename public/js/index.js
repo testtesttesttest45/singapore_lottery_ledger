@@ -525,9 +525,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Hide cancel button initially
     cancelBtn.style.display = 'none';
 
+    fetchNotesAndDisplay();
+
     editBtn.addEventListener('click', function () {
         if (selfNotes.hasAttribute('readonly')) {
-            // Show editing text and hide lock icon
             lockIcon.style.display = 'none';
             editingText.style.display = 'inline';
 
@@ -538,20 +539,16 @@ document.addEventListener('DOMContentLoaded', function () {
             selfNotes.removeAttribute('readonly');
             selfNotes.focus();
 
-            // Show the cancel button and change the edit button to save (floppy disk)
             editBtn.classList.remove('fa-pen-to-square');
             editBtn.classList.add('fa-regular', 'fa-floppy-disk');
             cancelBtn.style.display = 'inline';
         } else {
-            // Hide editing text and show lock icon
+            saveNotes(selfNotes.value);
+
             editingText.style.display = 'none';
             lockIcon.style.display = 'inline';
 
-            // Make textarea non-editable
             selfNotes.setAttribute('readonly', true);
-
-            // Show saved alert
-            alert('Saved!');
 
             // Hide the cancel button and change the save button back to edit
             editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
@@ -577,6 +574,47 @@ document.addEventListener('DOMContentLoaded', function () {
         cancelBtn.style.display = 'none';
     });
 });
+
+
+function fetchNotesAndDisplay() {
+    fetch('/get-notes')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const selfNotes = document.getElementById('self-notes');
+                // console.log(data); // shows empty string if no notes found
+                selfNotes.value = data.notes;
+            } else {
+                console.error('Error fetching notes:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was a problem fetching the notes.');
+        });
+}
+
+function saveNotes(notesContent) {
+    fetch('/save-notes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notes: notesContent }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Note saved successfully!');
+        } else {
+            alert('Error saving note: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was a problem saving the note.');
+    });
+}
 
 function updatePurchaseHistoryTotals() {
     const purchaseTable = document.getElementById('purchase-history-table');
