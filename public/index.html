@@ -201,8 +201,7 @@
             </section>
 
             <section id="section-total-winnings">
-                <h2>Winnings</h2>
-                <h3>Total Winnings</h3>
+                <h2>Total Winnings</h2>
                 <div style="display: grid; grid-template-rows: auto auto; align-items: center; justify-items: center;">
                     <table id="winnings-table">
                         <thead>
@@ -225,11 +224,9 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="sections-header">
-                    <h3>Prizes History</h3>
-                    <button id="save-winnings-btn" type="button" style="color: limegreen"
-                        aria-label="Save winning entries">Save winnings</button>
-                </div>
+                <h3>Prizes History</h3>
+                <button id="save-winnings-btn" type="button" style="color: limegreen; display: none;"
+                    aria-label="Save winning entries">Save winnings</button>
                 <div class="long-table-container">
                     <table id="prizes-history-table">
                         <thead>
@@ -288,6 +285,11 @@
                                 <input type="number" id="winnings-prize-4d" placeholder="Minimum $60" min="60" required>
                             </div>
 
+                            <div class="form-row">
+                                <label for="winnings-date-4d">Date:</label>
+                                <input type="date" id="winnings-date-4d" required>
+                            </div>
+
                             <div class="form-row button-row">
                                 <button type="submit" class="submit-btn">Add Winnings</button>
                             </div>
@@ -334,6 +336,11 @@
                                 <label for="winnings-prize-toto">Winning Prize:</label>
                                 <input type="number" id="winnings-prize-toto" placeholder="Minimum $10" min="10"
                                     required>
+                            </div>
+
+                            <div class="form-row">
+                                <label for="winnings-date-toto">Date:</label>
+                                <input type="date" id="winnings-date-toto" required>
                             </div>
 
                             <div class="form-row button-row">
@@ -411,7 +418,8 @@
                 </div>
                 <div class="pagination">
                     <button class="prev" disabled>&laquo;</button>
-                    <span class="page-info">Page <span class="page-number">1</span> of <span class="total-pages">1</span></span>
+                    <span class="page-info">Page <span class="page-number">1</span> of <span
+                            class="total-pages">1</span></span>
                     <button class="next">&raquo;</button>
                 </div>
             </section>

@@ -109,6 +109,7 @@ function setupDatabase() {
                 outlet VARCHAR(255),
                 winning_prize INT,
                 date_of_winning DATE,
+                isDeleted BOOLEAN DEFAULT FALSE,
                 FOREIGN KEY (fk_user_id) REFERENCES users(ID)
             );
             `;

@@ -154,6 +154,7 @@ document.getElementById('save-entries-btn').addEventListener('click', function (
 
     rows.forEach(row => {
         const cells = row.querySelectorAll('td');
+        console.log(cells.length)
         if (cells.length >= 7) {
             const entry = {
                 lottery_name: cells[1].innerText,
@@ -230,14 +231,16 @@ document.getElementById('winnings-form-4d').addEventListener('submit', function 
     const winningPickType4D = document.getElementById('winnings-pick-type-4d').value;
     const winningOutlet4D = document.getElementById('winnings-outlet-4d').value;
     const winningPrize4D = document.getElementById('winnings-prize-4d').value;
-    const winningDate4D = formatDate(date);
+    const winningDate4D = document.getElementById('winnings-date-4d').value;
     const tableBody = document.querySelector("#prizes-history-table tbody");
     // Check if the no-entry-row exists and remove it
     const noEntryRow = tableBody.querySelector('.no-entry-row');
     if (noEntryRow) {
         noEntryRow.remove();
     }
+    const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
     const newRow = `<tr>
+        <td>${nextRowNumber}</td>
         <td>4D</td>
         <td>${winningEntryType4D}</td>
         <td>${winningPickType4D}</td>
@@ -246,9 +249,24 @@ document.getElementById('winnings-form-4d').addEventListener('submit', function 
         <td>${winningDate4D}</td>
         <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
     </tr>`;
-    tableBody.innerHTML += newRow;
+    // tableBody.innerHTML += newRow;
+    tableBody.insertAdjacentHTML('afterbegin', newRow);
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const cell = row.querySelector('td:first-child');
+        cell.textContent = index + 1;
+    });
     showSuccessEffect('4D');
-    updateWinnings();
+    updateWinningsTotal();
+    const winning = {
+        lottery_name: "4D",
+        entry_type: winningEntryType4D,
+        pick_type: winningPickType4D,
+        outlet: winningOutlet4D,
+        winning_prize: parseFloat(winningPrize4D),
+        date_of_winning: winningDate4D
+    };
+    saveIndividualWinnings(winning);
 });
 
 document.getElementById('winnings-form-toto').addEventListener('submit', function (event) {
@@ -258,14 +276,16 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
     const winningPickTypeToto = document.getElementById('winnings-pick-type-toto').value;
     const winningOutletToto = document.getElementById('winnings-outlet-toto').value;
     const winningPrizeToto = document.getElementById('winnings-prize-toto').value;
-    const winningDateToto = formatDate(date);
+    const winningDateToto = document.getElementById('winnings-date-toto').value;
     const tableBody = document.querySelector("#prizes-history-table tbody");
     // Check if the no-entry-row exists and remove it
     const noEntryRow = tableBody.querySelector('.no-entry-row');
     if (noEntryRow) {
         noEntryRow.remove();
     }
+    const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
     const newRow = `<tr>
+        <td>${nextRowNumber}</td>
         <td>Toto</td>
         <td>${winningEntryTypeToto}</td>
         <td>${winningPickTypeToto}</td>
@@ -274,10 +294,50 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
         <td>${winningDateToto}</td>
         <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
     </tr>`;
-    tableBody.innerHTML += newRow;
+    // tableBody.innerHTML += newRow;
+    tableBody.insertAdjacentHTML('afterbegin', newRow);
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const cell = row.querySelector('td:first-child');
+        cell.textContent = index + 1;
+    });
     showSuccessEffect('Toto');
-    updateWinnings();
+    updateWinningsTotal();
+    const winning = {
+        lottery_name: "Toto",
+        entry_type: winningEntryTypeToto,
+        pick_type: winningPickTypeToto,
+        outlet: winningOutletToto,
+        winning_prize: parseFloat(winningPrizeToto),
+        date_of_winning: winningDateToto
+    };
+    console.log(winning);
+    saveIndividualWinnings(winning);
 });
+
+function saveIndividualWinnings(winning) {
+    fetch('/save-winnings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ winning }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Winnings saved successfully!');
+                const lastRow = document.querySelector("#prizes-history-table tbody tr:last-child");
+                lastRow.setAttribute('data-id', 'winning-' + data.id);
+            } else {
+                alert('Error saving winnings: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was a problem saving the winnings.');
+        });
+}
 
 function setUpTableListener(tableSelector, options = {}) {
     document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
@@ -288,8 +348,9 @@ function setUpTableListener(tableSelector, options = {}) {
                 const row = event.target.closest('tr');
                 const tableBody = document.querySelector(tableSelector + " tbody");
                 if (options.serverDelete) {
-                    const recordId = row.getAttribute('data-id').replace('purchase-', '');
-                    options.deleteMethod(recordId).then((success) => {
+                    // const recordId = row.getAttribute('data-id').replace('purchase-', ''); // need to do for 'winning-' too
+                    const rowId = row.getAttribute('data-id').replace(options.rowType + '-', '');
+                    options.deleteMethod(rowId).then((success) => {
                         if (success) {
                             row.remove();
                             // Check for empty table after row removal
@@ -338,11 +399,22 @@ setUpTableListener("#entries-table", {
 });
 
 setUpTableListener("#purchase-history-table", {
+    rowType: 'purchase',
     confirmMessage: 'Are you sure you want to delete this purchase?',
     serverDelete: true,
     deleteMethod: deletePurchase,
     noDataText: 'purchases found',
     colspan: 10
+});
+
+setUpTableListener("#prizes-history-table", {
+    rowType: 'winning',
+    confirmMessage: 'Are you sure you want to delete this prize entry?',
+    serverDelete: true,
+    deleteMethod: deleteWinnings,
+    afterDelete: updateWinningsTotal,
+    noDataText: 'prize entries found',
+    colspan: 8
 });
 
 let isAnimating = false;  // Flag to check if animation is currently playing
@@ -450,6 +522,7 @@ function showSuccessEffect(gameType) {
 }
 
 function updateTotals() {
+    console.log('updateTotals() called');
     const rows = document.querySelectorAll("#entries-table tbody tr:not(.no-entry-row)");
     let total4D = 0;
     let totalToto = 0;
@@ -472,14 +545,14 @@ function updateTotals() {
     document.getElementById("total-cost-all").textContent = `$${totalAll}`;
 }
 
-function updateWinnings() {
+function updateWinningsTotal() {
     const rows = document.querySelectorAll("#prizes-history-table tbody tr:not(.no-entry-row)");
     let total4D = 0;
     let totalToto = 0;
 
     rows.forEach(row => {
-        const lotteryName = row.children[0].textContent; // the first td
-        const costValue = parseFloat(row.children[4].textContent.replace("$", "")); // the 5th td and remove the $ sign
+        const lotteryName = row.children[1].textContent;
+        const costValue = parseFloat(row.children[5].textContent.replace("$", ""));
 
         if (lotteryName === "4D") {
             total4D += costValue;
@@ -602,31 +675,31 @@ function saveNotes(notesContent) {
         },
         body: JSON.stringify({ notes: notesContent }),
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Note saved successfully!');
-        } else {
-            alert('Error saving note: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('There was a problem saving the note.');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Note saved successfully!');
+            } else {
+                alert('Error saving note: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was a problem saving the note.');
+        });
 }
 
 function updatePurchaseHistoryTotals() {
     const purchaseTable = document.getElementById('purchase-history-table');
     const rows = purchaseTable.querySelectorAll('tbody tr:not(.no-entry-row)');
-    
+
     let total4D = 0;
     let totalToto = 0;
 
     rows.forEach(row => {
         const lotteryName = row.querySelector('td:nth-child(2)').textContent.trim();
         const cost = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('$', ''));
-        
+
         if (lotteryName === '4D') {
             total4D += cost;
         } else if (lotteryName === 'Toto') {
@@ -645,12 +718,16 @@ const ROWS_PER_PAGE = 5;
 let currentPage = 1;
 let totalRows = 0;
 let purchaseHistoryData = [];
+let winningHistoryData = [];
 let filteredAndSortedData = [];
 let currentFilter = 'All'; // Default
 let currentSort = 'latest'; // Default
 
 // Initial data fetch
-document.addEventListener('DOMContentLoaded', fetchPurchaseHistory);
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPurchaseHistory();
+    fetchWinningHistory();
+});
 
 // Bindings for sorting and filtering
 bindSortingAndFiltering();
@@ -668,6 +745,20 @@ function fetchPurchaseHistory() {
                 updatePurchaseHistoryTotals();
             } else {
                 console.error('Error retrieving purchase history:', data.message);
+            }
+        });
+}
+
+function fetchWinningHistory() {
+    fetch('/get-winnings')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                winningHistoryData = data.data;
+                populateWinningTable(winningHistoryData);
+                updateWinningsTotal();
+            } else {
+                console.error('Error retrieving winning history:', data.message);
             }
         });
 }
@@ -770,6 +861,35 @@ function displayPurchaseHistory(history) {
     updatePaginationControls();
 }
 
+function populateWinningTable(winnings) {
+    const tableBody = document.querySelector('#prizes-history-table tbody');
+    tableBody.innerHTML = '';
+
+    if (!winnings.length) {
+        tableBody.innerHTML = '<tr class="no-entry-row"><td colspan="8">No prizes found.</td></tr>';
+        return;
+    }
+
+    winnings.forEach((winning, index) => {
+        const row = document.createElement('tr');
+        const rowNumber = index + 1;
+        row.setAttribute('data-id', 'winning-' + winning.ID); // Assuming winnings have an ID attribute. If not, adjust accordingly.
+        row.innerHTML = `
+            <td>${rowNumber}</td>
+            <td>${winning.lottery_name}</td>
+            <td>${winning.entry_type}</td>
+            <td>${winning.pick_type}</td>
+            <td>${winning.outlet}</td>
+            <td>$${winning.winning_prize}</td>
+            <td>${formatDateToLocalDateString(winning.date_of_winning)}</td>
+            <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    updateWinningsTotal();
+}
+
 function formatDateToLocalDateString(dateString) {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -803,6 +923,23 @@ function deletePurchase(recordId) {
             if (currentPage < 1) currentPage = 1;
             displayPurchaseHistoryPaginated();
 
+            return true;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            return false;
+        });
+}
+
+function deleteWinnings(recordId) {
+    return fetch(`/delete-winning/${recordId}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) throw new Error(data.message);
+
+            winningHistoryData = winningHistoryData.filter(item => item.ID !== parseInt(recordId));
+            populateWinningTable(winningHistoryData);
+            updateWinningsTotal();
             return true;
         })
         .catch(error => {

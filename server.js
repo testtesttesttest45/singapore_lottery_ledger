@@ -186,11 +186,11 @@ app.post('/save-notes', ensureAuthenticated, (req, res) => {
   `;
 
   connection.query(sql, [req.session.userId, notes], (err, results) => {
-      if (err) {
-          console.error('Error saving notes:', err.stack);
-          return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
-      }
-      res.json({ success: true, message: 'Note saved successfully!' });
+    if (err) {
+      console.error('Error saving notes:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+    res.json({ success: true, message: 'Note saved successfully!' });
   });
 });
 
@@ -200,16 +200,16 @@ app.get('/get-notes', ensureAuthenticated, (req, res) => {
   const sql = `SELECT notes_content FROM notes WHERE fk_user_id = ?`;
 
   connection.query(sql, [userId], (err, results) => {
-      if (err) {
-          console.error('Error fetching notes:', err.stack);
-          return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
-      }
-      
-      if (results.length) {
-          return res.json({ success: true, notes: results[0].notes_content });
-      } else {
-          return res.json({ success: true, notes: "" }); // Default to empty string if no notes found
-      }
+    if (err) {
+      console.error('Error fetching notes:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+
+    if (results.length) {
+      return res.json({ success: true, notes: results[0].notes_content });
+    } else {
+      return res.json({ success: true, notes: "" }); // Default to empty string if no notes found
+    }
   });
 });
 
@@ -230,21 +230,95 @@ app.delete('/delete-purchase/:recordId', (req, res) => {
   const recordId = req.params.recordId;
 
   if (!recordId) {
-      return res.status(400).json({ success: false, message: 'Record ID is required.' });
+    return res.status(400).json({ success: false, message: 'Record ID is required.' });
   }
 
   const sql = 'UPDATE records SET isDeleted = 1 WHERE id = ?';
   connection.query(sql, [recordId], (err, results) => {
-      if (err) {
-          console.error('Error deleting purchase:', err.stack);
-          return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
-      }
+    if (err) {
+      console.error('Error deleting purchase:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
 
-      if (results.affectedRows === 0) {
-          return res.status(404).json({ success: false, message: 'Purchase not found.' });
-      }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Purchase not found.' });
+    }
 
-      res.json({ success: true, message: 'Purchase deleted successfully.' });
+    res.json({ success: true, message: 'Purchase deleted successfully.' });
+  });
+});
+
+app.post('/save-winnings', ensureAuthenticated, (req, res) => {
+  const winnings = req.body.winning;
+  if (!winnings) {
+    return res.status(400).json({ success: false, message: 'No winnings provided.' });
+  }
+
+  // Preparing the data for bulk insert
+  const values = [];
+  values.push([
+    req.session.userId,
+    winnings.lottery_name,
+    winnings.entry_type,
+    winnings.pick_type,
+    winnings.outlet,
+    winnings.winning_prize,
+    winnings.date_of_winning
+  ]);
+
+  const placeholder = "(?, ?, ?, ?, ?, ?, ?)";
+  const placeholders = new Array(winnings.length).fill(placeholder).join(', ');
+
+  const sql = `
+      INSERT INTO prizes 
+      (fk_user_id, lottery_name, entry_type, pick_type, outlet, winning_prize, date_of_winning) 
+      VALUES ${placeholders}
+  `;
+
+  // Flatten the values array for the query
+  const flattenedValues = [].concat(...values);
+
+  connection.query(sql, flattenedValues, (err, results) => {
+    if (err) {
+      console.error('Error with bulk insert:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+    res.json({ success: true, message: 'Winnings added successfully!', id: results.insertId });
+  });
+});
+
+app.get('/get-winnings', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userId;
+  const sql = 'SELECT * FROM prizes WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_winning DESC';
+  connection.query(sql, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching winnings:', err.stack);
+      return res.status(500).send({ message: 'Server error. Please try again later.' });
+    }
+
+    res.json({ success: true, data: results });
+  });
+});
+
+app.delete('/delete-winning/:recordId', (req, res) => {
+  const recordId = req.params.recordId;
+
+  if (!recordId) {
+    return res.status(400).json({ success: false, message: 'Record ID is required.' });
+  }
+
+  const sql = 'UPDATE prizes SET isDeleted = 1 WHERE id = ?';
+  connection.query(sql, [recordId], (err, results) => {
+    if (err) {
+      console.error('Error deleting winning:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Winning not found.' });
+    }
+
+    res.json({ success: true, message: 'Winning deleted successfully.' });
   });
 });
 
