@@ -19,7 +19,7 @@
 <body>
     <header>
 
-        <h1>SG Lottery Ledger</h1>
+        <h1>Singapore Lottery Ledger</h1>
         <div class="sections-header">
             <span>Welcome, <span id="user-name">User</span>!</span>
             <button id="logout-btn" type="button" style="color: limegreen" aria-label="logout button">Logout
@@ -29,7 +29,7 @@
 
     <main>
         <div class="sections-header">
-            <h4 style="color:limegreen">Note: You can reorder the sections by dragging and dropping them!</h4>
+            <h4 class="guide-text">Note: You can reorder the sections by dragging and dropping them!</h4>
             <button id="reset-order-btn" type="button" style="color: limegreen" aria-label="reset order button">Reset
                 sections order</button>
         </div>
@@ -41,6 +41,8 @@
                     <h2>Lottery Entries</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Just purchased your lottery tickets? Let's input the details here for
+                    tracking! Then, check the entries in Today's Entry section.</h4>
                 <div class="sections-wrapper">
                     <div id="section-4d-view">
                         <h2>4D Entry</h2>
@@ -139,6 +141,9 @@
                     <h2>Today's Entry</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Here, you can review and manage all your lottery entries for the
+                    day.<br><br>After adding your entries and ensuring that the information is accurate, click the 'Save
+                    entries' button to confirm and keep track of your submissions.</h4>
                 <div class="long-table-container">
                     <table id="entries-table">
                         <thead>
@@ -188,6 +193,10 @@
                     <h2>Total Spendings</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Monitor your total expenditures across the 4D and Toto lottery games in
+                    this
+                    section.
+                </h4>
                 <table id="totals-table">
                     <thead>
                         <tr>
@@ -215,6 +224,7 @@
                     <h2>Total Winnings</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Track your total winnings across different lottery games here.</h4>
                 <div style="display: grid; grid-template-rows: auto auto; align-items: center; justify-items: center;">
                     <table id="winnings-table">
                         <thead>
@@ -380,6 +390,10 @@
                     </h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Jot down personal reminders, budget plans, wishes, or any thoughts you
+                    want to
+                    revisit later.
+                </h4>
                 <div id="notes-container">
                     <textarea id="self-notes" placeholder="Write your notes here..." readonly></textarea>
                     <i class="fa-solid fa-pen-to-square edit-icon" id="edit-note-button"></i>
@@ -394,6 +408,9 @@
                         aria-label="sorting button">Sort</button>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Review a comprehensive record of all your lottery ticket purchases in
+                    this
+                    section.</h4>
                 <div id="sorting-menu" class="sorting-dropdown" style="display:none;">
                     <div class="menu-row">
                         <span class="menu-label">Showing:</span>
@@ -449,6 +466,9 @@
                     <h2>Current Betslips</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
+                <h4 class="section-description">Recently purchased tickets for upcoming draws? Use this section to upload and
+                    keep track of them.<br><br>After the draw, don't forget to click the check button to confirm
+                    you've reviewed the results.</h4>
                 <div class="betslip-section" id="4d-betslip-section">
                     <h3>4D Betslip</h3>
                     <p><span id="4d-count">0</span> 4D betslips uploaded</p>

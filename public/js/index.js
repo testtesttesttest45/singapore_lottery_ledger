@@ -1026,6 +1026,7 @@ function updateSectionOrderInDatabase(newOrder) {
         })
         .catch(error => {
             console.error('Error updating section order:', error);
+            alert('There was a problem updating the section order.');
         });
 }
 

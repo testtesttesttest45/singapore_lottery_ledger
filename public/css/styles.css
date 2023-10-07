@@ -16,6 +16,11 @@ header {
     color: white;
 }
 
+.section-description {
+    justify-self: center;
+    color: midnightblue;
+}
+
 section {
     margin-bottom: 15px;
     border: 1px solid #ccc;
