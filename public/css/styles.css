@@ -39,7 +39,7 @@ button:hover:not(:disabled):not(.selected) {
     transition: background-color 0.3s ease;
 }
 
-.sections-wrapper {
+.wrapper {
     display: flex;
     justify-content: center;
     align-items: stretch;
@@ -62,8 +62,6 @@ button:hover:not(:disabled):not(.selected) {
 #section-today-entry,
 #section-total-spendings {
     margin: 20px auto;
-    display: grid;
-    align-items: start;
 }
 
 #entries-table,
@@ -169,7 +167,8 @@ button:hover:not(:disabled):not(.selected) {
 .upload-betslip,
 .checked-btn,
 #reset-order-btn,
-#logout-btn {
+#logout-btn,
+.toggle-button {
     grid-row-start: 5;
     grid-column: span 2;
     justify-self: center;
@@ -199,7 +198,8 @@ button:hover:not(:disabled):not(.selected) {
 .pagination button:not(:disabled):hover,
 #sorting-btn:hover,
 #reset-order-btn:hover,
-#logout-btn:hover {
+#logout-btn:hover,
+.toggle-button:hover {
     background-color: gold;
 }
 
@@ -506,7 +506,7 @@ footer img {
 }
 
 .neon-reflection {
-    width: 140px;
+    width: 100%;
     height: 10px;
     background: linear-gradient(0deg, rgba(17, 17, 17, 1), rgba(17, 17, 17, 0.3)),
         linear-gradient(-45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
@@ -592,7 +592,9 @@ footer img {
     }
 }
 
-
+.toggle-button {
+    margin-bottom: 15px;
+}
 
 /* Mobile adjustments */
 @media (max-width: 600px) {
@@ -605,7 +607,7 @@ footer img {
         font-size: 14px;
     }
 
-    .sections-wrapper {
+    .wrapper {
         flex-direction: column;
         gap: 10px;
     }
@@ -629,7 +631,8 @@ footer img {
     .menu-row button,
     .pagination button,
     .upload-betslip,
-    #reset-order-btn {
+    #reset-order-btn,
+    .toggle-button {
         padding: 5px 10px;
         font-size: 14px;
         margin-bottom: 5px;
@@ -669,5 +672,10 @@ footer img {
 
     .winnings-form {
         margin: 5px 0;
+    }
+
+    .cancel-icon {
+        top: 1%;
+        right: 1%;
     }
 }

@@ -613,6 +613,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function toggleSectionVisibility(sectionId) {
+    const section = document.querySelector(sectionId);
+    const hidable = section.querySelector('.hidable');
+    if (hidable.style.display === 'none') {
+        hidable.style.display = ''; // Reset to default display property
+        section.querySelector('.toggle-button').textContent = "Hide Contents";
+    } else {
+        hidable.style.display = 'none';
+        section.querySelector('.toggle-button').textContent = "Show Contents";
+    }
+}
+
+const sections = ['#entry-sections', '#section-today-entry', '#section-total-spendings', '#section-total-winnings', '#notes', '#purchase-history', '#current-betslips'];
+
+sections.forEach(sectionId => {
+    const section = document.querySelector(sectionId);
+    const btn = section.querySelector('.toggle-button');
+
+    btn.addEventListener('click', function() {
+        toggleSectionVisibility(sectionId);
+    });
+});
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const editBtn = document.getElementById('edit-note-button');
     const cancelBtn = document.getElementById('cancel-note-button');
@@ -992,24 +1016,26 @@ document.getElementById('sorting-menu').addEventListener('click', function (e) {
         button.classList.add('selected');
     }
 });
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize SortableJS
+    const sortable = new Sortable(document.getElementById('sortable-container'), {
+        animation: 700,
+        scroll: false,
+        handle: ".move-button", // Only elements with this class will trigger dragging
+        onUpdate: function (evt) {
+            const newOrder = [];
+            const items = document.getElementById('sortable-container').children;
+            for (let item of items) {
+                newOrder.push(item.id);
+            }
+            if (!arraysEqual(newOrder, currentOrder)) {
+                updateSectionOrderInDatabase(newOrder);
 
-// Initialize SortableJS
-const sortable = new Sortable(document.getElementById('sortable-container'), {
-    animation: 700,
-    handle: ".move-button", // Only elements with this class will trigger dragging
-    onUpdate: function (evt) {
-        const newOrder = [];
-        const items = document.getElementById('sortable-container').children;
-        for (let item of items) {
-            newOrder.push(item.id);
+                currentOrder = newOrder.slice(); // Update currentOrder with the new order. Using slice() to make a copy of newOrder.
+                // console.log('Order updated!', currentOrder)
+            }
         }
-        if (!arraysEqual(newOrder, currentOrder)) {
-            updateSectionOrderInDatabase(newOrder);
-
-            currentOrder = newOrder.slice(); // Update currentOrder with the new order. Using slice() to make a copy of newOrder.
-            // console.log('Order updated!', currentOrder)
-        }
-    }
+    });
 });
 
 // Set default order or load from saved preference
