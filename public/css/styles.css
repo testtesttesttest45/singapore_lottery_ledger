@@ -678,4 +678,10 @@ footer img {
         top: 1%;
         right: 1%;
     }
+
+    #sortable-container {
+        overflow-x: hidden;
+        width: 100%;
+        overflow-y: auto;
+    }
 }

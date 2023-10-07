@@ -548,7 +548,6 @@ function showSuccessEffect(gameType) {
 }
 
 function updateTotals() {
-    console.log('updateTotals() called');
     const rows = document.querySelectorAll("#entries-table tbody tr:not(.no-entry-row)");
     let total4D = 0;
     let totalToto = 0;
@@ -631,7 +630,7 @@ sections.forEach(sectionId => {
     const section = document.querySelector(sectionId);
     const btn = section.querySelector('.toggle-button');
 
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
         toggleSectionVisibility(sectionId);
     });
 });
@@ -740,16 +739,38 @@ function saveNotes(notesContent) {
         });
 }
 
-function updatePurchaseHistoryTotals() {
-    const purchaseTable = document.getElementById('purchase-history-table');
-    const rows = purchaseTable.querySelectorAll('tbody tr:not(.no-entry-row)');
+// function updatePurchaseHistoryTotals() {
+//     const purchaseTable = document.getElementById('purchase-history-table');
+//     const rows = purchaseTable.querySelectorAll('tbody tr:not(.no-entry-row)');
 
+//     let total4D = 0;
+//     let totalToto = 0;
+
+//     rows.forEach(row => {
+//         const lotteryName = row.querySelector('td:nth-child(2)').textContent.trim();
+//         const cost = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('$', ''));
+
+//         if (lotteryName === '4D') {
+//             total4D += cost;
+//         } else if (lotteryName === 'Toto') {
+//             totalToto += cost;
+//         }
+//     });
+
+//     const totalAll = total4D + totalToto;
+
+//     document.getElementById('total-spend-4d').textContent = `$${total4D}`;
+//     document.getElementById('total-spend-toto').textContent = `$${totalToto}`;
+//     document.getElementById('total-spend-all').textContent = `$${totalAll}`;
+// }
+
+function updatePurchaseHistoryTotals() { // this version calculates the entire dataset instead of just the table
     let total4D = 0;
     let totalToto = 0;
 
-    rows.forEach(row => {
-        const lotteryName = row.querySelector('td:nth-child(2)').textContent.trim();
-        const cost = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('$', ''));
+    purchaseHistoryData.forEach(purchase => {
+        const lotteryName = purchase.lottery_name;
+        const cost = purchase.cost;
 
         if (lotteryName === '4D') {
             total4D += cost;
@@ -792,6 +813,7 @@ function fetchPurchaseHistory() {
         .then(data => {
             if (data.success) {
                 purchaseHistoryData = data.data;
+                console.log('called', purchaseHistoryData);
                 updateView();
                 updatePurchaseHistoryTotals();
             } else {
@@ -1016,11 +1038,14 @@ document.getElementById('sorting-menu').addEventListener('click', function (e) {
         button.classList.add('selected');
     }
 });
+
+
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize SortableJS
     const sortable = new Sortable(document.getElementById('sortable-container'), {
         animation: 700,
-        scroll: false,
+        scroll: true,
+        direction: 'vertical', // restricts movement to vertical direction
         handle: ".move-button", // Only elements with this class will trigger dragging
         onUpdate: function (evt) {
             const newOrder = [];
@@ -1030,13 +1055,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (!arraysEqual(newOrder, currentOrder)) {
                 updateSectionOrderInDatabase(newOrder);
-
                 currentOrder = newOrder.slice(); // Update currentOrder with the new order. Using slice() to make a copy of newOrder.
-                // console.log('Order updated!', currentOrder)
             }
         }
     });
 });
+
 
 // Set default order or load from saved preference
 function setOrder(order) {
