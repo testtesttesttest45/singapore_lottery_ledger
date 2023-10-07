@@ -62,7 +62,6 @@ button:hover:not(:disabled):not(.selected) {
 #section-today-entry,
 #section-total-spendings {
     margin: 20px auto;
-    overflow-x: auto;
     display: grid;
     align-items: start;
 }
@@ -372,8 +371,10 @@ body.effect-active {
 }
 
 .cancel-icon {
-    right: 60px;
+    right: 2%;
+    top: 5%;
     display: none;
+    height: fit-content;
 }
 
 .fa-floppy-disk {
@@ -382,7 +383,6 @@ body.effect-active {
 
 .long-table-container {
     overflow-x: auto;
-    margin: 20px auto;
     padding: 5px;
 }
 
@@ -504,6 +504,95 @@ footer img {
     right: 1%;
     transform: translateY(-50%);
 }
+
+.neon-reflection {
+    width: 140px;
+    height: 10px;
+    background: linear-gradient(0deg, rgba(17, 17, 17, 1), rgba(17, 17, 17, 0.3)),
+        linear-gradient(-45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400%, 100%;
+    background-position: 0 0, 100% 0;
+    margin-top: 5px;
+    filter: blur(4px);
+    animation: glowing 10s linear infinite;
+    border-radius: 0 0 10px 10px;
+    transform: perspective(1em) rotateX(40deg) scaleY(-1);
+    opacity: 0.6;
+}
+
+.neon-button {
+    position: relative;
+    z-index: 0;
+}
+
+.neon-button:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 10s linear infinite;
+    opacity: 1;
+    border-radius: 10px;
+}
+
+.neon-button:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+.neon-button-container {
+    justify-self: center;
+    align-self: center;
+}
+.black-background {
+    background-color: black;
+}
+
+.inverted-text {
+    color: white;
+}
+
+.white-text {
+    color: white;
+}
+
+.neon-button:hover {
+    box-shadow:
+        0 0 50px 3px rgba(72, 255, 0, 0.7),
+        0 0 50px 3px rgba(0, 255, 213, 0.7),
+        0 0 50px 3px rgba(0, 43, 255, 0.7),
+        0 0 50px 3px rgba(122, 0, 255, 0.7),
+        0 0 50px 3px rgba(255, 0, 200, 0.7);
+}
+
+@keyframes glowing {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 400% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+
 
 /* Mobile adjustments */
 @media (max-width: 600px) {

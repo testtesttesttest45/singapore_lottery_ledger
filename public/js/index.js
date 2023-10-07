@@ -95,6 +95,7 @@ document.getElementById('4d-form').addEventListener('submit', function (event) {
     const noEntryRow = tableBody.querySelector('.no-entry-row');
     if (noEntryRow) {
         noEntryRow.remove();
+        updateButtonAppearance(true, '#section-today-entry');
     }
     const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
     const newRow = `<tr>
@@ -128,6 +129,7 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     const noEntryRow = tableBody.querySelector('.no-entry-row');
     if (noEntryRow) {
         noEntryRow.remove();
+        updateButtonAppearance(true, '#section-today-entry');
     }
     const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
     const newRow = `<tr>
@@ -153,6 +155,23 @@ function updateRowNumbers(tableSelector) {
     });
 }
 
+function updateButtonAppearance(hasEntries, sectionSelector) {
+    if (hasEntries) {
+        saveButton.classList.add('neon-button');
+        neonReflection.style.display = 'block';
+        // sectionSelecctor will be something like "#section-today-entry", so when used it we will change its background color to #95e495
+        document.querySelector(sectionSelector).style.backgroundColor = "#95e495";
+    } else {
+        saveButton.classList.remove('neon-button');
+        neonReflection.style.display = 'none';
+        document.querySelector(sectionSelector).style.backgroundColor = "";
+    }
+}
+
+
+const saveButton = document.getElementById('save-entries-btn');
+const neonReflection = document.querySelector('.neon-reflection');
+
 document.getElementById('save-entries-btn').addEventListener('click', function () {
     const table = document.getElementById('entries-table');
     const rows = table.querySelectorAll('tbody tr');
@@ -160,7 +179,6 @@ document.getElementById('save-entries-btn').addEventListener('click', function (
 
     rows.forEach(row => {
         const cells = row.querySelectorAll('td');
-        console.log(cells.length)
         if (cells.length >= 7) {
             const entry = {
                 lottery_name: cells[1].innerText,
@@ -203,6 +221,7 @@ function saveEntries(entries) {
                 checkForNoEntries("#entries-table", 'entry', 'entries added');
                 updateTotals();
                 fetchPurchaseHistory();
+                updateButtonAppearance(false, '#section-today-entry');
             } else {
                 alert('Error saving entries: ' + data.message);
             }
@@ -390,6 +409,7 @@ function setUpTableListener(tableSelector, options = {}) {
                     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
                         const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
                         tableBody.innerHTML = noEntryRow;
+                        updateButtonAppearance(false, '#section-today-entry');
                     }
                 }
             }
@@ -608,6 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     editBtn.addEventListener('click', function () {
         if (selfNotes.hasAttribute('readonly')) {
+            console.log('here1')
             lockIcon.style.display = 'none';
             editingText.style.display = 'inline';
 
@@ -622,6 +643,7 @@ document.addEventListener('DOMContentLoaded', function () {
             editBtn.classList.add('fa-regular', 'fa-floppy-disk');
             cancelBtn.style.display = 'inline';
         } else {
+            console.log("here2")
             saveNotes(selfNotes.value);
 
             editingText.style.display = 'none';
@@ -653,7 +675,6 @@ document.addEventListener('DOMContentLoaded', function () {
         cancelBtn.style.display = 'none';
     });
 });
-
 
 function fetchNotesAndDisplay() {
     fetch('/get-notes')
