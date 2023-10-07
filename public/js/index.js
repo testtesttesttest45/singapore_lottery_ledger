@@ -28,6 +28,8 @@ function calculateCost(entryType, boards) {
     return costPerBoard * boards;
 }
 
+let currentOrder = [];
+
 document.addEventListener('DOMContentLoaded', function () {
     fetch('/current-user')
         .then(response => {
@@ -40,6 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Populate user's full name on the page
             const userNameElement = document.getElementById('user-name');
             userNameElement.textContent = data.fullName;
+            // Set the section order based on user data
+            setOrder(data.sectionsOrder);
+            currentOrder.push(data.sectionsOrder);
+            // console.log(currentOrder);
         })
         .catch(error => {
             console.error('Error fetching current user:', error);
@@ -966,26 +972,22 @@ document.getElementById('sorting-menu').addEventListener('click', function (e) {
     }
 });
 
-const defaultOrder = [
-    "entry-sections",
-    "section-today-entry",
-    "section-total-spendings",
-    "section-total-winnings",
-    "notes",
-    "purchase-history",
-    "current-betslips"
-];
-
 // Initialize SortableJS
 const sortable = new Sortable(document.getElementById('sortable-container'), {
     animation: 700,
+    handle: ".move-button", // Only elements with this class will trigger dragging
     onUpdate: function (evt) {
         const newOrder = [];
         const items = document.getElementById('sortable-container').children;
         for (let item of items) {
             newOrder.push(item.id);
         }
-        localStorage.setItem('sectionOrder', JSON.stringify(newOrder));
+        if (!arraysEqual(newOrder, currentOrder)) {
+            updateSectionOrderInDatabase(newOrder);
+
+            currentOrder = newOrder.slice(); // Update currentOrder with the new order. Using slice() to make a copy of newOrder.
+            // console.log('Order updated!', currentOrder)
+        }
     }
 });
 
@@ -1000,16 +1002,48 @@ function setOrder(order) {
     });
 }
 
+// Utility function to check if two arrays are equal
+function arraysEqual(a, b) {
+    return a.length === b.length && a.every((val, index) => val === b[index]);
+}
+
+function updateSectionOrderInDatabase(newOrder) {
+    fetch('/update-section-order', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newOrder: newOrder })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(message => {
+            console.log(message);
+        })
+        .catch(error => {
+            console.error('Error updating section order:', error);
+        });
+}
+
 document.getElementById('reset-order-btn').addEventListener('click', function () {
+    const defaultOrder = [
+        "entry-sections",
+        "section-today-entry",
+        "section-total-spendings",
+        "section-total-winnings",
+        "notes",
+        "purchase-history",
+        "current-betslips"
+    ];
     setOrder(defaultOrder);
-    localStorage.removeItem('sectionOrder'); // reset the saved order as well
+    if (!arraysEqual(defaultOrder, currentOrder)) {
+        updateSectionOrderInDatabase(defaultOrder);
+        currentOrder = defaultOrder.slice();
+    }
 });
 
-// Check for saved order or use default
-const savedOrder = JSON.parse(localStorage.getItem('sectionOrder'));
-if (savedOrder) {
-    setOrder(savedOrder);
-} else {
-    setOrder(defaultOrder);
-}
 

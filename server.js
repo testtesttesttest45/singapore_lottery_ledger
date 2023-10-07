@@ -121,7 +121,7 @@ app.post('/logout', (req, res) => {
 
 app.get('/current-user', ensureAuthenticated, (req, res) => {
   const username = req.session.username;
-  connection.query('SELECT full_name FROM users WHERE username = ?', [username], (err, results) => {
+  connection.query('SELECT full_name, sections_order FROM users WHERE username = ?', [username], (err, results) => {
     if (err) {
       return res.status(500).send('Error fetching user');
     }
@@ -131,7 +131,7 @@ app.get('/current-user', ensureAuthenticated, (req, res) => {
     }
 
     // Return the user's full name as JSON
-    res.json({ fullName: results[0].full_name });
+    res.json({ fullName: results[0].full_name, sectionsOrder: JSON.parse(results[0].sections_order) });
   });
 });
 
@@ -319,6 +319,19 @@ app.delete('/delete-winning/:recordId', (req, res) => {
     }
 
     res.json({ success: true, message: 'Winning deleted successfully.' });
+  });
+});
+
+app.put('/update-section-order', ensureAuthenticated, (req, res) => {
+  const username = req.session.username;
+  const newOrder = req.body.newOrder;
+  
+  connection.query('UPDATE users SET sections_order = ? WHERE username = ?', [JSON.stringify(newOrder), username], (err, results) => {
+      if (err) {
+          return res.status(500).send('Error updating sections order');
+      }
+
+      res.status(200).send('Sections order updated successfully');
   });
 });
 
