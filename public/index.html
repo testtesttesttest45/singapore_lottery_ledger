@@ -134,6 +134,33 @@
                                 <button type="submit">Add Entry</button>
                             </form>
                         </div>
+                        <div id="section-sg-sweep-view">
+                            <h2>Singapore Sweep Entry</h2>
+                            <form id="sg-sweep-form">
+
+                                <div class="form-row">
+                                    <label for="sg-sweep-pick-type">Pick Type:</label>
+                                    <select id="sg-sweep-pick-type">
+                                        <option value="Quick Pick">Quick Pick</option>
+                                        <option value="Self Pick">Self Pick</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label for="sg-sweep-outlet">Outlet:</label>
+                                    <select id="sg-sweep-outlet">
+                                        <option value="Woodlands N8">Woodlands N8</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label for="sg-sweep-boards">Number of Boards:</label>
+                                    <input type="number" id="sg-sweep-boards" placeholder="e.g., 1" min="1" required>
+                                </div>
+
+                                <button type="submit">Add Entry</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -177,6 +204,7 @@
                                     <tr>
                                         <th>Total Cost 4D</th>
                                         <th>Total Cost Toto</th>
+                                        <th>Total Cost Singapore Sweep</th>
                                         <th>Total Cost All</th>
                                     </tr>
                                 </thead>
@@ -184,6 +212,7 @@
                                     <tr>
                                         <td id="total-cost-4d">$0</td>
                                         <td id="total-cost-toto">$0</td>
+                                        <td id="total-cost-sg-sweep">$0</td>
                                         <td id="total-cost-all">$0</td>
                                     </tr>
                                 </tbody>
@@ -205,7 +234,7 @@
                     <h2>Total Spendings</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
-                <h4 class="section-description">Monitor your total expenditures across the 4D and Toto lottery games in
+                <h4 class="section-description">Monitor your total expenditures across the 3 lottery games in
                     this
                     section.
                 </h4>
@@ -217,18 +246,20 @@
                                 <tr>
                                     <th>Total Spend 4D</th>
                                     <th>Total Spend Toto</th>
+                                    <th>Total Spend Singapore Sweep</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td id="total-spend-4d">$0</td>
                                     <td id="total-spend-toto">$0</td>
+                                    <td id="total-spend-sg-sweep">$0</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2" style="color: white; font-weight: bold">Total Spend All</td>
+                                    <td colspan="3" style="color: white; font-weight: bold">Total Spend All</td>
                                 </tr>
                                 <tr>
-                                    <td id="total-spend-all" colspan="2">$0</td>
+                                    <td id="total-spend-all" colspan="3">$0</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -251,18 +282,20 @@
                                 <tr>
                                     <th>Total Winnings 4D</th>
                                     <th>Total Winnings Toto</th>
+                                    <th>Total Winnings Singapore Sweep</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td id="total-winnings-4d">$0</td>
                                     <td id="total-winnings-toto">$0</td>
+                                    <td id="total-winnings-sg-sweep">$0</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2" style="color: white; font-weight: bold">Total Winnings All</td>
+                                    <td colspan="3" style="color: white; font-weight: bold">Total Winnings All</td>
                                 </tr>
                                 <tr>
-                                    <td id="total-winnings-all" colspan="2">$0</td>
+                                    <td id="total-winnings-all" colspan="3">$0</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -396,6 +429,45 @@
                                 </div>
                             </form>
                         </div>
+                        <div class="individual-form">
+                            <div>
+                                <h2 class="form-title">Singapore Sweep</h2>
+                                <p class="toggle-form" data-target="winnings-form-sg-sweep">Show Form <i
+                                        class="fa-solid fa-caret-right"></i></p>
+                            </div>
+                            <form id="winnings-form-sg-sweep" class="winnings-form">
+
+                                <div class="form-row">
+                                    <label for="winnings-pick-type-sg-sweep">Pick Type:</label>
+                                    <select id="winnings-pick-type-sg-sweep">
+                                        <option value="Quick Pick">Quick Pick</option>
+                                        <option value="Self Pick">Self Pick</option>
+                                    </select>
+                                </div>
+                        
+                                <div class="form-row">
+                                    <label for="winnings-outlet-sg-sweep">Outlet:</label>
+                                    <select id="winnings-outlet-sg-sweep">
+                                        <option value="Woodlands N8">Woodlands N8</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label for="winnings-prize-sg-sweep">Winning Prize:</label>
+                                    <input type="number" id="winnings-prize-sg-sweep" placeholder="Minimum $6" min="6"
+                                        required>
+                                </div>
+
+                                <div class="form-row">
+                                    <label for="winnings-date-sg-sweep">Date:</label>
+                                    <input type="date" id="winnings-date-sg-sweep" required>
+                                </div>
+
+                                <div class="form-row button-row">
+                                    <button type="submit" class="submit-btn">Add Winnings</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -516,6 +588,15 @@
                             <p>You have not uploaded a Toto betslip for the upcoming draw!</p>
                         </div>
                         <button id="uploadToto" class="upload-betslip">Upload Toto Betslip</button>
+                    </div>
+
+                    <div class="betslip-section" id="sg-sweep-betslip-section">
+                        <h3>Singapore Sweep Betslip</h3>
+                        <p><span id="sg-sweep-count">0</span> Singapore Sweep betslips uploaded</p>
+                        <div class="image-container" id="sg-sweep-image-container">
+                            <p>You have not uploaded a Singapore Sweep betslip for the upcoming draw!</p>
+                        </div>
+                        <button id="uploadSgSweep" class="upload-betslip">Upload Singapore Sweep Betslip</button>
                     </div>
                 </div>
             </section>

@@ -48,7 +48,8 @@ button:hover:not(:disabled):not(.selected) {
 }
 
 #section-4d-view,
-#section-toto-view {
+#section-toto-view,
+#section-sg-sweep-view {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -111,11 +112,11 @@ button:hover:not(:disabled):not(.selected) {
     font-weight: bold;
 }
 
-#today-totals-table td:nth-child(3),
-#today-totals-table th:nth-child(3),
-#totals-table tbody tr td[colspan="2"]:first-child,
+#today-totals-table td:nth-child(4),
+#today-totals-table th:nth-child(4),
+#totals-table tbody tr td[colspan="3"]:first-child,
 #totals-table tbody #total-spend-all,
-#winnings-table tbody tr td[colspan="2"]:first-child {
+#winnings-table tbody tr td[colspan="3"]:first-child {
     background-color: rgb(234, 212, 91);
 }
 
@@ -126,7 +127,7 @@ button:hover:not(:disabled):not(.selected) {
 }
 
 #entries-table tbody tr:hover,
-#today-totals-table tbody tr td:hover:not(:nth-child(3)),
+#today-totals-table tbody tr td:hover:not(:nth-child(4)),
 #totals-table tbody tr td:hover,
 #winnings-table tbody tr td:hover,
 #prizes-history-table tbody tr:hover,
@@ -135,7 +136,8 @@ button:hover:not(:disabled):not(.selected) {
 }
 
 #section-4d-view form,
-#section-toto-view form {
+#section-toto-view form,
+#section-sg-sweep-view form {
     width: 100%;
     display: grid;
     grid-template-rows: 1fr 1fr 1fr 1fr auto;
@@ -151,8 +153,11 @@ button:hover:not(:disabled):not(.selected) {
 .form-row input,
 .form-row select,
 #section-4d-view label,
-#section-toto-view label #winnings-form-4d label,
-#winnings-form-toto label {
+#section-toto-view label,
+#section-sg-sweep-view label,
+#winnings-form-4d label,
+#winnings-form-toto label,
+#winnings-form-sg-sweep label {
     display: block;
     width: 100%;
     margin-bottom: 10px;
@@ -160,6 +165,7 @@ button:hover:not(:disabled):not(.selected) {
 
 #section-4d-view button,
 #section-toto-view button,
+#section-sg-sweep-view button,
 #save-entries-btn,
 .submit-btn,
 #save-winnings-btn,
@@ -192,6 +198,7 @@ button:hover:not(:disabled):not(.selected) {
 
 #section-4d-view button:hover,
 #section-toto-view button:hover,
+#section-sg-sweep-view button:hover,
 #save-entries-btn:hover,
 .submit-btn:hover,
 #save-winnings-btn:hover,
@@ -207,10 +214,14 @@ button:hover:not(:disabled):not(.selected) {
 #section-4d-view select,
 #section-toto-view input,
 #section-toto-view select,
+#section-sg-sweep-view input,
+#section-sg-sweep-view select,
 #winnings-form-4d input,
 #winnings-form-toto input,
+#winnings-form-sg-sweep input,
 #winnings-form-4d select,
-#winnings-form-toto select {
+#winnings-form-toto select,
+#winnings-form-sg-sweep select {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -221,17 +232,26 @@ button:hover:not(:disabled):not(.selected) {
 #section-4d-view select:hover,
 #section-toto-view input:hover,
 #section-toto-view select:hover,
+#section-sg-sweep-view input:hover,
+#section-sg-sweep-view select:hover,
 #section-4d-view input:focus,
 #section-4d-view select:focus,
 #section-toto-view input:focus,
 #section-toto-view select:focus,
+#section-sg-sweep-view input:focus,
+#section-sg-sweep-view select:focus,
 #winnings-form-4d input:hover,
 #winnings-form-toto input:hover,
+#winnings-form-sg-sweep input:hover,
 #winnings-form-4d select:hover,
-#winnings-form-toto select:hover #winnings-form-4d input:focus,
+#winnings-form-toto select:hover,
+#winnings-form-sg-sweep select:hover,
+#winnings-form-4d input:focus,
 #winnings-form-toto input:focus,
+#winnings-form-sg-sweep input:focus,
 #winnings-form-4d select:focus,
-#winnings-form-toto select:focus {
+#winnings-form-toto select:focus,
+#winnings-form-sg-sweep select:focus {
     border-color: gold;
     box-shadow: 0 0 5px gold;
 }
@@ -384,6 +404,7 @@ body.effect-active {
 .long-table-container {
     overflow-x: auto;
     padding: 5px;
+    margin-bottom: 10px;
 }
 
 .pagination {
@@ -557,6 +578,7 @@ footer img {
     justify-self: center;
     align-self: center;
 }
+
 .black-background {
     background-color: black;
 }
@@ -623,6 +645,7 @@ footer img {
 
     #section-4d-view button,
     #section-toto-view button,
+    #section-sg-sweep-view button,
     #today-totals-container button,
     #save-entries-btn,
     .submit-btn,
@@ -642,21 +665,27 @@ footer img {
     #section-4d-view select,
     #section-toto-view input,
     #section-toto-view select,
+    #section-sg-sweep-view input,
+    #section-sg-sweep-view select,
     #winnings-form-4d input,
     #winnings-form-toto input,
+    #winnings-form-sg-sweep input,
     #winnings-form-4d select,
-    #winnings-form-toto select {
+    #winnings-form-toto select,
+    #winnings-form-sg-sweep select {
         padding: 5px;
     }
 
     #section-4d-view,
-    #section-toto-view {
+    #section-toto-view,
+    #section-sg-sweep-view {
         margin-bottom: 10px;
         min-height: auto;
     }
 
     #section-4d-view form,
-    #section-toto-view form {
+    #section-toto-view form,
+    #section-sg-sweep-view form {
         display: flex;
         flex-direction: column;
     }

@@ -105,7 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const registerButton = document.getElementById('register-btn');
-    registerButton.addEventListener('click', function () {
+    registerButton.addEventListener('click', function (event) {
+        event.preventDefault();
         const fullName = document.getElementById('register-fullname').value;
         const firstDayBetting = document.getElementById('first-day-betting').value;
         const username = document.getElementById('register-username').value;
@@ -127,8 +128,12 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => response.json())
             .then(data => {
-                alert(data.message);  // Removed extra argument
-                location.reload();
+                setTimeout(() => {
+                    showSuccessEffect('Registered successfully.');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                });
             })
             .catch(err => {
                 console.error('Error:', err);

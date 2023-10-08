@@ -148,6 +148,38 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
     updateTotals();
 });
 
+// Add Singapore Sweep Entry to Table
+document.getElementById('sg-sweep-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const numberOfBoards = document.getElementById('sg-sweep-boards').value;
+    const pickTypeSgSweep = document.getElementById('sg-sweep-pick-type').value;
+    const outletSgSweep = document.getElementById('sg-sweep-outlet').value;
+    const cost = numberOfBoards * 3;
+
+    const tableBody = document.querySelector("#entries-table tbody");
+    const noEntryRow = tableBody.querySelector('.no-entry-row');
+    if (noEntryRow) {
+        noEntryRow.remove();
+        updateButtonAppearance(true, '#section-today-entry');
+    }
+    const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
+    const newRow = `<tr>
+        <td>${nextRowNumber}</td>
+        <td>Singapore Sweep</td>
+        <td style="text-align: center">-</td>
+        <td>${pickTypeSgSweep}</td>
+        <td style="text-align: center">-</td>
+        <td>${outletSgSweep}</td>
+        <td>${numberOfBoards}</td>
+        <td>$${cost}</td>
+        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+    tableBody.innerHTML += newRow;
+    showSuccessEffect('Singapore Sweep');
+    updateTotals();
+});
+
 function updateRowNumbers(tableSelector) {
     const rows = document.querySelectorAll(`${tableSelector} tbody tr:not(.no-entry-row)`);
     rows.forEach((row, index) => {
@@ -340,6 +372,51 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
     saveIndividualWinnings(winning);
 });
 
+document.getElementById('winnings-form-sg-sweep').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent form from submitting
+
+    const winningPickTypeSgSweep = document.getElementById('winnings-pick-type-sg-sweep').value;
+    const winningOutletSgSweep = document.getElementById('winnings-outlet-sg-sweep').value;
+    const winningPrizeSgSweep = document.getElementById('winnings-prize-sg-sweep').value;
+    const winningDateSgSweep = document.getElementById('winnings-date-sg-sweep').value;
+    const tableBody = document.querySelector("#prizes-history-table tbody");
+    // Check if the no-entry-row exists and remove it
+    const noEntryRow = tableBody.querySelector('.no-entry-row');
+    if (noEntryRow) {
+        noEntryRow.remove();
+    }
+    const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
+    const newRow = `<tr>
+        <td>${nextRowNumber}</td>
+        <td>Singapore Sweep</td>
+        <td>-</td>
+        <td>${winningPickTypeSgSweep}</td>
+        <td>${winningOutletSgSweep}</td>
+        <td>$${winningPrizeSgSweep}</td>
+        <td>${winningDateSgSweep}</td>
+        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+    </tr>`;
+    // tableBody.innerHTML += newRow;
+    tableBody.insertAdjacentHTML('afterbegin', newRow);
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const cell = row.querySelector('td:first-child');
+        cell.textContent = index + 1;
+    });
+    showSuccessEffect('Singapore Sweep');
+    updateWinningsTotal();
+    const winning = {
+        lottery_name: "Singapore Sweep",
+        entry_type: "-",
+        pick_type: winningPickTypeSgSweep,
+        outlet: winningOutletSgSweep,
+        winning_prize: parseFloat(winningPrizeSgSweep),
+        date_of_winning: winningDateSgSweep
+    };
+    console.log(winning);
+    saveIndividualWinnings(winning);
+});
+
 function saveIndividualWinnings(winning) {
     fetch('/save-winnings', {
         method: 'POST',
@@ -461,6 +538,10 @@ document.getElementById('uploadToto').addEventListener('click', function () {
     addPlaceholderImage('toto');
 });
 
+document.getElementById('uploadSgSweep').addEventListener('click', function () {
+    addPlaceholderImage('sg-sweep');
+});
+
 function addPlaceholderImage(type) {
     const imgContainer = document.getElementById(`${type}-image-container`);
     const divChildrenCount = imgContainer.querySelectorAll('div.image-div').length;
@@ -486,7 +567,10 @@ function addPlaceholderImage(type) {
                     const placeholderText = document.createElement('p');
                     // placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
                     // if type =  "toto" use "toto" else "4D"
-                    placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" : "4D"} betslip for the upcoming draw!`;
+                    placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" :
+                            type === "4d" ? "4D" :
+                            type === "Singapore Sweep" ? "Singapore Sweep" : ""
+                        } betslip for the upcoming draw!`;
                     imgContainer.appendChild(placeholderText);
                 }
             }
@@ -551,6 +635,7 @@ function updateTotals() {
     const rows = document.querySelectorAll("#entries-table tbody tr:not(.no-entry-row)");
     let total4D = 0;
     let totalToto = 0;
+    let totalSgSweep = 0;
 
     rows.forEach(row => {
         const lotteryName = row.children[1].textContent; // the first td
@@ -560,13 +645,16 @@ function updateTotals() {
             total4D += costValue;
         } else if (lotteryName === "Toto") {
             totalToto += costValue;
+        } else if (lotteryName === "Singapore Sweep") {
+            totalSgSweep += costValue;
         }
     });
 
-    const totalAll = total4D + totalToto;
+    const totalAll = total4D + totalToto + totalSgSweep;
 
     document.getElementById("total-cost-4d").textContent = `$${total4D}`;
     document.getElementById("total-cost-toto").textContent = `$${totalToto}`;
+    document.getElementById("total-cost-sg-sweep").textContent = `$${totalSgSweep}`;
     document.getElementById("total-cost-all").textContent = `$${totalAll}`;
 }
 
@@ -574,6 +662,7 @@ function updateWinningsTotal() {
     const rows = document.querySelectorAll("#prizes-history-table tbody tr:not(.no-entry-row)");
     let total4D = 0;
     let totalToto = 0;
+    let totalSgSweep = 0;
 
     rows.forEach(row => {
         const lotteryName = row.children[1].textContent;
@@ -583,13 +672,16 @@ function updateWinningsTotal() {
             total4D += costValue;
         } else if (lotteryName === "Toto") {
             totalToto += costValue;
+        } else if (lotteryName === "Singapore Sweep") {
+            totalSgSweep += costValue;
         }
     });
 
-    const totalAll = total4D + totalToto;
+    const totalAll = total4D + totalToto + totalSgSweep;
 
     document.getElementById("total-winnings-4d").textContent = `$${total4D}`;
     document.getElementById("total-winnings-toto").textContent = `$${totalToto}`;
+    document.getElementById("total-winnings-sg-sweep").textContent = `$${totalSgSweep}`;
     document.getElementById("total-winnings-all").textContent = `$${totalAll}`;
 }
 
@@ -767,6 +859,7 @@ function saveNotes(notesContent) {
 function updatePurchaseHistoryTotals() { // this version calculates the entire dataset instead of just the table
     let total4D = 0;
     let totalToto = 0;
+    let totalSgSweep = 0;
 
     purchaseHistoryData.forEach(purchase => {
         const lotteryName = purchase.lottery_name;
@@ -776,13 +869,16 @@ function updatePurchaseHistoryTotals() { // this version calculates the entire d
             total4D += cost;
         } else if (lotteryName === 'Toto') {
             totalToto += cost;
+        } else if (lotteryName === 'Singapore Sweep') {
+            totalSgSweep += cost;
         }
     });
 
-    const totalAll = total4D + totalToto;
+    const totalAll = total4D + totalToto + totalSgSweep;
 
     document.getElementById('total-spend-4d').textContent = `$${total4D}`;
     document.getElementById('total-spend-toto').textContent = `$${totalToto}`;
+    document.getElementById('total-spend-sg-sweep').textContent = `$${totalSgSweep}`;
     document.getElementById('total-spend-all').textContent = `$${totalAll}`;
 }
 
@@ -813,7 +909,6 @@ function fetchPurchaseHistory() {
         .then(data => {
             if (data.success) {
                 purchaseHistoryData = data.data;
-                console.log('called', purchaseHistoryData);
                 updateView();
                 updatePurchaseHistoryTotals();
             } else {

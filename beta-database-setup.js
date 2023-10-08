@@ -52,7 +52,7 @@ function setupDatabase() {
                 password VARCHAR(255) NOT NULL,
                 first_day_betting DATE,
                 date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                sections_order TEXT DEFAULT '["entry-sections", "section-today-entry",  "section-total-spendings", "section-total-winnings", "notes", "purchase-history", "current-betslips"]',
+                sections_order VARCHAR(500) DEFAULT '["entry-sections", "section-today-entry",  "section-total-spendings", "section-total-winnings", "notes", "purchase-history", "current-betslips"]',
             );
             `;
 
