@@ -5,9 +5,18 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const ensureAuthenticated = require('./middleware.js');
+require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
+const fileUpload = require('express-fileupload');
 
 const app = express();
 const PORT = 3000;
+
+cloudinary.config({
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret
+});
 
 app.use(bodyParser.json());  // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));  // to support URL-encoded bodies
@@ -17,6 +26,11 @@ app.use(session({
   secret: 'password',
   resave: false,
   saveUninitialized: false
+}));
+
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: './temp/'
 }));
 
 app.get('/', (req, res) => {
@@ -325,13 +339,13 @@ app.delete('/delete-winning/:recordId', (req, res) => {
 app.put('/update-section-order', ensureAuthenticated, (req, res) => {
   const username = req.session.username;
   const newOrder = req.body.newOrder;
-  
-  connection.query('UPDATE users SET sections_order = ? WHERE username = ?', [JSON.stringify(newOrder), username], (err, results) => {
-      if (err) {
-          return res.status(500).send('Error updating sections order');
-      }
 
-      res.status(200).send('Sections order updated successfully');
+  connection.query('UPDATE users SET sections_order = ? WHERE username = ?', [JSON.stringify(newOrder), username], (err, results) => {
+    if (err) {
+      return res.status(500).send('Error updating sections order');
+    }
+
+    res.status(200).send('Sections order updated successfully');
   });
 });
 
@@ -355,6 +369,71 @@ app.put('/edit-purchase/:recordId', ensureAuthenticated, (req, res) => {
     }
 
     res.json({ success: true, message: 'Purchase edited successfully.' });
+  });
+});
+
+app.post('/upload-image', ensureAuthenticated, (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).json({ success: false, message: 'No files were uploaded.' });
+  }
+  let uploadedFile = req.files.image;
+
+  const lotteryName = req.body.lotteryName;
+
+  cloudinary.uploader.upload(uploadedFile.tempFilePath, { folder: 'Singapore Lottery Ledger project/Betslips' }, (error, result) => {
+    if (error) {
+      console.error('Error uploading to Cloudinary:', error);
+      return res.status(500).json({ success: false, message: 'Error uploading image.' });
+    }
+
+    // After successful upload, store the result.secure_url in your database
+    const sql = `
+          INSERT INTO betslips (fk_user_id, lottery_name, image_url)
+          VALUES (?, ?, ?);
+      `;
+
+    connection.query(sql, [req.session.userId, lotteryName, result.secure_url], (err, results) => {
+      if (err) {
+        console.error('Error saving image URL to the database:', err.stack);
+        return res.status(500).json({ success: false, message: 'Error saving image URL to the database.' });
+      }
+      res.json({ success: true, imgUrl: result.secure_url });
+    });
+  });
+});
+
+app.get('/retrieve-betslips', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userId;
+
+  const sql = `
+    SELECT * FROM betslips 
+    WHERE fk_user_id = ? AND isChecked = 0;
+  `;
+
+  connection.query(sql, [userId], (err, results) => {
+    if (err) {
+      console.error('Error retrieving betslips:', err.stack);
+      return res.status(500).json({ success: false, message: 'Error retrieving your betslips from the database.' });
+    }
+    res.json({ success: true, data: results });
+  });
+});
+
+app.delete('/check-betslip/:id', ensureAuthenticated, (req, res) => {
+  const betslipId = req.params.id;
+
+  const sql = `
+      UPDATE betslips 
+      SET isChecked = 1, date_checked = CURRENT_TIMESTAMP
+      WHERE id = ?;
+  `;
+
+  connection.query(sql, [betslipId], (err, results) => {
+    if (err) {
+      console.error('Error updating betslip:', err.stack);
+      return res.status(500).json({ success: false, message: 'Error marking your betslip as checked.' });
+    }
+    res.json({ success: true, message: 'Betslip marked as checked.' });
   });
 });
 

@@ -718,18 +718,21 @@ function clearExistingTimeouts() {
 }
 
 document.getElementById('upload4D').addEventListener('click', function () {
-    addPlaceholderImage('4d');
+    // addPlaceholderImage('4d');
+    document.getElementById('input4D').click();
 });
 
 document.getElementById('uploadToto').addEventListener('click', function () {
-    addPlaceholderImage('toto');
+    // addPlaceholderImage('toto');
+    document.getElementById('inputToto').click();
 });
 
 document.getElementById('uploadSgSweep').addEventListener('click', function () {
-    addPlaceholderImage('sg-sweep');
+    // addPlaceholderImage('sg-sweep');
+    document.getElementById('inputSgSweep').click();
 });
 
-function addPlaceholderImage(type) {
+function addUploadedBetslipImage(type, imgSrc, betslipId) {
     const imgContainer = document.getElementById(`${type}-image-container`);
     const divChildrenCount = imgContainer.querySelectorAll('div.image-div').length;
 
@@ -737,31 +740,45 @@ function addPlaceholderImage(type) {
         const imageDiv = document.createElement('div');
         imageDiv.classList.add('image-div');
 
-        // Create and append a placeholder image
-        const placeholderImg = document.createElement('img');
-        placeholderImg.src = "https://via.placeholder.com/300x200.png?text=Uploaded+Betslip";
-        imageDiv.appendChild(placeholderImg);
+        const uploadedImg = document.createElement('img');
+        uploadedImg.src = imgSrc;
+        uploadedImg.alt = `${type} betslip`;
+        imageDiv.appendChild(uploadedImg);
+        imageDiv.setAttribute('data-id', `betslip-${betslipId}`);
 
         const checkedButton = document.createElement('button');
         checkedButton.innerHTML = `Checked finish <i class="fa-solid fa-check"></i>`;
         checkedButton.classList.add('checked-btn');
         checkedButton.addEventListener('click', function () {
-            const confirmDelete = confirm(`Delete this ${type} betslip?`);
+            const confirmDelete = confirm(`Done checking this ${type} betslip?`);
             if (confirmDelete) {
-                imgContainer.removeChild(imageDiv);
-                updateCount(type, imgContainer.children.length);
-                if (imgContainer.querySelectorAll('div.image-div').length === 0) {
-                    const placeholderText = document.createElement('p');
-                    // placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
-                    // if type =  "toto" use "toto" else "4D"
-                    placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" :
-                        type === "4d" ? "4D" :
-                            type === "Singapore Sweep" ? "Singapore Sweep" : ""
-                        } betslip for the upcoming draw!`;
-                    imgContainer.appendChild(placeholderText);
-                }
+                const betslipId = imageDiv.getAttribute('data-id').replace('betslip-', '');
+                fetch(`/check-betslip/${betslipId}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            imgContainer.removeChild(imageDiv);
+                            updateCount(type, imgContainer.children.length);
+                            if (imgContainer.querySelectorAll('div.image-div').length === 0) {
+                                const placeholderText = document.createElement('p');
+                                placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" :
+                                    type === "4d" ? "4D" :
+                                        type === "Singapore Sweep" ? "Singapore Sweep" : ""
+                                    } betslip for the upcoming draw!`;
+                                imgContainer.appendChild(placeholderText);
+                            }
+                        } else {
+                            alert('Error checking the betslip. Please try again later.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking the betslip:', error);
+                    });
             }
         });
+
         imageDiv.appendChild(checkedButton);
 
         imgContainer.appendChild(imageDiv);
@@ -776,6 +793,81 @@ function addPlaceholderImage(type) {
         imgContainer.removeChild(placeholderText);
     }
 }
+
+function uploadToServer(type, file, callback) {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('lotteryName', type);
+    fetch('/upload-image', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                callback(true, data.imgUrl);
+            } else {
+                callback(false);
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading the image:', error);
+            callback(false);
+        });
+}
+
+document.getElementById('input4D').addEventListener('change', function () {
+    handleImageUpload('4d', this);
+});
+
+document.getElementById('inputToto').addEventListener('change', function () {
+    handleImageUpload('toto', this);
+});
+
+document.getElementById('inputSgSweep').addEventListener('change', function () {
+    handleImageUpload('sg-sweep', this);
+});
+
+function handleImageUpload(type, input) {
+    const file = input.files[0];
+    if (!file) return;
+    document.getElementById('loadingSpinner').classList.remove('hidden');
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    uploadToServer(type, file, function (success, cloudinaryUrl) {
+        document.getElementById('loadingSpinner').classList.add('hidden');
+        if (success) {
+            // If upload was successful, display the image using Cloudinary URL
+            addUploadedBetslipImage(type, cloudinaryUrl);
+        } else {
+            alert('Error uploading image. Please try again later.');
+        }
+    });
+
+    // Clear the input to ensure the change event is triggered next time, even for the same file.
+    input.value = "";
+}
+
+function fetchBetslips() {
+    fetch('/retrieve-betslips')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                for (let betslip of data.data) {
+                    addUploadedBetslipImage(betslip.lottery_name.toLowerCase(), betslip.image_url, betslip.ID);
+                }
+            } else {
+                console.error('Error retrieving betslips:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching the betslips:', error);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', fetchBetslips);
 
 function updateCount(type, count) {
     const countElement = document.getElementById(`${type}-count`);
@@ -1208,7 +1300,7 @@ function displayPurchaseHistory(history) {
             <td>${record.number_of_boards}</td>
             <td>$${record.cost}</td>
             <td class="date-with-edit">
-                <div style="display: flex; justify-content: space-evenly">
+                <div class="table-date-cell" style="display: flex; justify-content: space-evenly">
                     <span class="date-text">${formatDateToLocalDateString(record.date_of_entry)}</span>
                     <button class="edit-btn" title="Edit this entry">
                         <i class="fas fa-edit"></i>

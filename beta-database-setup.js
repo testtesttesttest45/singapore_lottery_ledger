@@ -125,8 +125,11 @@ function setupDatabase() {
             CREATE TABLE IF NOT EXISTS betslips (
                 ID INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
+                lottery_name VARCHAR(255),
                 image_url VARCHAR(255),
+                date_of_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isChecked BOOLEAN DEFAULT FALSE,
+                date_checked TIMESTAMP DEFAULT NULL,
                 FOREIGN KEY (fk_user_id) REFERENCES users(ID)
             );
             `;
