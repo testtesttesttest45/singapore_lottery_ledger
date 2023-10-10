@@ -1,4 +1,3 @@
-// Calculate Cost
 function calculateCost(entryType, boards) {
     let costPerBoard = 1;
 
@@ -58,7 +57,6 @@ document.getElementById('logout-btn').addEventListener('click', function () {
     })
         .then(response => {
             if (response.status === 200) {
-                // Redirect the user to the login page after successful logout
                 window.location.href = '/login';
             } else {
                 return response.json();
@@ -66,7 +64,7 @@ document.getElementById('logout-btn').addEventListener('click', function () {
         })
         .then(data => {
             if (data && data.message) {
-                alert(data.message); // You can notify the user about the error in any other way you prefer
+                alert(data.message)
             }
         })
         .catch(error => {
@@ -76,7 +74,7 @@ document.getElementById('logout-btn').addEventListener('click', function () {
 
 // Add 4D Entry to Table
 document.getElementById('4d-form').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent form from submitting
+    event.preventDefault();
 
     const bigBet = parseInt(document.getElementById('4d-bet-big').value || 0);
     const smallBet = parseInt(document.getElementById('4d-bet-small').value || 0);
@@ -107,7 +105,11 @@ document.getElementById('4d-form').addEventListener('submit', function (event) {
         <td>${outlet4D}</td>
         <td>${numberOfBoards}</td>
         <td>$${parseInt(bigBet || 0) * numberOfBoards + parseInt(smallBet || 0) * numberOfBoards}</td>
-        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        <td>
+            <button class="delete-btn" title="Remove this entry">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
     </tr>`;
     tableBody.innerHTML += newRow;
     showSuccessEffect('4D');
@@ -141,7 +143,11 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
         <td>${outletToto}</td>
         <td>${numberOfBoards}</td>
         <td>$${cost}</td>
-        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        <td>
+            <button class="delete-btn" title="Remove this entry">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
     </tr>`;
     tableBody.innerHTML += newRow;
     showSuccessEffect('Toto');
@@ -173,7 +179,9 @@ document.getElementById('sg-sweep-form').addEventListener('submit', function (ev
         <td>${outletSgSweep}</td>
         <td>${numberOfBoards}</td>
         <td>$${cost}</td>
-        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        <td>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+        </td>
     </tr>`;
     tableBody.innerHTML += newRow;
     showSuccessEffect('Singapore Sweep');
@@ -304,7 +312,9 @@ document.getElementById('winnings-form-4d').addEventListener('submit', function 
         <td>${winningOutlet4D}</td>
         <td>$${winningPrize4D}</td>
         <td>${winningDate4D}</td>
-        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        <td>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+        </td>
     </tr>`;
     // tableBody.innerHTML += newRow;
     tableBody.insertAdjacentHTML('afterbegin', newRow);
@@ -349,7 +359,9 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
         <td>${winningOutletToto}</td>
         <td>$${winningPrizeToto}</td>
         <td>${winningDateToto}</td>
-        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        <td>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+        </td>
     </tr>`;
     // tableBody.innerHTML += newRow;
     tableBody.insertAdjacentHTML('afterbegin', newRow);
@@ -394,7 +406,9 @@ document.getElementById('winnings-form-sg-sweep').addEventListener('submit', fun
         <td>${winningOutletSgSweep}</td>
         <td>$${winningPrizeSgSweep}</td>
         <td>${winningDateSgSweep}</td>
-        <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+        <td>
+            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+        </td>
     </tr>`;
     // tableBody.innerHTML += newRow;
     tableBody.insertAdjacentHTML('afterbegin', newRow);
@@ -442,7 +456,67 @@ function saveIndividualWinnings(winning) {
 }
 
 function setUpTableListener(tableSelector, options = {}) {
-    document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
+    const tbody = document.querySelector(tableSelector + " tbody");
+
+    function toggleEditMode(td, isEditing) {
+        const dateText = td.querySelector('.date-text');
+        const dateInput = td.querySelector('.date-input');
+        const confirmBtn = td.querySelector('.confirm-btn');
+        const cancelBtn = td.querySelector('.cancel-btn');
+        const editBtn = td.querySelector('.edit-btn');
+
+        if (isEditing) {
+            dateText.style.display = 'none';
+            dateInput.style.display = 'block';
+            confirmBtn.style.display = 'inline-block';
+            cancelBtn.style.display = 'inline-block';
+            editBtn.style.display = 'none';
+        } else {
+            dateText.style.display = 'block';
+            dateInput.style.display = 'none';
+            confirmBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            editBtn.style.display = 'flex';
+        }
+    }
+
+    function handleEdit(td) {
+        toggleEditMode(td, true);
+    }
+
+    function handleConfirm(td, rowId, rowIndex) {
+        const dateText = td.querySelector('.date-text');
+        const dateInput = td.querySelector('.date-input');
+        const newDate = dateInput.value;
+        const rowDate = purchaseHistoryData[rowIndex].date_of_entry;
+        if (newDate === formatDateToLocalDateString(rowDate)) {
+            alert('Date unchanged.');
+            toggleEditMode(td, false);
+            return;
+        }
+        editPurchase(rowId, dateInput.value).then((success) => {
+            if (success) {
+                dateText.textContent = dateInput.value;
+                toggleEditMode(td, false);
+            } else {
+                alert('Error updating. Please try again later.');
+            }
+        });
+    }
+
+    function handleCancel(td) {
+        const dateText = td.querySelector('.date-text');
+        const dateInput = td.querySelector('.date-input');
+
+        dateInput.value = dateText.textContent;
+        toggleEditMode(td, false);
+    }
+
+    tbody.addEventListener('click', function (event) {
+        const td = event.target.closest('td');
+        const row = event.target.closest('tr');
+        const rowId = row.getAttribute('data-id').replace('purchase-', '');
+        const rowIndex = Array.from(row.parentNode.children).indexOf(row);
         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
             const message = options.confirmMessage || 'Are you sure you want to delete this entry?';
             const shouldDelete = confirm(message);
@@ -491,8 +565,120 @@ function setUpTableListener(tableSelector, options = {}) {
                 }
             }
         }
+        else if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
+            handleEdit(td);
+        }
+        else if (event.target.classList.contains('confirm-btn') || event.target.closest('.confirm-btn')) {
+            handleConfirm(td, rowId, rowIndex);
+            fetchPurchaseHistory();
+        }
+        else if (event.target.classList.contains('cancel-btn') || event.target.closest('.cancel-btn')) {
+            handleCancel(td);
+        }
     });
 }
+
+
+// function setUpTableListener(tableSelector, options = {}) {
+//     document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
+//         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
+//             const message = options.confirmMessage || 'Are you sure you want to delete this entry?';
+//             const shouldDelete = confirm(message);
+//             if (shouldDelete) {
+//                 const row = event.target.closest('tr');
+//                 const tableBody = document.querySelector(tableSelector + " tbody");
+//                 if (options.serverDelete) {
+//                     // const recordId = row.getAttribute('data-id').replace('purchase-', ''); // need to do for 'winning-' too
+//                     const rowId = row.getAttribute('data-id').replace(options.rowType + '-', '');
+//                     options.deleteMethod(rowId).then((success) => {
+//                         if (success) {
+//                             row.remove();
+//                             // Check for empty table after row removal
+//                             const tableBody = document.querySelector(tableSelector + " tbody");
+//                             const colspan = options.colspan || 9;
+//                             if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+//                                 const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
+//                                 tableBody.innerHTML = noEntryRow;
+//                                 if (currentPage > 1) {
+//                                     currentPage--; // Go back to the previous page if the current one is empty
+//                                 }
+//                                 displayPurchaseHistory(purchaseHistoryData);
+//                             }
+//                             updatePurchaseHistoryTotals();
+//                             updatePaginationControls();
+//                         } else {
+//                             alert('Error deleting. Please try again later.');
+//                         }
+//                     });
+//                 } else {
+//                     row.remove();
+//                     if (options.afterDelete) {
+//                         options.afterDelete();
+//                     }
+//                     const rows = tableBody.querySelectorAll('tr:not(.no-entry-row)');
+//                     rows.forEach((row, index) => {
+//                         const firstCell = row.querySelector('td:first-child');
+//                         firstCell.textContent = index + 1;
+//                     });
+//                     const colspan = options.colspan || 8;
+//                     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+//                         const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
+//                         tableBody.innerHTML = noEntryRow;
+//                         updateButtonAppearance(false, '#section-today-entry');
+//                     }
+//                 }
+//             }
+//         } else if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
+//             console.log('edit');
+//             const td = event.target.closest('td');
+//             const dateText = td.querySelector('.date-text');
+//             const dateInput = td.querySelector('.date-input');
+//             const confirmBtn = td.querySelector('.confirm-btn');
+//             const cancelBtn = td.querySelector('.cancel-btn');
+
+//             // Hide date text and show input and buttons
+//             dateText.style.display = 'none';
+//             dateInput.style.display = 'block';
+//             confirmBtn.style.display = 'inline-block';
+//             cancelBtn.style.display = 'inline-block';
+//         }
+//         else if (event.target.classList.contains('confirm-btn') || event.target.closest('.confirm-btn')) {
+//             console.log('confirm');
+//             const td = event.target.closest('td');
+//             const dateText = td.querySelector('.date-text');
+//             const dateInput = td.querySelector('.date-input');
+//             const row = event.target.closest('tr');
+//             const rowId = row.getAttribute('data-id').replace('purchase-', '');
+
+//             // Update the date on the server
+//             editPurchase(rowId, dateInput.value).then((success) => {
+//                 if (success) {
+//                     // Update the date text and hide input and buttons
+//                     dateText.textContent = dateInput.value;
+//                     dateText.style.display = 'block';
+//                     dateInput.style.display = 'none';
+//                     td.querySelector('.confirm-btn').style.display = 'none';
+//                     td.querySelector('.cancel-btn').style.display = 'none';
+//                 } else {
+//                     alert('Error updating. Please try again later.');
+//                 }
+//             });
+//         }
+//         else if (event.target.classList.contains('cancel-btn') || event.target.closest('.cancel-btn')) {
+//             console.log('cancel');
+//             const td = event.target.closest('td');
+//             const dateText = td.querySelector('.date-text');
+//             const dateInput = td.querySelector('.date-input');
+
+//             // Reset input value and hide input and buttons
+//             dateInput.value = dateText.textContent;
+//             dateText.style.display = 'block';
+//             dateInput.style.display = 'none';
+//             td.querySelector('.confirm-btn').style.display = 'none';
+//             td.querySelector('.cancel-btn').style.display = 'none';
+//         }
+//     });
+// }
 
 setUpTableListener("#entries-table", {
     confirmMessage: 'Are you sure you want to delete this entry?',
@@ -506,6 +692,7 @@ setUpTableListener("#purchase-history-table", {
     confirmMessage: 'Are you sure you want to delete this purchase?',
     serverDelete: true,
     deleteMethod: deletePurchase,
+    editMethod: editPurchase,
     noDataText: 'purchases found',
     colspan: 10
 });
@@ -568,7 +755,7 @@ function addPlaceholderImage(type) {
                     // placeholderText.textContent = `You have not uploaded a ${type} betslip for the upcoming draw!`;
                     // if type =  "toto" use "toto" else "4D"
                     placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" :
-                            type === "4d" ? "4D" :
+                        type === "4d" ? "4D" :
                             type === "Singapore Sweep" ? "Singapore Sweep" : ""
                         } betslip for the upcoming draw!`;
                     imgContainer.appendChild(placeholderText);
@@ -1020,8 +1207,22 @@ function displayPurchaseHistory(history) {
             <td>${record.outlet}</td>
             <td>${record.number_of_boards}</td>
             <td>$${record.cost}</td>
-            <td>${formatDateToLocalDateString(record.date_of_entry)}</td>
-            <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+            <td class="date-with-edit">
+                <div style="display: flex; justify-content: space-evenly">
+                    <span class="date-text">${formatDateToLocalDateString(record.date_of_entry)}</span>
+                    <button class="edit-btn" title="Edit this entry">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <input type="date" class="date-input" value="${formatDateToLocalDateString(record.date_of_entry)}" style="display:none; width:100%">
+                <div style="display: flex; justify-content: space-evenly">
+                    <button class="confirm-btn" style="display:none;">Save</button>
+                    <button class="cancel-btn" style="display:none;">Cancel</button>
+                </div>
+            </td>
+            <td>
+                <button class="delete-btn"><i class="fas fa-trash"></i></button>
+            </td>
         `;
         tableBody.appendChild(row);
     });
@@ -1050,7 +1251,9 @@ function populateWinningTable(winnings) {
             <td>${winning.outlet}</td>
             <td>$${winning.winning_prize}</td>
             <td>${formatDateToLocalDateString(winning.date_of_winning)}</td>
-            <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+            <td>
+                <button class="delete-btn"><i class="fas fa-trash"></i></button>
+            </td>
         `;
         tableBody.appendChild(row);
     });
@@ -1108,6 +1311,26 @@ function deleteWinnings(recordId) {
             winningHistoryData = winningHistoryData.filter(item => item.ID !== parseInt(recordId));
             populateWinningTable(winningHistoryData);
             updateWinningsTotal();
+            return true;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            return false;
+        });
+}
+
+function editPurchase(recordId, newDate) {
+    console.log('edit purchase');
+    return fetch(`/edit-purchase/${recordId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date_of_entry: newDate })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) throw new Error(data.message);
             return true;
         })
         .catch(error => {

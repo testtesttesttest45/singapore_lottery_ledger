@@ -579,18 +579,6 @@ footer img {
     align-self: center;
 }
 
-.black-background {
-    background-color: black;
-}
-
-.inverted-text {
-    color: white;
-}
-
-.white-text {
-    color: white;
-}
-
 .neon-button:hover {
     box-shadow:
         0 0 50px 3px rgba(72, 255, 0, 0.7),
@@ -616,6 +604,11 @@ footer img {
 
 .toggle-button {
     margin-bottom: 15px;
+}
+
+.th-lottery-name {
+    width: 200px;
+    text-wrap: nowrap;
 }
 
 /* Mobile adjustments */

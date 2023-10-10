@@ -1,12 +1,13 @@
 const express = require('express');
 const path = require('path');
 const connection = require('./database-config');
-const app = express();
-const PORT = 3000;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const ensureAuthenticated = require('./middleware.js');
+
+const app = express();
+const PORT = 3000;
 
 app.use(bodyParser.json());  // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));  // to support URL-encoded bodies
@@ -39,8 +40,7 @@ app.get('/users', (req, res) => {
   connection.query('SELECT * FROM users', (err, results) => {
     if (err) {
       console.error('Error fetching users:', err.stack);
-      res.status(500).send('Error fetching users');
-      return;
+      return res.status(500).send('Error fetching users');
     }
     res.json(results); // Send the results as JSON
   });
@@ -226,7 +226,7 @@ app.get('/get-purchase-history', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.delete('/delete-purchase/:recordId', (req, res) => {
+app.delete('/delete-purchase/:recordId', ensureAuthenticated, (req, res) => {
   const recordId = req.params.recordId;
 
   if (!recordId) {
@@ -332,6 +332,29 @@ app.put('/update-section-order', ensureAuthenticated, (req, res) => {
       }
 
       res.status(200).send('Sections order updated successfully');
+  });
+});
+
+app.put('/edit-purchase/:recordId', ensureAuthenticated, (req, res) => {
+  const recordId = req.params.recordId;
+  const { date_of_entry } = req.body;
+
+  if (!recordId || !date_of_entry) {
+    return res.status(400).send({ message: 'Missing required fields.' });
+  }
+
+  const sql = 'UPDATE records SET date_of_entry = ? WHERE id = ?';
+  connection.query(sql, [date_of_entry, recordId], (err, results) => {
+    if (err) {
+      console.error('Error editing purchase:', err.stack);
+      return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Purchase not found.' });
+    }
+
+    res.json({ success: true, message: 'Purchase edited successfully.' });
   });
 });
 
