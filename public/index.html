@@ -576,7 +576,8 @@
                         <h3>4D Betslip</h3>
                         <p><span id="4d-count">0</span> 4D betslips uploaded</p>
                         <div class="image-container" id="4d-image-container">
-                            <p class="betslip-placeholder-text">You have not uploaded a 4D betslip for the upcoming draw!</p>
+                            <p class="betslip-placeholder-text">You have not uploaded a 4D betslip for the upcoming
+                                draw!</p>
                         </div>
                         <input type="file" id="input4D" accept="image/*" style="display: none;">
                         <button id="upload4D" class="upload-betslip">Upload 4D Betslip</button>
@@ -586,7 +587,8 @@
                         <h3>Toto Betslip</h3>
                         <p><span id="toto-count">0</span> Toto betslips uploaded</p>
                         <div class="image-container" id="toto-image-container">
-                            <p class="betslip-placeholder-text">You have not uploaded a Toto betslip for the upcoming draw!</p>
+                            <p class="betslip-placeholder-text">You have not uploaded a Toto betslip for the upcoming
+                                draw!</p>
                         </div>
                         <input type="file" id="inputToto" accept="image/*" style="display: none;">
                         <button id="uploadToto" class="upload-betslip">Upload Toto Betslip</button>
@@ -596,7 +598,8 @@
                         <h3>Singapore Sweep Betslip</h3>
                         <p><span id="sg-sweep-count">0</span> Singapore Sweep betslips uploaded</p>
                         <div class="image-container" id="sg-sweep-image-container">
-                            <p class="betslip-placeholder-text">You have not uploaded a Singapore Sweep betslip for the upcoming draw!</p>
+                            <p class="betslip-placeholder-text">You have not uploaded a Singapore Sweep betslip for the
+                                upcoming draw!</p>
                         </div>
                         <input type="file" id="inputSgSweep" accept="image/*" style="display: none;">
                         <button id="uploadSgSweep" class="upload-betslip">Upload Singapore Sweep Betslip</button>
@@ -614,12 +617,40 @@
         <p class="success-text">Added Successfully</p>
     </div>
     <div class="spinner-container hidden" id="loadingSpinner">
-        <div  class="spinner"></div>
+        <div class="spinner"></div>
     </div>
     <footer>
-        <p>Made by Wei Lin from Singapore</p>
-        <img src="/assets/treasure.png" alt="treasure image">
+        <div class="test2">
+            <p>Made by Wei Lin from Singapore</p>
+            
+            <div class="test">
+                <img src="/assets/treasure.png" alt="treasure image">
+            </div>
+        </div>
+        
+        <div class="contact-admin-form">
+            <h4>Contact Admin</h4>
+    
+            <form action="/contact-admin" method="POST" id="contactForm">
+                <!-- Dropdown for message type -->
+                <label for="messageType">Message Type:</label>
+                <select id="messageType" name="messageType">
+                    <option value="Request data change">Request data change</option>
+                    <option value="Report bug or improvements">Report bug or improvements</option>
+                    <option value="Request help">Request help</option>
+                    <option value="Others">Others</option>
+                </select>
+    
+                <!-- Input field for message content -->
+                <label for="messageContent">Message Content:</label>
+                <textarea id="messageContent" name="messageContent" rows="4" required></textarea>
+    
+                <!-- Submit button -->
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     </footer>
+    
 
 </body>
 

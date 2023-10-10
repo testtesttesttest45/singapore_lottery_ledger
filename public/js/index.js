@@ -1528,4 +1528,40 @@ document.getElementById('reset-order-btn').addEventListener('click', function ()
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+
+    contactForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Extract values from the form
+        const messageType = document.getElementById('messageType').value;
+        const messageContent = document.getElementById('messageContent').value;
+
+        // Create POST request payload
+        const payload = {
+            messageType: messageType,
+            messageContent: messageContent
+        };
+
+        // Send POST request
+        fetch('/contact-admin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) throw new Error(data.message);
+            showSuccessEffect('Message');
+            contactForm.reset();
+            alert(data.message);
+        })
+        .catch(error => {
+            alert('Error sending message: ' + error.message);
+        });
+    });
+});
 

@@ -437,6 +437,49 @@ app.delete('/check-betslip/:id', ensureAuthenticated, (req, res) => {
   });
 });
 
+app.post('/contact-admin', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userId;
+  const { messageType, messageContent } = req.body;
+
+  if (!messageType || !messageContent) {
+      return res.status(400).json({ success: false, message: 'Both message type and content are required.' });
+  }
+
+  // Check how many unresolved messages the user already has
+  const countSql = `
+      SELECT COUNT(*) AS unresolvedCount 
+      FROM messages 
+      WHERE fk_user_id = ? AND isResolved = 0;
+  `;
+
+  connection.query(countSql, [userId], (err, results) => {
+      if (err) {
+          console.error('Error checking unresolved message count:', err.stack);
+          return res.status(500).json({ success: false, message: 'Error processing your request.' });
+      }
+
+      if (results[0].unresolvedCount >= 3) {
+          return res.status(400).json({ success: false, message: 'You have sended 3 messages. Please wait for admin\'s reply' });
+      }
+
+      // If they have less than 3 unresolved messages, proceed to insert the new message
+      const insertSql = `
+          INSERT INTO messages (message_type, message_content, fk_user_id)
+          VALUES (?, ?, ?);
+      `;
+
+      connection.query(insertSql, [messageType, messageContent, userId], (err, results) => {
+          if (err) {
+              console.error('Error inserting message:', err.stack);
+              return res.status(500).json({ success: false, message: 'Error submitting your message to the admin.' });
+          }
+          res.json({ success: true, message: 'Message sent successfully.' });
+      });
+  });
+});
+
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {

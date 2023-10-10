@@ -134,13 +134,31 @@ function setupDatabase() {
             );
             `;
 
-            connection.query(createBetslipsTable, err => {
-                if (err) throw err;
-                console.log("betslips table created.");
-            });
             connection.query(createBetslipsTable, (err, result) => {
                 if (err) throw err;
                 console.log("betslips table created.");
+
+                // Ending the connection after all tables have been created.
+                connection.end(() => {
+                    console.log('Database connection closed.');
+                });
+            });
+
+            // Create messages table
+            const createMessagesTable = `
+                CREATE TABLE IF NOT EXISTS messages(
+                    ID INT AUTO_INCREMENT PRIMARY KEY,
+                    fk_user_id INT,
+                    message_type VARCHAR(255),
+                    message_content VARCHAR(1000),
+                    date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (fk_user_id) REFERENCES users(id)
+                );
+            `;
+
+            connection.query(createMessagesTable, (err, result) => {
+                if (err) throw err;
+                console.log("messages table created.");
 
                 // Ending the connection after all tables have been created.
                 connection.end(() => {

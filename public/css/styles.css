@@ -498,26 +498,6 @@ body.effect-active {
     cursor: pointer;
 }
 
-footer {
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    /* Stacks the children vertically */
-    align-items: center;
-    /* Centers children horizontally */
-    justify-content: center;
-    /* Centers children vertically */
-    height: 100%;
-    background: radial-gradient(circle, rgb(234, 212, 91), limegreen);
-    padding: 20px;
-}
-
-footer img {
-    width: 200px;
-    height: 200px;
-    margin-top: 10px;
-}
-
 .move-button {
     cursor: pointer;
     position: absolute;
@@ -652,6 +632,100 @@ footer img {
     100% { transform: rotate(360deg); }
 }
 
+footer {
+    padding: 20px;
+    position: relative;
+    height: auto;
+    min-height: 250px;
+    border-radius: 5px;
+    background: radial-gradient(circle, rgb(234, 212, 91), limegreen);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.test2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.test {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer img {
+    width: 200px;
+    height: 200px;
+}
+
+.contact-admin-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+    padding: 0 20px;
+    max-width: 300px;
+    border-left: 2px solid rgba(0,0,0,0.1);  /* Add a subtle border to the left of the form to separate it visually from the image */
+}
+
+.contact-admin-form h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(0,0,0,0.1);  /* Bottom border to separate the title from the form fields */
+    padding-bottom: 10px;
+}
+
+#contactForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#contactForm label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+#contactForm select,
+#contactForm textarea,
+#contactForm button {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s;  /* Smooth transition for hover effects */
+}
+
+#contactForm button {
+    background-color: limegreen;
+    color: white;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+}
+
+#contactForm button:hover {
+    background-color: darkgreen;
+}
+
+#contactForm textarea {
+    resize: vertical;  /* Allow vertical resizing of the textarea */
+}
+
 /* Mobile adjustments */
 @media (max-width: 600px) {
     body {
@@ -754,5 +828,22 @@ footer img {
 
     .table-date-cell button {
         align-self: center;
+    }
+
+    footer {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .test2 {
+        position: static;
+        margin-bottom: 20px;  /* Spacing between the image and form */
+    }
+
+    .contact-admin-form {
+        max-width: 100%;
+        padding: 0;
+        border-left: none;  /* Remove the left border */
     }
 }
