@@ -39,6 +39,10 @@ button:hover:not(:disabled):not(.selected) {
     transition: background-color 0.3s ease;
 }
 
+td {
+    padding: 10px !important;
+}
+
 .wrapper {
     display: flex;
     justify-content: center;
@@ -305,13 +309,6 @@ body.effect-active {
     }
 }
 
-#today-totals-container {
-    display: grid;
-    grid-template-rows: auto auto;
-    align-items: center;
-    justify-self: center;
-}
-
 .winnings-form {
     width: 100%;
     max-width: 600px;
@@ -405,6 +402,7 @@ body.effect-active {
     overflow-x: auto;
     padding: 5px;
     margin-bottom: 10px;
+    display: grid;
 }
 
 .pagination {
@@ -838,7 +836,8 @@ footer img {
 
     .test2 {
         position: static;
-        margin-bottom: 20px;  /* Spacing between the image and form */
+        margin-bottom: 20px;
+        margin-top: 200px;
     }
 
     .contact-admin-form {

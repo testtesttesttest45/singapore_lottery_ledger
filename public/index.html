@@ -175,7 +175,7 @@
                     entries' button to confirm and keep track of your submissions.</h4>
                 <button class="toggle-button">Hide Contents</button>
                 <div class="hidable">
-                    <div style="display: grid">
+                    <div>
                         <div class="long-table-container">
                             <table id="entries-table">
                                 <thead>
@@ -198,14 +198,14 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div id="today-totals-container">
+                        <div class="long-table-container">
                             <table id="today-totals-table">
                                 <thead>
                                     <tr>
                                         <th class="th-lottery-name">Total Cost 4D</th>
                                         <th class="th-lottery-name">Total Cost Toto</th>
                                         <th class="th-lottery-name">Total Cost Singapore Sweep</th>
-                                        <th>Total Cost All</th>
+                                        <th class="th-lottery-name">Total Cost All</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -240,29 +240,31 @@
                 </h4>
                 <button class="toggle-button">Hide Contents</button>
                 <div class="hidable">
-                    <div style="display: grid">
-                        <table id="totals-table">
-                            <thead>
-                                <tr>
-                                    <th class="th-lottery-name">Total Spend 4D</th>
-                                    <th class="th-lottery-name">Total Spend Toto</th>
-                                    <th class="th-lottery-name">Total Spend Singapore Sweep</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td id="total-spend-4d">$0</td>
-                                    <td id="total-spend-toto">$0</td>
-                                    <td id="total-spend-sg-sweep">$0</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" style="color: white; font-weight: bold">Total Spend All</td>
-                                </tr>
-                                <tr>
-                                    <td id="total-spend-all" colspan="3">$0</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div>
+                        <div class="long-table-container">
+                            <table id="totals-table">
+                                <thead>
+                                    <tr>
+                                        <th class="th-lottery-name">Total Spend 4D</th>
+                                        <th class="th-lottery-name">Total Spend Toto</th>
+                                        <th class="th-lottery-name">Total Spend Singapore Sweep</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="total-spend-4d">$0</td>
+                                        <td id="total-spend-toto">$0</td>
+                                        <td id="total-spend-sg-sweep">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="color: white; font-weight: bold">Total Spend All</td>
+                                    </tr>
+                                    <tr>
+                                        <td id="total-spend-all" colspan="3">$0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -275,30 +277,31 @@
                 <h4 class="section-description">Track your total winnings across different lottery games here.</h4>
                 <button class="toggle-button">Hide Contents</button>
                 <div class="hidable">
-                    <div
-                        style="display: grid; grid-template-rows: auto auto; align-items: center; justify-items: center;">
-                        <table id="winnings-table">
-                            <thead>
-                                <tr>
-                                    <th class="th-lottery-name">Total Winnings 4D</th>
-                                    <th class="th-lottery-name">Total Winnings Toto</th>
-                                    <th class="th-lottery-name">Total Winnings Singapore Sweep</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td id="total-winnings-4d">$0</td>
-                                    <td id="total-winnings-toto">$0</td>
-                                    <td id="total-winnings-sg-sweep">$0</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" style="color: white; font-weight: bold">Total Winnings All</td>
-                                </tr>
-                                <tr>
-                                    <td id="total-winnings-all" colspan="3">$0</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div>
+                        <div class="long-table-container">
+                            <table id="winnings-table">
+                                <thead>
+                                    <tr>
+                                        <th class="th-lottery-name">Total Winnings 4D</th>
+                                        <th class="th-lottery-name">Total Winnings Toto</th>
+                                        <th class="th-lottery-name">Total Winnings Singapore Sweep</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="total-winnings-4d">$0</td>
+                                        <td id="total-winnings-toto">$0</td>
+                                        <td id="total-winnings-sg-sweep">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="color: white; font-weight: bold">Total Winnings All</td>
+                                    </tr>
+                                    <tr>
+                                        <td id="total-winnings-all" colspan="3">$0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <h3>Prizes History</h3>
                     <button id="save-winnings-btn" type="button" style="color: limegreen; display: none;"
@@ -621,16 +624,16 @@
     </div>
     <footer>
         <div class="test2">
-            <p>Made by Wei Lin from Singapore</p>
-            
+            <h4>Made by Wei Lin from Singapore</h4>
+
             <div class="test">
                 <img src="/assets/treasure.png" alt="treasure image">
             </div>
         </div>
-        
+
         <div class="contact-admin-form">
             <h4>Contact Admin</h4>
-    
+
             <form action="/contact-admin" method="POST" id="contactForm">
                 <!-- Dropdown for message type -->
                 <label for="messageType">Message Type:</label>
@@ -640,17 +643,17 @@
                     <option value="Request help">Request help</option>
                     <option value="Others">Others</option>
                 </select>
-    
+
                 <!-- Input field for message content -->
                 <label for="messageContent">Message Content:</label>
                 <textarea id="messageContent" name="messageContent" rows="4" required></textarea>
-    
+
                 <!-- Submit button -->
                 <button type="submit">Submit</button>
             </form>
         </div>
     </footer>
-    
+
 
 </body>
 
