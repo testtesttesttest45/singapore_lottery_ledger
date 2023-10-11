@@ -151,6 +151,7 @@ function setupDatabase() {
                     fk_user_id INT,
                     message_type VARCHAR(255),
                     message_content VARCHAR(1000),
+                    sender_email VARCHAR(255),
                     date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (fk_user_id) REFERENCES users(id)
                 );

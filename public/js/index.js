@@ -1533,15 +1533,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
-
+        document.getElementById('loadingSpinner').classList.remove('hidden');
         // Extract values from the form
         const messageType = document.getElementById('messageType').value;
         const messageContent = document.getElementById('messageContent').value;
+        const senderEmail = document.getElementById('senderEmail').value;
 
         // Create POST request payload
         const payload = {
             messageType: messageType,
-            messageContent: messageContent
+            messageContent: messageContent,
+            senderEmail: senderEmail
         };
 
         // Send POST request
@@ -1555,12 +1557,17 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (!data.success) throw new Error(data.message);
-            showSuccessEffect('Message');
+            document.getElementById('loadingSpinner').classList.add('hidden');
             contactForm.reset();
-            alert(data.message);
+            setTimeout(() => {
+                alert(data.message);
+            }, 50);
         })
         .catch(error => {
-            alert('Error sending message: ' + error.message);
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            setTimeout(() => {
+                alert(data.message);
+            }, 50);
         });
     });
 });

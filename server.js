@@ -8,6 +8,7 @@ const ensureAuthenticated = require('./middleware.js');
 require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
 const fileUpload = require('express-fileupload');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = 3000;
@@ -32,6 +33,17 @@ app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: './temp/'
 }));
+
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    type: 'OAuth2',
+    user: 'weilinquek201@gmail.com',
+    clientId: '572718799888-4df0sq2fvrkeog37u9mc55opatfvf8gk.apps.googleusercontent.com',
+    clientSecret: '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',
+    refreshToken: '1//04dqPeQ8T9XV4CgYIARAAGAQSNwF-L9IrkEGTm3xxaVjgynVIlysBJuNkjz4GzqAn4WGUpTovjshpmvBAmi7wM-7wtGzJJk13VMU',
+  }
+});
 
 app.get('/', (req, res) => {
   res.redirect('/login');
@@ -116,8 +128,18 @@ app.post('/login', (req, res) => {
       }
 
       req.session.isAuthenticated = true;
-      req.session.username = username;
-      req.session.userId = results[0].ID;
+      // req.session.username = results[0].username;
+      // req.session.userId = results[0].ID;
+      // req.session.fullName = results[0].full_name;
+      const mappings = {
+        username: 'username',
+        ID: 'userId', // database column name: session variable name
+        full_name: 'fullName'
+      };
+
+      for (let key in mappings) {
+        req.session[mappings[key]] = results[0][key]; // example: req.session['ID'] = results[0]['ID']
+      }
       res.status(200).send({ message: 'Logged in successfully.' });
     });
   });
@@ -386,6 +408,11 @@ app.post('/upload-image', ensureAuthenticated, (req, res) => {
       return res.status(500).json({ success: false, message: 'Error uploading image.' });
     }
 
+    // Delete the temp file after uploading to Cloudinary
+    fs.unlink(uploadedFile.tempFilePath, (err) => {
+      if (err) console.error('Error deleting temp file:', err);
+    });
+
     // After successful upload, store the result.secure_url in your database
     const sql = `
           INSERT INTO betslips (fk_user_id, lottery_name, image_url)
@@ -439,10 +466,10 @@ app.delete('/check-betslip/:id', ensureAuthenticated, (req, res) => {
 
 app.post('/contact-admin', ensureAuthenticated, (req, res) => {
   const userId = req.session.userId;
-  const { messageType, messageContent } = req.body;
+  const { messageType, messageContent, senderEmail } = req.body;
 
-  if (!messageType || !messageContent) {
-      return res.status(400).json({ success: false, message: 'Both message type and content are required.' });
+  if (!messageType || !messageContent || !senderEmail) {
+    return res.status(400).json({ success: false, message: 'Missing required fields.' });
   }
 
   // Check how many unresolved messages the user already has
@@ -453,28 +480,67 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
   `;
 
   connection.query(countSql, [userId], (err, results) => {
-      if (err) {
-          console.error('Error checking unresolved message count:', err.stack);
-          return res.status(500).json({ success: false, message: 'Error processing your request.' });
+    if (err) {
+      console.error('Error checking unresolved message count:', err.stack);
+      return res.status(500).json({ success: false, message: 'Error processing your request.' });
+    }
+
+    if (results[0].unresolvedCount >= 3) {
+      return res.status(400).json({ success: false, message: 'You have sended 3 messages. Please wait for admin\'s reply' });
+    }
+
+    let currentDate = new Date();
+    let formattedDate = `${currentDate.toLocaleDateString()} at ${currentDate.toLocaleTimeString()}`;
+    
+    let mailOptions = {
+      from: `SG Lottery Ledger <${senderEmail}>`,
+      replyTo: senderEmail,
+      to: 'weilinquek201@gmail.com',
+      cc: 'infocommclub1@gmail.com',
+      subject: `SG Lottery Ledger: New message - ${messageType}`,
+      html: `
+        <div style="font-family: math;">
+          <h2>New Message received from Singapore Lottery Ledger mobile app project</h2>
+          <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="background-color: #f2f2f2; font-weight: bold;">Message Type</td>
+              <td>${messageType}</td>
+            </tr>
+            <tr>
+              <td style="background-color: #f2f2f2; font-weight: bold;">Message Content</td>
+              <td>${messageContent}</td>
+            </tr>
+            <tr>
+              <td style="background-color: #f2f2f2; font-weight: bold;">Sent By</td>
+              <td>${req.session.fullName} (Username: ${req.session.username})</td>
+            </tr>
+          </table>
+          <p style="margin-top: 20px;">Message sent on ${formattedDate}</p>
+          <p style="margin-top: 20px;">Email of sender: ${senderEmail}</p>
+        </div>
+      `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        return res.status(500).json({ success: false, message: 'Failed to send email notification. Message not stored.' });
       }
 
-      if (results[0].unresolvedCount >= 3) {
-          return res.status(400).json({ success: false, message: 'You have sended 3 messages. Please wait for admin\'s reply' });
-      }
-
-      // If they have less than 3 unresolved messages, proceed to insert the new message
+      // If email is sent successfully, insert the message into the database
       const insertSql = `
-          INSERT INTO messages (message_type, message_content, fk_user_id)
-          VALUES (?, ?, ?);
+        INSERT INTO messages (message_type, message_content, fk_user_id, sender_email)
+        VALUES (?, ?, ?, ?);
       `;
 
-      connection.query(insertSql, [messageType, messageContent, userId], (err, results) => {
-          if (err) {
-              console.error('Error inserting message:', err.stack);
-              return res.status(500).json({ success: false, message: 'Error submitting your message to the admin.' });
-          }
-          res.json({ success: true, message: 'Message sent successfully.' });
+      connection.query(insertSql, [messageType, messageContent, userId, senderEmail], (err, results) => {
+        if (err) {
+          console.error('Error inserting message:', err.stack);
+          return res.status(500).json({ success: false, message: 'Error submitting your message to the admin.' });
+        }
+        res.json({ success: true, message: 'Message sent successfully.' });
       });
+    });
   });
 });
 

@@ -699,6 +699,7 @@ footer img {
 
 #contactForm select,
 #contactForm textarea,
+#contactForm input,
 #contactForm button {
     padding: 10px;
     margin-bottom: 15px;
