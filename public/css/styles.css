@@ -722,7 +722,25 @@ footer img {
 }
 
 #contactForm textarea {
-    resize: vertical;  /* Allow vertical resizing of the textarea */
+    resize: vertical;
+}
+
+@keyframes flashingGold {
+    0% {
+        background-color: gold;
+    }
+
+    50% {
+        background-color: transparent;
+    }
+
+    100% {
+        background-color: gold;
+    }
+}
+
+.highlight-gold {
+    animation: flashingGold 0.2s infinite;
 }
 
 /* Mobile adjustments */

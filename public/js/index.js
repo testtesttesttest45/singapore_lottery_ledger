@@ -243,6 +243,9 @@ document.getElementById('save-entries-btn').addEventListener('click', function (
 });
 
 function saveEntries(entries) {
+    const previousPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
+        .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
+
     fetch('/save-entries', {
         method: 'POST',
         headers: {
@@ -260,8 +263,27 @@ function saveEntries(entries) {
                 }
                 checkForNoEntries("#entries-table", 'entry', 'entries added');
                 updateTotals();
-                fetchPurchaseHistory();
+                fetchPurchaseHistory(() => {
+                    const currentPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
+                        .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
+                    const newIds = currentPurchaseIds.filter(id => !previousPurchaseIds.includes(id));
+                    newIds.forEach(id => {
+                        const row = document.querySelector(`#purchase-history-table tbody tr:not(.no-entry-row)[data-id="purchase-${id}"]`);
+                        if (row) {
+                            row.classList.add('highlight-gold')
+                            setTimeout(() => {
+                                row.classList.remove('highlight-gold');
+                            }, 1400);
+                        }
+                    });
+                });
                 updateButtonAppearance(false, '#section-today-entry');
+                const purchaseHistorySection = document.querySelector('#purchase-history');
+                if (purchaseHistorySection) {
+                    purchaseHistorySection.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
             } else {
                 alert('Error saving entries: ' + data.message);
             }
@@ -271,7 +293,6 @@ function saveEntries(entries) {
             alert('There was a problem saving the entries.');
         });
 }
-
 function checkForNoEntries(tableSelector, type, text) {
     const tableBody = document.querySelector(tableSelector + " tbody");
     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
@@ -1182,7 +1203,7 @@ bindSortingAndFiltering();
 // Bindings for pagination
 bindPaginationControls();
 
-function fetchPurchaseHistory() {
+function fetchPurchaseHistory(callback) {
     fetch('/get-purchase-history')
         .then(response => response.json())
         .then(data => {
@@ -1190,6 +1211,7 @@ function fetchPurchaseHistory() {
                 purchaseHistoryData = data.data;
                 updateView();
                 updatePurchaseHistoryTotals();
+                if (callback) callback();
             } else {
                 console.error('Error retrieving purchase history:', data.message);
             }
@@ -1528,10 +1550,10 @@ document.getElementById('reset-order-btn').addEventListener('click', function ()
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const contactForm = document.getElementById('contactForm');
 
-    contactForm.addEventListener('submit', function(event) {
+    contactForm.addEventListener('submit', function (event) {
         event.preventDefault();
         document.getElementById('loadingSpinner').classList.remove('hidden');
         // Extract values from the form
@@ -1554,21 +1576,21 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(payload)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) throw new Error(data.message);
-            document.getElementById('loadingSpinner').classList.add('hidden');
-            contactForm.reset();
-            setTimeout(() => {
-                alert(data.message);
-            }, 50);
-        })
-        .catch(error => {
-            document.getElementById('loadingSpinner').classList.add('hidden');
-            setTimeout(() => {
-                alert(data.message);
-            }, 50);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) throw new Error(data.message);
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                contactForm.reset();
+                setTimeout(() => {
+                    alert(data.message);
+                }, 50);
+            })
+            .catch(error => {
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                setTimeout(() => {
+                    alert(data.message);
+                }, 50);
+            });
     });
 });
 
