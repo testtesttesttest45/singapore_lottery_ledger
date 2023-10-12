@@ -270,9 +270,9 @@ function saveEntries(entries) {
                     newIds.forEach(id => {
                         const row = document.querySelector(`#purchase-history-table tbody tr:not(.no-entry-row)[data-id="purchase-${id}"]`);
                         if (row) {
-                            row.classList.add('highlight-gold')
+                            row.classList.add('gradient-highlight')
                             setTimeout(() => {
-                                row.classList.remove('highlight-gold');
+                                row.classList.remove('gradient-highlight');
                             }, 1400);
                         }
                     });

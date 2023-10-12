@@ -1,11 +1,15 @@
 const mysql = require('mysql');
 require('dotenv').config();
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-});
+const isDevEnvironment = process.env.STAGE === 'dev';
+
+const connectionConfig = {
+    host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,
+    user: isDevEnvironment ? process.env.DB_USER : process.env.DB_USER_PROD,
+    password: isDevEnvironment ? process.env.DB_PASSWORD : process.env.DB_PASSWORD_PROD
+};
+
+const connection = mysql.createConnection(connectionConfig);
 
 // Connect to MySQL
 connection.connect(err => {
@@ -24,7 +28,6 @@ function setupDatabase() {
             console.error("Error dropping database:", err);
             return;
         }
-        console.log('Database found and dropped.');
     }
     );
     connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`, (err, result) => {
@@ -52,7 +55,7 @@ function setupDatabase() {
                 password VARCHAR(255) NOT NULL,
                 first_day_betting DATE,
                 date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                sections_order VARCHAR(500) DEFAULT '["entry-sections", "section-today-entry",  "section-total-spendings", "section-total-winnings", "notes", "purchase-history", "current-betslips"]',
+                sections_order VARCHAR(500) DEFAULT '["entry-sections", "section-today-entry",  "section-total-spendings", "section-total-winnings", "notes", "purchase-history", "current-betslips"]'
             );
             `;
 

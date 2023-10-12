@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'poppins',sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -725,22 +725,17 @@ footer img {
     resize: vertical;
 }
 
-@keyframes flashingGold {
-    0% {
-        background-color: gold;
+@keyframes gradientTransition  {
+    0%, 100% {
+        background-image: linear-gradient(45deg, #FFD700, #FFB300);
     }
-
     50% {
-        background-color: transparent;
-    }
-
-    100% {
-        background-color: gold;
+        background-image: linear-gradient(45deg, #FFA500, #FF6347);
     }
 }
 
-.highlight-gold {
-    animation: flashingGold 0.2s infinite;
+.gradient-highlight {
+    animation: gradientTransition 0.2s infinite;
 }
 
 /* Mobile adjustments */

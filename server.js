@@ -9,6 +9,7 @@ require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
 const fileUpload = require('express-fileupload');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
@@ -38,10 +39,10 @@ let transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     type: 'OAuth2',
-    user: PROCESS.ENV.GMAIL_USER,
-    clientId: PROCESS.ENV.GMAIL_CLIENT_ID,
-    clientSecret: PROCESS.ENV.GMAIL_CLIENT_SECRET,
-    refreshToken: PROCESS.ENV.OAUTH_REFRESH_TOKEN
+    user: process.env.GMAIL_USER,
+    clientId: process.env.GMAIL_CLIENT_ID,
+    clientSecret: process.env.GMAIL_CLIENT_SECRET,
+    refreshToken: process.env.OAUTH_REFRESH_TOKEN
   }
 });
 
@@ -452,7 +453,7 @@ app.delete('/check-betslip/:id', ensureAuthenticated, (req, res) => {
   const sql = `
       UPDATE betslips 
       SET isChecked = 1, date_checked = CURRENT_TIMESTAMP
-      WHERE id = ?;
+      WHERE ID = ?;
   `;
 
   connection.query(sql, [betslipId], (err, results) => {
