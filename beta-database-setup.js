@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 require('dotenv').config();
 
-const isDevEnvironment = process.env.STAGE === 'dev';
+const isDevEnvironment = process.env.DEVELOPMENT_STAGE === 'dev';
 
 const connectionConfig = {
     host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,
@@ -156,6 +156,7 @@ function setupDatabase() {
                     message_content VARCHAR(1000),
                     sender_email VARCHAR(255),
                     date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    isResolved BOOLEAN DEFAULT FALSE,
                     FOREIGN KEY (fk_user_id) REFERENCES users(id)
                 );
             `;

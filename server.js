@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const ensureAuthenticated = require('./middleware.js');
-require('dotenv').config();
+
 const cloudinary = require('cloudinary').v2;
 const fileUpload = require('express-fileupload');
 const nodemailer = require('nodemailer');
@@ -13,6 +13,8 @@ const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
+
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
@@ -549,6 +551,8 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
+
+module.exports = { server, PORT };

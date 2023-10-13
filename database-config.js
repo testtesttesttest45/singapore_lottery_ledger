@@ -1,7 +1,8 @@
 const mysql = require('mysql');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const isDevEnvironment = process.env.STAGE === 'dev'; // means isDevEnvironment = true if process.env.STAGE === 'dev'
+const isDevEnvironment = process.env.DEVELOPMENT_STAGE === 'dev'; // means isDevEnvironment = true if process.env.STAGE === 'dev'
 
 const connectionConfig = {
     host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,

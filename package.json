@@ -1,11 +1,13 @@
 {
-  "name": "toto-and-4d-tracker",
+  "name": "singapore-lottery-ledger",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "electron-window.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "electron .",
+    "server": "node server.js",
+    "package": "electron-packager . singapore_lottery_ledger --platform=win32 --arch=x64 --icon=public/assets/favicon.ico"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +20,11 @@
     "express-fileupload": "^1.4.1",
     "express-session": "^1.17.3",
     "mysql": "^2.18.1",
-    "nodemailer": "^6.9.6"
+    "nodemailer": "^6.9.6",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-packager": "^17.1.2"
   }
 }
