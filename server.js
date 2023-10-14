@@ -12,9 +12,11 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '.env') });
+}
 
 cloudinary.config({
   cloud_name: process.env.cloud_name,
@@ -494,7 +496,7 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
 
     let currentDate = new Date();
     let formattedDate = `${currentDate.toLocaleDateString()} at ${currentDate.toLocaleTimeString()}`;
-    
+
     let mailOptions = {
       from: `SG Lottery Ledger <${senderEmail}>`,
       replyTo: senderEmail,

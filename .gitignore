@@ -3,3 +3,7 @@
 temp
 /singapore_lottery_ledger-win32-x64
 /executable
+dist
+/cordovaAppFolder
+app.yaml
+singapore_lottery_ledger.exe

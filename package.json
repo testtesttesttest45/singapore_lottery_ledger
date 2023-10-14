@@ -7,7 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "server": "node server.js",
-    "package": "electron-packager . singapore_lottery_ledger --platform=win32 --arch=x64 --icon=public/assets/favicon.ico"
+    "package": "electron-packager . singapore_lottery_ledger --platform=win32 --arch=x64 --icon=public/assets/favicon.ico",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "win": {
+      "target": "nsis",
+      "icon": "public/assets/treasure.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +37,7 @@
   },
   "devDependencies": {
     "electron": "^27.0.0",
+    "electron-builder": "^24.6.4",
     "electron-packager": "^17.1.2"
   }
 }

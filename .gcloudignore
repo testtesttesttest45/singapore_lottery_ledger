@@ -1,0 +1,12 @@
+cordovaAppFolder/
+node_modules/
+electron-window.js
+package-lock.json
+.env
+cloudinary_test.js
+executable/
+temp/
+.gitignore
+beta-detabase-setup.js
+test.js
+singapore-lottery-ledger Setup 1.0.0.exe
