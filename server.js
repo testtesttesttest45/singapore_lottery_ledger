@@ -10,6 +10,7 @@ const cloudinary = require('cloudinary').v2;
 const fileUpload = require('express-fileupload');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+const { DateTime } = require('luxon');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,7 +37,7 @@ app.use(session({
 
 app.use(fileUpload({
   useTempFiles: true,
-  tempFileDir: './temp/'
+  tempFileDir: process.env.NODE_ENV === 'production' ? '/tmp/' : './temp/',
 }));
 
 let transporter = nodemailer.createTransport({
@@ -477,6 +478,9 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing required fields.' });
   }
 
+  let currentDate = DateTime.now().setZone("Asia/Singapore");
+  let formattedDate = `${currentDate.toFormat('dd/LL/yyyy')} at ${currentDate.toFormat('h:mm:ss a')}`;
+
   // Check how many unresolved messages the user already has
   const countSql = `
       SELECT COUNT(*) AS unresolvedCount 
@@ -493,9 +497,6 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
     if (results[0].unresolvedCount >= 3) {
       return res.status(400).json({ success: false, message: 'You have sended 3 messages. Please wait for admin\'s reply' });
     }
-
-    let currentDate = new Date();
-    let formattedDate = `${currentDate.toLocaleDateString()} at ${currentDate.toLocaleTimeString()}`;
 
     let mailOptions = {
       from: `SG Lottery Ledger <${senderEmail}>`,
@@ -548,8 +549,6 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
     });
   });
 });
-
-
 
 app.use(express.static(path.join(__dirname, 'public')));
 

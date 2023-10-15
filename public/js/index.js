@@ -536,7 +536,7 @@ function setUpTableListener(tableSelector, options = {}) {
     tbody.addEventListener('click', function (event) {
         const td = event.target.closest('td');
         const row = event.target.closest('tr');
-        const rowId = row.getAttribute('data-id').replace('purchase-', '');
+        // const rowId = row.getAttribute('data-id').replace('purchase-', '');
         const rowIndex = Array.from(row.parentNode.children).indexOf(row);
         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
             const message = options.confirmMessage || 'Are you sure you want to delete this entry?';
@@ -1588,7 +1588,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 document.getElementById('loadingSpinner').classList.add('hidden');
                 setTimeout(() => {
-                    alert(data.message);
+                    alert(error.message);
                 }, 50);
             });
     });

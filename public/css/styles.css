@@ -451,6 +451,9 @@ body.effect-active {
 }
 
 .betslip-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This centers its children horizontally */
     padding: 5px;
     margin: 10px 0;
     border: 1px solid #e0e0e0;
@@ -458,29 +461,30 @@ body.effect-active {
 }
 
 .image-container {
-    width: 100%;
+    width: 440px;
     height: 100%;
     border: 2px dashed #e0e0e0;
-    margin-bottom: 10px;
+    margin: 0 auto 10px;
     position: relative;
     overflow-x: auto;
     white-space: nowrap;
-    /* Prevent wrapping of child elements */
 }
 
 .image-div {
     position: relative;
-    width: calc(100% - 20px);
+    width: 420px;
     display: inline-block;
     margin: 10px;
-    padding-top: 30px;
+    padding-top: 25px;
+    vertical-align: top;
+    box-sizing: border-box;
 }
 
 .image-div img {
     margin-top: 10px;
     display: block;
     width: 100%;
-    max-height: 300px;
+    height: auto;
 }
 
 .image-div button.checked-btn {
@@ -489,7 +493,7 @@ body.effect-active {
     right: 50%;
     width: 100%;
     transform: translateX(50%);
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
     border: none;
     border-radius: 5px;
@@ -858,5 +862,14 @@ footer img {
         max-width: 100%;
         padding: 0;
         border-left: none;  /* Remove the left border */
+    }
+
+    .image-container {
+        width: 100%;
+    }
+
+    .image-div {
+        width: calc(100% - 10px);
+        margin: 5px;
     }
 }

@@ -1,6 +1,6 @@
 /node_modules
 .env
-temp
+/temp
 /singapore_lottery_ledger-win32-x64
 /executable
 dist
