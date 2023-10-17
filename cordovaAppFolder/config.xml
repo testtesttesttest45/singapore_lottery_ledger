@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.yourdomain.yourapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>SG Lottery Ledger</name>
+  <description>Keep track of your spendings</description>
+  <author email="weilinquek201@gmail.com" href="">
+    Made by Wei Lin from Singapore
+  </author>
+  <content src="index.html" />
+  <allow-intent href="http://*/*" />
+  <access origin="https://sg-lottery-ledger.as.r.appspot.com/" />
+  <allow-navigation href="https://sg-lottery-ledger.as.r.appspot.com/*" />
+  <platform name="android">
+   <icon src="resources/treasure3.png" />
+  </platform>
+</widget>

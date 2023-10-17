@@ -160,7 +160,6 @@ app.post('/login', (req, res) => {
         userId: results[0].ID,
         fullName: results[0].full_name
       };
-
       const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '1h' });
 
       // Set the JWT as an httpOnly cookie

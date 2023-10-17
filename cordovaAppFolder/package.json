@@ -1,0 +1,30 @@
+{
+  "name": "com.yourdomain.yourapp",
+  "displayName": "SingaporeLotteryLedger",
+  "version": "1.0.0",
+  "description": "Keep track of your spendings",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Quek Wei Lin",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cordova-android": "^12.0.1",
+    "cordova-plugin-file": "^8.0.0",
+    "cordova-plugin-file-transfer": "github:apache/cordova-plugin-file-transfer",
+    "cordova-plugin-network-information": "^3.0.0"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-file-transfer": {}
+    }
+  }
+}
