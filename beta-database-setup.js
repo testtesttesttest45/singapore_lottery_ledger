@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 require('dotenv').config();
 
-const isDevEnvironment = process.env.DEVELOPMENT_STAGE === 'dev';
+const isDevEnvironment = true; // change this to false when using it to populate the production database
 
 const connectionConfig = {
     host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,
@@ -49,7 +49,7 @@ function setupDatabase() {
             // Create users table
             const createUsersTable = `
             CREATE TABLE IF NOT EXISTS users (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 full_name VARCHAR(255) NOT NULL,
                 username VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
@@ -67,7 +67,7 @@ function setupDatabase() {
             // Create records table
             const createRecordsTable = `
             CREATE TABLE IF NOT EXISTS records (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 lottery_name VARCHAR(255),
                 entry_type VARCHAR(255),
@@ -78,7 +78,7 @@ function setupDatabase() {
                 cost INT,
                 date_of_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isDeleted BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY (fk_user_id) REFERENCES users(ID)
+                FOREIGN KEY (fk_user_id) REFERENCES users(id)
             );
             `;
 
@@ -90,10 +90,10 @@ function setupDatabase() {
             // Create notes table
             const createNotesTable = `
             CREATE TABLE IF NOT EXISTS notes (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT UNIQUE,
                 notes_content TEXT,
-                FOREIGN KEY (fk_user_id) REFERENCES users(ID)
+                FOREIGN KEY (fk_user_id) REFERENCES users(id)
             );
             `;
 
@@ -105,7 +105,7 @@ function setupDatabase() {
             // Create prizes table
             const createPrizesTable = `
             CREATE TABLE IF NOT EXISTS prizes (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 lottery_name VARCHAR(255),
                 entry_type VARCHAR(255),
@@ -114,7 +114,7 @@ function setupDatabase() {
                 winning_prize INT,
                 date_of_winning DATE,
                 isDeleted BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY (fk_user_id) REFERENCES users(ID)
+                FOREIGN KEY (fk_user_id) REFERENCES users(id)
             );
             `;
 
@@ -126,31 +126,26 @@ function setupDatabase() {
             // Create betslips table
             const createBetslipsTable = `
             CREATE TABLE IF NOT EXISTS betslips (
-                ID INT AUTO_INCREMENT PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 lottery_name VARCHAR(255),
                 image_url VARCHAR(255),
                 date_of_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isChecked BOOLEAN DEFAULT FALSE,
                 date_checked TIMESTAMP DEFAULT NULL,
-                FOREIGN KEY (fk_user_id) REFERENCES users(ID)
+                FOREIGN KEY (fk_user_id) REFERENCES users(id)
             );
             `;
 
-            connection.query(createBetslipsTable, (err, result) => {
+            connection.query(createBetslipsTable, err => {
                 if (err) throw err;
                 console.log("betslips table created.");
-
-                // Ending the connection after all tables have been created.
-                connection.end(() => {
-                    console.log('Database connection closed.');
-                });
             });
 
             // Create messages table
             const createMessagesTable = `
                 CREATE TABLE IF NOT EXISTS messages(
-                    ID INT AUTO_INCREMENT PRIMARY KEY,
+                    id INT AUTO_INCREMENT PRIMARY KEY,
                     fk_user_id INT,
                     message_type VARCHAR(255),
                     message_content VARCHAR(1000),
@@ -161,7 +156,7 @@ function setupDatabase() {
                 );
             `;
 
-            connection.query(createMessagesTable, (err, result) => {
+            connection.query(createMessagesTable, (err) => {
                 if (err) throw err;
                 console.log("messages table created.");
 
