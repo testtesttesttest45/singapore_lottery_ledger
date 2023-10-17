@@ -180,7 +180,7 @@ app.post('/logout', (req, res) => {
 
 app.get('/current-user', customJwtMiddleware, (req, res) => {
   const username = req.user.username;
-  connection.query('SELECT full_name, sections_order FROM users WHERE username = ?', [username], (err, results) => {
+  connection.query('SELECT full_name, sections_order, first_day_betting FROM users WHERE username = ?', [username], (err, results) => {
     if (err) {
       return res.status(500).send('Error fetching user');
     }
@@ -188,9 +188,8 @@ app.get('/current-user', customJwtMiddleware, (req, res) => {
     if (results.length === 0) {
       return res.status(404).send('User not found');
     }
-
     // Return the user's full name as JSON
-    res.json({ fullName: results[0].full_name, sectionsOrder: JSON.parse(results[0].sections_order) });
+    res.json({ fullName: results[0].full_name, sectionsOrder: JSON.parse(results[0].sections_order), firstDayBetting: results[0].first_day_betting });
   });
 });
 

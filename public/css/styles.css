@@ -506,6 +506,7 @@ body.effect-active {
     top: 30%;
     right: 1%;
     transform: translateY(-50%);
+    font-size: 25px;
 }
 
 .neon-reflection {
@@ -742,6 +743,33 @@ footer img {
     animation: gradientTransition 0.2s infinite;
 }
 
+#refresh-btn {
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.header-banner {
+    display: grid;
+    align-items: center;
+}
+
+.btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#logout-btn {
+    padding: 5px 10px;
+}
+
 /* Mobile adjustments */
 @media (max-width: 600px) {
     body {
@@ -783,6 +811,7 @@ footer img {
         padding: 5px 10px;
         font-size: 14px;
         margin-bottom: 5px;
+        text-wrap: nowrap;
     }
 
     #section-4d-view input,
@@ -871,5 +900,9 @@ footer img {
     .image-div {
         width: calc(100% - 10px);
         margin: 5px;
+    }
+
+    .move-button {
+        font-size: 20px;
     }
 }

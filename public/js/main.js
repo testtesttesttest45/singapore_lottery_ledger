@@ -40,7 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             // Populate user's full name on the page
             const userNameElement = document.getElementById('user-name');
+            const firstBettingElement = document.getElementById('first-betting');
             userNameElement.textContent = data.fullName;
+            
+            const dateObj = new Date(data.firstDayBetting);
+            const formattedDate = `${dateObj.toLocaleString('default', { month: 'long' })} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+            
+            firstBettingElement.textContent = formattedDate;
             // Set the section order based on user data
             setOrder(data.sectionsOrder);
             currentOrder.push(data.sectionsOrder);
@@ -1595,3 +1601,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+    const refreshButton = document.getElementById('refresh-btn');
+
+    refreshButton.addEventListener('click', function() {
+        location.reload();
+    });
+});

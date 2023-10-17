@@ -19,10 +19,16 @@
 <body>
     <header>
         <h1>Singapore Lottery Ledger</h1>
-        <div class="sections-header">
-            <span>Welcome, <span id="user-name">User</span>!</span>
-            <button id="logout-btn" type="button" style="color: limegreen" aria-label="logout button">Logout
-            </button>
+        <div class="header-banner">
+            <div></div>
+            <span>Welcome, <span id="user-name" style="color: salmon;">User</span> !</span>
+            <span>First betted on <span id="first-betting" style="color: navajowhite;">October 18, 2023</span></span>
+            <div class="btn-container">
+                <button id="refresh-btn" type="button" aria-label="refresh button">Refresh <i
+                    class="fa-solid fa-rotate-right"></i></button>
+                <button id="logout-btn" type="button" style="color: limegreen"
+                    aria-label="logout button">Logout</button>
+            </div>
         </div>
     </header>
 
@@ -650,7 +656,8 @@
                 <textarea id="messageContent" name="messageContent" rows="4" required></textarea>
 
                 <label for="senderEmail">Your email (for admin to reply):</label>
-                <input type="email" id="senderEmail" name="senderEmail" required title="Use real email so admin can reply back.">
+                <input type="email" id="senderEmail" name="senderEmail" required
+                    title="Use real email so admin can reply back.">
 
                 <!-- Submit button -->
                 <button type="submit">Submit</button>

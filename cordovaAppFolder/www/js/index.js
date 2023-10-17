@@ -48,12 +48,12 @@ function attemptConnection() {
     const cordovaInterface = document.getElementById('cordova-interface');
     serverMessage.textContent = 'Checking connection...';
     serverMessage.style.backgroundColor = '#0eb3d8';
-    
+
     setTimeout(function () {
         if (checkConnection() !== 'No network connection') {
             serverMessage.textContent = 'Connection success! Redirecting...';
             serverMessage.style.backgroundColor = '#3bd57c';
-            setTimeout(function() {
+            setTimeout(function () {
                 cordovaInterface.style.display = 'none';
                 var iframe = document.getElementById('contentFrame');
                 iframe.style.display = 'block';
@@ -69,7 +69,7 @@ function attemptConnection() {
 }
 
 // Handle the "Try Again" button click
-document.getElementById('tryAgainButton').addEventListener('click', function() {
+document.getElementById('tryAgainButton').addEventListener('click', function () {
     document.getElementById('tryAgainButton').style.display = 'none'; // Hide the button
     attemptConnection(); // Attempt connection again
 });
