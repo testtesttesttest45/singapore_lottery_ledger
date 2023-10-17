@@ -81,27 +81,25 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ username, password }),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message === 'Logged in successfully.') {
-                    setTimeout(() => {
-                        showSuccessEffect('Logged in successfully.');
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1500);
-                    });
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error logging in:', error);
-                alert('Error logging in. Please try again.');
-            });
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Logged in successfully.') {
+                showSuccessEffect('Logged in successfully.');
+                setTimeout(() => {
+                    window.location.replace('/index.html');
+                }, 1500);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error logging in:', error);
+            alert('Error logging in. Please try again.');
+        });
     });
 
     const registerButton = document.getElementById('register-btn');

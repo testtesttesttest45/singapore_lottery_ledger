@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const connection = require('./database-config');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-const ensureAuthenticated = require('./middleware.js');
+const cookieParser = require('cookie-parser');
+const { customJwtMiddleware, jwtSECRET} = require('./middleware.js');
 
 const cloudinary = require('cloudinary').v2;
 const fileUpload = require('express-fileupload');
@@ -14,6 +16,16 @@ const { DateTime } = require('luxon');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// const corsOptions = {
+//   origin: true,
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   optionsSuccessStatus: 204
+// };
+
+// app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -29,11 +41,19 @@ app.use(bodyParser.json());  // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));  // to support URL-encoded bodies
 
 app.use(express.json());
-app.use(session({
-  secret: 'password',
-  resave: false,
-  saveUninitialized: false
-}));
+// app.use(session({
+//   secret: 'password',
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: {
+//     sameSite: 'none',
+//     secure: true, // ensure this is true when using SameSite=None
+//     httpOnly: true, // recommended to keep this for security
+//     path: '/'  // you had this in your previous config
+//   }
+// }));
+// no longer using the above session config because it doesn't work with Cordova
+const jsonwebtoken  = require('jsonwebtoken');
 
 app.use(fileUpload({
   useTempFiles: true,
@@ -51,6 +71,8 @@ let transporter = nodemailer.createTransport({
   }
 });
 
+app.use(cookieParser());
+
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
@@ -59,7 +81,7 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-app.get('/index', ensureAuthenticated, (req, res) => {
+app.get('/index', customJwtMiddleware, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -133,36 +155,32 @@ app.post('/login', (req, res) => {
         return res.status(401).send({ message: 'Password is incorrect.' });
       }
 
-      req.session.isAuthenticated = true;
-      // req.session.username = results[0].username;
-      // req.session.userId = results[0].ID;
-      // req.session.fullName = results[0].full_name;
-      const mappings = {
-        username: 'username',
-        ID: 'userId', // database column name: session variable name
-        full_name: 'fullName'
+      const userPayload = {
+        username: results[0].username,
+        userId: results[0].ID,
+        fullName: results[0].full_name
       };
 
-      for (let key in mappings) {
-        req.session[mappings[key]] = results[0][key]; // example: req.session['ID'] = results[0]['ID']
-      }
-      res.status(200).send({ message: 'Logged in successfully.' });
+      const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '1h' });
+
+      // Set the JWT as an httpOnly cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+      });
+      res.status(200).send({ message: 'Logged in successfully.', token });
     });
   });
 });
 
 app.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Error during session destroy:', err);
-      return res.status(500).send({ message: 'Internal server error.' });
-    }
-    res.status(200).send({ message: 'Logged out successfully.' });
-  });
+  res.clearCookie('token');
+  res.status(200).send({ message: 'Logged out successfully.' });
 });
 
-app.get('/current-user', ensureAuthenticated, (req, res) => {
-  const username = req.session.username;
+app.get('/current-user', customJwtMiddleware, (req, res) => {
+  const username = req.user.username;
   connection.query('SELECT full_name, sections_order FROM users WHERE username = ?', [username], (err, results) => {
     if (err) {
       return res.status(500).send('Error fetching user');
@@ -177,7 +195,7 @@ app.get('/current-user', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.post('/save-entries', ensureAuthenticated, (req, res) => {
+app.post('/save-entries', customJwtMiddleware, (req, res) => {
   const entries = req.body.entries;
   if (!entries || !entries.length) {
     return res.status(400).json({ success: false, message: 'No entries provided.' });
@@ -186,7 +204,7 @@ app.post('/save-entries', ensureAuthenticated, (req, res) => {
   const values = [];
   entries.forEach(entry => {
     values.push([
-      req.session.userId,
+      req.user.userId,
       entry.lottery_name,
       entry.entry_type,
       entry.pick_type,
@@ -218,7 +236,7 @@ app.post('/save-entries', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.post('/save-notes', ensureAuthenticated, (req, res) => {
+app.post('/save-notes', customJwtMiddleware, (req, res) => {
   const notes = req.body.notes || ""; // If no note content is provided, use an empty string
 
   const sql = `
@@ -227,7 +245,7 @@ app.post('/save-notes', ensureAuthenticated, (req, res) => {
       ON DUPLICATE KEY UPDATE notes_content = VALUES(notes_content);
   `;
 
-  connection.query(sql, [req.session.userId, notes], (err, results) => {
+  connection.query(sql, [req.user.userId, notes], (err, results) => {
     if (err) {
       console.error('Error saving notes:', err.stack);
       return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
@@ -236,8 +254,8 @@ app.post('/save-notes', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.get('/get-notes', ensureAuthenticated, (req, res) => {
-  const userId = req.session.userId;
+app.get('/get-notes', customJwtMiddleware, (req, res) => {
+  const userId = req.user.userId;
 
   const sql = `SELECT notes_content FROM notes WHERE fk_user_id = ?`;
 
@@ -255,8 +273,8 @@ app.get('/get-notes', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.get('/get-purchase-history', ensureAuthenticated, (req, res) => {
-  const userId = req.session.userId;
+app.get('/get-purchase-history', customJwtMiddleware, (req, res) => {
+  const userId = req.user.userId;
   const sql = 'SELECT * FROM records WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_entry DESC';
   connection.query(sql, [userId], (err, results) => {
     if (err) {
@@ -268,7 +286,7 @@ app.get('/get-purchase-history', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.delete('/delete-purchase/:recordId', ensureAuthenticated, (req, res) => {
+app.delete('/delete-purchase/:recordId', customJwtMiddleware, (req, res) => {
   const recordId = req.params.recordId;
 
   if (!recordId) {
@@ -290,7 +308,7 @@ app.delete('/delete-purchase/:recordId', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.post('/save-winnings', ensureAuthenticated, (req, res) => {
+app.post('/save-winnings', customJwtMiddleware, (req, res) => {
   const winnings = req.body.winning;
   if (!winnings) {
     return res.status(400).json({ success: false, message: 'No winnings provided.' });
@@ -299,7 +317,7 @@ app.post('/save-winnings', ensureAuthenticated, (req, res) => {
   // Preparing the data for bulk insert
   const values = [];
   values.push([
-    req.session.userId,
+    req.user.userId,
     winnings.lottery_name,
     winnings.entry_type,
     winnings.pick_type,
@@ -329,8 +347,8 @@ app.post('/save-winnings', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.get('/get-winnings', ensureAuthenticated, (req, res) => {
-  const userId = req.session.userId;
+app.get('/get-winnings', customJwtMiddleware, (req, res) => {
+  const userId = req.user.userId;
   const sql = 'SELECT * FROM prizes WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_winning DESC';
   connection.query(sql, [userId], (err, results) => {
     if (err) {
@@ -364,8 +382,8 @@ app.delete('/delete-winning/:recordId', (req, res) => {
   });
 });
 
-app.put('/update-section-order', ensureAuthenticated, (req, res) => {
-  const username = req.session.username;
+app.put('/update-section-order', customJwtMiddleware, (req, res) => {
+  const username = req.user.username;
   const newOrder = req.body.newOrder;
 
   connection.query('UPDATE users SET sections_order = ? WHERE username = ?', [JSON.stringify(newOrder), username], (err, results) => {
@@ -377,7 +395,7 @@ app.put('/update-section-order', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.put('/edit-purchase/:recordId', ensureAuthenticated, (req, res) => {
+app.put('/edit-purchase/:recordId', customJwtMiddleware, (req, res) => {
   const recordId = req.params.recordId;
   const { date_of_entry } = req.body;
 
@@ -400,7 +418,7 @@ app.put('/edit-purchase/:recordId', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.post('/upload-image', ensureAuthenticated, (req, res) => {
+app.post('/upload-image', customJwtMiddleware, (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({ success: false, message: 'No files were uploaded.' });
   }
@@ -425,7 +443,7 @@ app.post('/upload-image', ensureAuthenticated, (req, res) => {
           VALUES (?, ?, ?);
       `;
 
-    connection.query(sql, [req.session.userId, lotteryName, result.secure_url], (err, results) => {
+    connection.query(sql, [req.user.userId, lotteryName, result.secure_url], (err, results) => {
       if (err) {
         console.error('Error saving image URL to the database:', err.stack);
         return res.status(500).json({ success: false, message: 'Error saving image URL to the database.' });
@@ -435,8 +453,8 @@ app.post('/upload-image', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.get('/retrieve-betslips', ensureAuthenticated, (req, res) => {
-  const userId = req.session.userId;
+app.get('/retrieve-betslips', customJwtMiddleware, (req, res) => {
+  const userId = req.user.userId;
 
   const sql = `
     SELECT * FROM betslips 
@@ -452,7 +470,7 @@ app.get('/retrieve-betslips', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.delete('/check-betslip/:id', ensureAuthenticated, (req, res) => {
+app.delete('/check-betslip/:id', customJwtMiddleware, (req, res) => {
   const betslipId = req.params.id;
 
   const sql = `
@@ -470,8 +488,8 @@ app.delete('/check-betslip/:id', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.post('/contact-admin', ensureAuthenticated, (req, res) => {
-  const userId = req.session.userId;
+app.post('/contact-admin', customJwtMiddleware, (req, res) => {
+  const userId = req.user.userId;
   const { messageType, messageContent, senderEmail } = req.body;
 
   if (!messageType || !messageContent || !senderEmail) {
@@ -518,7 +536,7 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
             </tr>
             <tr>
               <td style="background-color: #f2f2f2; font-weight: bold;">Sent By</td>
-              <td>${req.session.fullName} (Username: ${req.session.username})</td>
+              <td>${req.user.fullName} (Username: ${req.user.username})</td>
             </tr>
           </table>
           <p style="margin-top: 20px;">Message sent on ${formattedDate}</p>
@@ -549,6 +567,7 @@ app.post('/contact-admin', ensureAuthenticated, (req, res) => {
     });
   });
 });
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 

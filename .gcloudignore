@@ -1,4 +1,5 @@
 cordovaAppFolder/
+myNewCordovaApp/
 node_modules/
 electron-window.js
 package-lock.json
