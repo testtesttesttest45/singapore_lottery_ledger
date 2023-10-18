@@ -65,7 +65,13 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(announcements => {
             const announcementContainer = document.getElementById('announcement-container');
-
+            if (!announcements.length) {
+                announcementContainer.innerHTML = `<div class="announcement-banner" style="background: linear-gradient(45deg, #675757, #d4bebe);">
+                                                    <p class="announcement-text">There is no new announcements</p>
+                                                    </div>
+                                                    `;
+                return;
+            }
             announcements.forEach(announcement => {
                 const announcementDiv = document.createElement('div');
                 announcementDiv.className = 'announcement-banner';

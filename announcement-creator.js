@@ -1,27 +1,32 @@
-// How to use:
+// How to use: - For every change, please remember to save the file before running it.
 
 // Check Users
-// 1. First, check the users table first to identify who to send the announcement to. Go to line 42 and ensure the getUsers() call is uncommented
+// 1. First, check the users table first to identify who to send the announcement to. Go to line 47 and ensure the getUsers() call is uncommented
 // 2. Run this script with `node announcement-creator.js`
 
 // Set Announcement
-// 3. Right below, declare announcement content (line 18)
+// 3. Right below, declare announcement content on line 22
 // 4. At the next line, declare your target users. If targetting all users, leave the array empty.
-// 5. Comment out the getUsers() call on line 42, and uncomment the createAnnouncement() call on line 44
+// 5. Ensure all the other functions are commented out, and uncomment the createAnnouncement() call on line 49
 // 6. Run this script with `node announcement-creator.js`
 
 // Display Announcements
-// 6. Ensure getAnnouncements() and createAnnouncement() are commented out
-// 7. Uncomment getAnnouncements() on line 43
-// 8. Run this script with `node announcement-creator.js`
+// 6. Ensure all the other functions are commented out, then uncomment getAnnouncements()
+// 7. Run this script with `node announcement-creator.js`
+
+// Outdate Announcements
+// 9. Ensure all the other functions are commented out, then uncomment announcementsOutdater()
+// 10. Declare the announcement IDs to outdate in the outdateAnnoucements array on line 24
+// 11. Run this script with `node announcement-creator.js`
 
 const announcementContent = "ENTER ANNOUNCEMENT HERE";
 const targetUsers = []; // Array of user IDs to target. Leave empty for all users.
+const outdateAnnoucements = []; // Array of announcement IDs to outdate, [1, 2, 3, 4, 5]
 
 const mysql = require('mysql');
 require('dotenv').config();
 
-const isDevEnvironment = true; // change this as per your environment
+const isDevEnvironment = true;
 
 const connectionConfig = {
     host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,
@@ -42,6 +47,7 @@ connection.connect(err => {
     getUsers();
     // getAnnouncements();
     // createAnnouncement();
+    // announcementsOutdater();
 });
 
 function createAnnouncement() {
@@ -126,4 +132,28 @@ function getUsers() {
         console.log(mappedResults);
         connection.end();
     });
+}
+
+function announcementsOutdater() {
+    // simply set isOutdated to true for all announcements that are not outdated. check outdateAnnoucements array
+    if (!outdateAnnoucements.length) {
+        console.log("No announcements to outdate. Did you forget to declare the announcement IDs?");
+        connection.end();
+        return;
+    }
+    const query = `
+        UPDATE announcements
+        SET isOutdated = true
+        WHERE id IN (?);
+    `;
+    connection.query(query, [outdateAnnoucements], (err, results) => {
+        if (err) {
+            console.error("Error with announcementsOutdater:", err);
+            connection.end();
+            return;
+        }
+        console.log(`${results.changedRows} announcements outdated.`);
+        connection.end();
+    });
+
 }

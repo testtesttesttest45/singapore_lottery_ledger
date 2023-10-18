@@ -585,20 +585,22 @@ app.get('/get-announcements', customJwtMiddleware, (req, res) => {
     // This includes general announcements that are not linked to any user 
     // and announcements specifically meant for this user.
     const announcementsQuery = `
-      SELECT announcement_content, date_created 
-      FROM announcements 
-      WHERE NOT EXISTS (
-          SELECT 1 
-          FROM announcement_users 
-          WHERE announcement_users.announcement_id = announcements.id
-      ) 
-      OR EXISTS (
-          SELECT 1 
-          FROM announcement_users 
-          WHERE announcement_users.announcement_id = announcements.id 
-          AND announcement_users.user_id = ?
-      );
-    `;
+    SELECT announcement_content, date_created 
+    FROM announcements 
+    WHERE isOutdated = 0 AND (
+        NOT EXISTS (
+            SELECT 1 
+            FROM announcement_users 
+            WHERE announcement_users.announcement_id = announcements.id
+        ) 
+        OR EXISTS (
+            SELECT 1 
+            FROM announcement_users 
+            WHERE announcement_users.announcement_id = announcements.id 
+            AND announcement_users.user_id = ?
+        )
+    );
+`;
 
     connection.query(announcementsQuery, [userId], (err, announcementResults) => {
       if (err) {
