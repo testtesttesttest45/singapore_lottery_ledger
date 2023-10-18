@@ -13,6 +13,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"
         integrity="sha512-Eezs+g9Lq4TCCq0wae01s9PuNWzHYoCMkE97e2qdkYthpI0pzC3UGB03lgEHn2XM85hDOUF6qgqqszs+iXU4UA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Orbitron:wght@900&family=Shadows+Into+Light&display=swap"
+        rel="stylesheet">
+
 
 </head>
 
@@ -21,11 +27,11 @@
         <h1>Singapore Lottery Ledger</h1>
         <div class="header-banner">
             <div></div>
-            <span>Welcome, <span id="user-name" style="color: salmon;">User</span> !</span>
-            <span>First betted on <span id="first-betting" style="color: navajowhite;">October 18, 2023</span></span>
+            <span>Welcome, <span id="user-name" style="color: limegreen;">User</span> !</span>
+            <span>First betted on <span id="first-betting" style="color: limegreen;">October 18, 2023</span></span>
             <div class="btn-container">
                 <button id="refresh-btn" type="button" aria-label="refresh button">Refresh <i
-                    class="fa-solid fa-rotate-right"></i></button>
+                        class="fa-solid fa-rotate-right"></i></button>
                 <button id="logout-btn" type="button" style="color: limegreen"
                     aria-label="logout button">Logout</button>
             </div>
@@ -33,6 +39,12 @@
     </header>
 
     <main>
+        <div id="announcement-container">
+            <div class="announcement-banner" style="background: linear-gradient(45deg, #675757, #d4bebe);">
+                <p class="announcement-text">There is no new announcements</p>
+            </div>
+        </div>
+
         <div class="sections-header">
             <h4 class="section-description">Note: You can reorder the sections by dragging and dropping them!</h4>
             <button id="reset-order-btn" type="button" style="color: limegreen" aria-label="reset order button">Reset

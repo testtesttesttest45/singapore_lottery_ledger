@@ -566,6 +566,54 @@ app.post('/contact-admin', customJwtMiddleware, (req, res) => {
   });
 });
 
+app.get('/get-announcements', customJwtMiddleware, (req, res) => {
+  const username = req.user.username;
+  
+  // First, fetch the user's ID using the provided username.
+  connection.query('SELECT id FROM users WHERE username = ?', [username], (err, results) => {
+    if (err) {
+      return res.status(500).send('Error fetching user ID');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    const userId = results[0].id;
+    
+    // Next, fetch announcements targeted at the current user.
+    // This includes general announcements that are not linked to any user 
+    // and announcements specifically meant for this user.
+    const announcementsQuery = `
+      SELECT announcement_content, date_created 
+      FROM announcements 
+      WHERE NOT EXISTS (
+          SELECT 1 
+          FROM announcement_users 
+          WHERE announcement_users.announcement_id = announcements.id
+      ) 
+      OR EXISTS (
+          SELECT 1 
+          FROM announcement_users 
+          WHERE announcement_users.announcement_id = announcements.id 
+          AND announcement_users.user_id = ?
+      );
+    `;
+
+    connection.query(announcementsQuery, [userId], (err, announcementResults) => {
+      if (err) {
+        return res.status(500).send('Error fetching announcements');
+      }
+      const cleanResults = announcementResults.map(row => {
+        return {
+          announcement_content: row.announcement_content,
+          date_created: row.date_created
+        };
+      });
+      res.json(cleanResults);
+    });
+  });
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 

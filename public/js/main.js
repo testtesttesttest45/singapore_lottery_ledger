@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const userNameElement = document.getElementById('user-name');
             const firstBettingElement = document.getElementById('first-betting');
             userNameElement.textContent = data.fullName;
-            
+
             const dateObj = new Date(data.firstDayBetting);
             const formattedDate = `${dateObj.toLocaleString('default', { month: 'long' })} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
-            
+
             firstBettingElement.textContent = formattedDate;
             // Set the section order based on user data
             setOrder(data.sectionsOrder);
@@ -54,6 +54,32 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => {
             console.error('Error fetching current user:', error);
+        });
+
+    fetch('/get-announcements')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(announcements => {
+            const announcementContainer = document.getElementById('announcement-container');
+
+            announcements.forEach(announcement => {
+                const announcementDiv = document.createElement('div');
+                announcementDiv.className = 'announcement-banner';
+
+                const announcementText = document.createElement('p');
+                announcementText.className = 'announcement-text';
+                announcementText.textContent = announcement.announcement_content;
+
+                announcementDiv.appendChild(announcementText);
+                announcementContainer.appendChild(announcementDiv);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching announcements:', error);
         });
 });
 
@@ -1601,10 +1627,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const refreshButton = document.getElementById('refresh-btn');
 
-    refreshButton.addEventListener('click', function() {
+    refreshButton.addEventListener('click', function () {
         location.reload();
     });
 });

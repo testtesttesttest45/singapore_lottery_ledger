@@ -1,5 +1,5 @@
 body {
-    font-family: 'poppins',sans-serif;
+    font-family: 'poppins', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -453,7 +453,8 @@ body.effect-active {
 .betslip-section {
     display: flex;
     flex-direction: column;
-    align-items: center; /* This centers its children horizontally */
+    align-items: center;
+    /* This centers its children horizontally */
     padding: 5px;
     margin: 10px 0;
     border: 1px solid #e0e0e0;
@@ -594,7 +595,8 @@ body.effect-active {
     text-wrap: nowrap;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
     width: fit-content;
     height: fit-content;
     padding: 4px;
@@ -614,7 +616,7 @@ body.effect-active {
     align-items: center;
     justify-content: center;
     z-index: 999;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .spinner {
@@ -631,8 +633,13 @@ body.effect-active {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 footer {
@@ -679,7 +686,8 @@ footer img {
     z-index: 2;
     padding: 0 20px;
     max-width: 300px;
-    border-left: 2px solid rgba(0,0,0,0.1);  /* Add a subtle border to the left of the form to separate it visually from the image */
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+    /* Add a subtle border to the left of the form to separate it visually from the image */
 }
 
 .contact-admin-form h4 {
@@ -687,7 +695,8 @@ footer img {
     margin-bottom: 15px;
     color: #333;
     font-weight: 500;
-    border-bottom: 2px solid rgba(0,0,0,0.1);  /* Bottom border to separate the title from the form fields */
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    /* Bottom border to separate the title from the form fields */
     padding-bottom: 10px;
 }
 
@@ -708,10 +717,11 @@ footer img {
 #contactForm button {
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 5px;
     font-size: 14px;
-    transition: all 0.3s;  /* Smooth transition for hover effects */
+    transition: all 0.3s;
+    /* Smooth transition for hover effects */
 }
 
 #contactForm button {
@@ -730,10 +740,13 @@ footer img {
     resize: vertical;
 }
 
-@keyframes gradientTransition  {
-    0%, 100% {
+@keyframes gradientTransition {
+
+    0%,
+    100% {
         background-image: linear-gradient(45deg, #FFD700, #FFB300);
     }
+
     50% {
         background-image: linear-gradient(45deg, #FFA500, #FF6347);
     }
@@ -770,10 +783,67 @@ footer img {
     padding: 5px 10px;
 }
 
+.announcement-banner {
+    max-width: 100%;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+    position: relative;
+    display: grid;
+}
+
+.announcement-text {
+    color: midnightblue;
+    width: 90%;
+    align-self: center;
+    justify-self: center;
+    background-color: #463c140f;
+    border-radius: 5px;
+    padding: 7px;
+    font-family: 'Shadows Into Light', cursive;
+    font-weight: bold;
+}
+
+.announcement-banner:before,
+.announcement-banner:after,
+.announcement-text:before,
+.announcement-text:after {
+    content: "";
+    display: block;
+    width: 16px;
+    height: 14px;
+    background-color: #f4f4f4;
+    position: absolute;
+}
+
+.announcement-banner:before {
+    top: 0;
+    left: 0;
+    border-bottom-right-radius: 100%;
+}
+
+.announcement-banner:after {
+    bottom: 0;
+    right: 0;
+    border-top-left-radius: 100%;
+}
+
+.announcement-text:before {
+    top: 0;
+    right: 0;
+    border-bottom-left-radius: 100%;
+}
+
+.announcement-text:after {
+    bottom: 0;
+    left: 0;
+    border-top-right-radius: 100%;
+}
+
+
 /* Mobile adjustments */
 @media (max-width: 600px) {
     body {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     header {
@@ -890,7 +960,8 @@ footer img {
     .contact-admin-form {
         max-width: 100%;
         padding: 0;
-        border-left: none;  /* Remove the left border */
+        border-left: none;
+        /* Remove the left border */
     }
 
     .image-container {
@@ -904,5 +975,17 @@ footer img {
 
     .move-button {
         font-size: 20px;
+    }
+
+    .announcement-banner:before,
+    .announcement-banner:after,
+    .announcement-text:before,
+    .announcement-text:after {
+        width: 9px;
+        height: 6px;
+    }
+
+    .announcement-text {
+        padding: 0px;
     }
 }

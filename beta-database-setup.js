@@ -23,13 +23,13 @@ connection.connect(err => {
 
 function setupDatabase() {
     // Create the database if not exists
-    connection.query(`DROP DATABASE IF EXISTS ${process.env.DB_NAME}`, (err, result) => {
-        if (err) {
-            console.error("Error dropping database:", err);
-            return;
-        }
-    }
-    );
+    // connection.query(`DROP DATABASE IF EXISTS ${process.env.DB_NAME}`, (err, result) => {
+    //     if (err) {
+    //         console.error("Error dropping database:", err);
+    //         return;
+    //     }
+    // }
+    // );
     connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`, (err, result) => {
 
         if (err) {
@@ -144,21 +144,58 @@ function setupDatabase() {
 
             // Create messages table
             const createMessagesTable = `
-                CREATE TABLE IF NOT EXISTS messages(
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    fk_user_id INT,
-                    message_type VARCHAR(255),
-                    message_content VARCHAR(1000),
-                    sender_email VARCHAR(255),
-                    date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    isResolved BOOLEAN DEFAULT FALSE,
-                    FOREIGN KEY (fk_user_id) REFERENCES users(id)
-                );
+            CREATE TABLE IF NOT EXISTS messages(
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                fk_user_id INT,
+                message_type VARCHAR(255),
+                message_content VARCHAR(1000),
+                sender_email VARCHAR(255),
+                date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                isResolved BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY (fk_user_id) REFERENCES users(id)
+            );
             `;
 
             connection.query(createMessagesTable, (err) => {
                 if (err) throw err;
                 console.log("messages table created.");
+            });
+            const createAnnouncementsTable = `
+            CREATE TABLE IF NOT EXISTS announcements (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                announcement_content VARCHAR(500),
+                date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                isOutdated BOOLEAN DEFAULT FALSE
+            );
+            `;
+
+            connection.query(createAnnouncementsTable, err => {
+                if (err) throw err;
+                console.log("announcements table created.");
+            });
+
+            const createAnnouncementUsersTable = `
+            CREATE TABLE IF NOT EXISTS announcement_users (
+                announcement_id INT,
+                user_id INT,
+                PRIMARY KEY (announcement_id, user_id),
+                FOREIGN KEY (announcement_id) REFERENCES announcements(id),
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+            `;
+
+            // user_id, announcement_id. Both columns together will form the primary key, meaning one user can be related to one announcement only once.
+            
+            // To target an announcement to specific users, insert rows into announcement_users for each user.
+            // For example, if announcement with id 5 should be shown to users with IDs 2 and 4, insert two rows into announcement_users (announcement_id,user_id): (5, 2) and (5, 4).
+
+            // To query announcements for a specific user, join announcements with announcement_users on the announcement ID and filter by the user ID.
+
+            // If an announcement doesn't have any rows in announcement_users, it's for every users.
+
+            connection.query(createAnnouncementUsersTable, err => {
+                if (err) throw err;
+                console.log("announcement_users table created.");
 
                 // Ending the connection after all tables have been created.
                 connection.end(() => {
