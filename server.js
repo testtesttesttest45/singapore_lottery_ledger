@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const { customJwtMiddleware, jwtSECRET} = require('./middleware.js');
+const { customJwtMiddleware, jwtSECRET } = require('./middleware.js');
 
 const cloudinary = require('cloudinary').v2;
 const fileUpload = require('express-fileupload');
@@ -53,7 +53,7 @@ app.use(express.json());
 //   }
 // }));
 // no longer using the above session config because it doesn't work with Cordova
-const jsonwebtoken  = require('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken');
 
 app.use(fileUpload({
   useTempFiles: true,
@@ -518,7 +518,7 @@ app.post('/contact-admin', customJwtMiddleware, (req, res) => {
       from: `SG Lottery Ledger <${senderEmail}>`,
       replyTo: senderEmail,
       to: 'weilinquek201@gmail.com',
-      cc: 'infocommclub1@gmail.com',
+      // cc: 'infocommclub1@gmail.com',
       subject: `SG Lottery Ledger: New message - ${messageType}`,
       html: `
         <div style="font-family: math;">
@@ -568,7 +568,7 @@ app.post('/contact-admin', customJwtMiddleware, (req, res) => {
 
 app.get('/get-announcements', customJwtMiddleware, (req, res) => {
   const username = req.user.username;
-  
+
   // First, fetch the user's ID using the provided username.
   connection.query('SELECT id FROM users WHERE username = ?', [username], (err, results) => {
     if (err) {
@@ -580,7 +580,7 @@ app.get('/get-announcements', customJwtMiddleware, (req, res) => {
     }
 
     const userId = results[0].id;
-    
+
     // Next, fetch announcements targeted at the current user.
     // This includes general announcements that are not linked to any user 
     // and announcements specifically meant for this user.

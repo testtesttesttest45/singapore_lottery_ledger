@@ -57,7 +57,7 @@ function attemptConnection() {
                 cordovaInterface.style.display = 'none';
                 var iframe = document.getElementById('contentFrame');
                 iframe.style.display = 'block';
-                iframe.src = 'https://sg-lottery-ledger.as.r.appspot.com';
+                iframe.src = 'https://singapore-lottery-ledger-v2.as.r.appspot.com';
             }, 1200);
 
         } else {

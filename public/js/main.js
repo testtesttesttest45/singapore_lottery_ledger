@@ -793,7 +793,7 @@ document.getElementById('uploadSgSweep').addEventListener('click', function () {
 });
 
 function addUploadedBetslipImage(type, imgSrc, betslipId) {
-    const imgContainer = document.getElementById(`${type}-image-container`);
+    const imgContainer = document.getElementById(`image-container-${type}`);
     const divChildrenCount = imgContainer.querySelectorAll('div.image-div').length;
 
     if (divChildrenCount < 5) {
@@ -917,6 +917,10 @@ function fetchBetslips() {
             if (data.success) {
                 for (let betslip of data.data) {
                     addUploadedBetslipImage(betslip.lottery_name.toLowerCase(), betslip.image_url, betslip.ID);
+                }
+
+                for (const type of lotteryTypes) {
+                    checkButtonVisibility(type);
                 }
             } else {
                 console.error('Error retrieving betslips:', data.message);
@@ -1639,4 +1643,46 @@ document.addEventListener("DOMContentLoaded", function () {
     refreshButton.addEventListener('click', function () {
         location.reload();
     });
+
+    for (const type of lotteryTypes) {
+        const container = document.getElementById(`image-container-${type}`);
+        const prevBtn = document.getElementById(`prevBtn-${type}`);
+        const nextBtn = document.getElementById(`nextBtn-${type}`);
+
+        prevBtn.addEventListener('click', function () {
+            checkButtonVisibility(type);
+            container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+            
+        });
+
+        nextBtn.addEventListener('click', function () {
+            checkButtonVisibility(type);
+            container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+            
+        });
+
+        container.addEventListener('scroll', () => checkButtonVisibility(type));
+    }
 });
+
+const lotteryTypes = ['4d', 'toto', 'sg-sweep'];
+
+function checkButtonVisibility(type) {
+    const container = document.getElementById(`image-container-${type}`);
+    const prevBtn = document.getElementById(`prevBtn-${type}`);
+    const nextBtn = document.getElementById(`nextBtn-${type}`);
+
+    // Hide the "previous" button if we're at the start
+    if (container.scrollLeft <= 0) {
+        prevBtn.style.visibility = 'hidden';
+    } else {
+        prevBtn.style.visibility = 'visible';
+    }
+
+    // Hide the "next" button if we're at the end
+    if (container.scrollWidth - container.scrollLeft <= container.clientWidth) {
+        nextBtn.style.visibility = 'hidden';
+    } else {
+        nextBtn.style.visibility = 'visible';
+    }
+}

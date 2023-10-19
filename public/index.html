@@ -593,8 +593,12 @@
                 <div class="hidable">
                     <div class="betslip-section" id="4d-betslip-section">
                         <h3>4D Betslip</h3>
-                        <p><span id="4d-count">0</span> 4D betslips uploaded</p>
-                        <div class="image-container" id="4d-image-container">
+                        <div class="betslip-pagination-container">
+                            <button id="prevBtn-4d" class="betslip-pagination">&laquo;</button>
+                            <p><span id="4d-count">0</span> 4D betslips uploaded</p>
+                            <button id="nextBtn-4d" class="betslip-pagination">&raquo;</button>
+                        </div>
+                        <div class="image-container" id="image-container-4d">
                             <p class="betslip-placeholder-text">You have not uploaded a 4D betslip for the upcoming
                                 draw!</p>
                         </div>
@@ -604,21 +608,27 @@
 
                     <div class="betslip-section" id="toto-betslip-section">
                         <h3>Toto Betslip</h3>
-                        <p><span id="toto-count">0</span> Toto betslips uploaded</p>
-                        <div class="image-container" id="toto-image-container">
-                            <p class="betslip-placeholder-text">You have not uploaded a Toto betslip for the upcoming
-                                draw!</p>
+                        <div class="betslip-pagination-container">
+                            <button id="prevBtn-toto" class="betslip-pagination">&laquo;</button>
+                            <p><span id="toto-count">0</span> Toto betslips uploaded</p>
+                            <button id="nextBtn-toto" class="betslip-pagination">&raquo;</button>
+                        </div>
+                        <div class="image-container" id="image-container-toto">
+                            <p class="betslip-placeholder-text">You have not uploaded a Toto betslip for the upcoming draw!</p>
                         </div>
                         <input type="file" id="inputToto" accept="image/*" style="display: none;">
                         <button id="uploadToto" class="upload-betslip">Upload Toto Betslip</button>
                     </div>
-
+                    
                     <div class="betslip-section" id="sg-sweep-betslip-section">
                         <h3>Singapore Sweep Betslip</h3>
-                        <p><span id="sg-sweep-count">0</span> Singapore Sweep betslips uploaded</p>
-                        <div class="image-container" id="sg-sweep-image-container">
-                            <p class="betslip-placeholder-text">You have not uploaded a Singapore Sweep betslip for the
-                                upcoming draw!</p>
+                        <div class="betslip-pagination-container">
+                            <button id="prevBtn-sg-sweep" class="betslip-pagination">&laquo;</button>
+                            <p><span id="sg-sweep-count">0</span> Singapore Sweep betslips uploaded</p>
+                            <button id="nextBtn-sg-sweep" class="betslip-pagination">&raquo;</button>
+                        </div>
+                        <div class="image-container" id="image-container-sg-sweep">
+                            <p class="betslip-placeholder-text">You have not uploaded a Singapore Sweep betslip for the upcoming draw!</p>
                         </div>
                         <input type="file" id="inputSgSweep" accept="image/*" style="display: none;">
                         <button id="uploadSgSweep" class="upload-betslip">Upload Singapore Sweep Betslip</button>

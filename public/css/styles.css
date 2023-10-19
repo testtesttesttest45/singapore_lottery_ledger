@@ -207,6 +207,7 @@ td {
 .submit-btn:hover,
 #save-winnings-btn:hover,
 .pagination button:not(:disabled):hover,
+.betslip-pagination:hover,
 #sorting-btn:hover,
 #reset-order-btn:hover,
 #logout-btn:hover,
@@ -410,7 +411,7 @@ body.effect-active {
     margin: 20px;
 }
 
-.pagination button {
+.pagination button, .betslip-pagination {
     background-color: #333;
     color: #fff;
     padding: 10px 20px;
@@ -839,6 +840,12 @@ footer img {
     border-top-right-radius: 100%;
 }
 
+.betslip-pagination-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
 
 /* Mobile adjustments */
 @media (max-width: 600px) {
@@ -875,6 +882,7 @@ footer img {
     #sorting-btn,
     .menu-row button,
     .pagination button,
+    .betslip-pagination,
     .upload-betslip,
     #reset-order-btn,
     .toggle-button {
