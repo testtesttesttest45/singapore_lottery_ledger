@@ -103,7 +103,7 @@ document.getElementById('logout-btn').addEventListener('click', function () {
         })
         .then(data => {
             if (data && data.message) {
-                alert(data.message)
+                alert(data.message);
             }
         })
         .catch(error => {
@@ -151,7 +151,7 @@ document.getElementById('4d-form').addEventListener('submit', function (event) {
         </td>
     </tr>`;
     tableBody.innerHTML += newRow;
-    showSuccessEffect('4D');
+    showSuccessEffect('4D entry added!');
     updateTotals();
 });
 
@@ -189,7 +189,7 @@ document.getElementById('toto-form').addEventListener('submit', function (event)
         </td>
     </tr>`;
     tableBody.innerHTML += newRow;
-    showSuccessEffect('Toto');
+    showSuccessEffect('Toto entry added!');
     updateTotals();
 });
 
@@ -223,7 +223,7 @@ document.getElementById('sg-sweep-form').addEventListener('submit', function (ev
         </td>
     </tr>`;
     tableBody.innerHTML += newRow;
-    showSuccessEffect('Singapore Sweep');
+    showSuccessEffect('Singapore Sweep entry added!');
     updateTotals();
 });
 
@@ -295,7 +295,8 @@ function saveEntries(entries) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Entries saved successfully!');
+                console.log('Entries saved successfully!');
+                showSuccessEffect('Entries saved!');
                 const tableBody = document.querySelector('#entries-table tbody');
                 while (tableBody.firstChild) {
                     tableBody.removeChild(tableBody.firstChild);
@@ -383,7 +384,7 @@ document.getElementById('winnings-form-4d').addEventListener('submit', function 
         const cell = row.querySelector('td:first-child');
         cell.textContent = index + 1;
     });
-    showSuccessEffect('4D');
+    showSuccessEffect('4D winnings added!');
     updateWinningsTotal();
     const winning = {
         lottery_name: "4D",
@@ -430,7 +431,7 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
         const cell = row.querySelector('td:first-child');
         cell.textContent = index + 1;
     });
-    showSuccessEffect('Toto');
+    showSuccessEffect('Toto winnings added!');
     updateWinningsTotal();
     const winning = {
         lottery_name: "Toto",
@@ -440,7 +441,7 @@ document.getElementById('winnings-form-toto').addEventListener('submit', functio
         winning_prize: parseFloat(winningPrizeToto),
         date_of_winning: winningDateToto
     };
-    console.log(winning);
+    // console.log(winning);
     saveIndividualWinnings(winning);
 });
 
@@ -477,7 +478,7 @@ document.getElementById('winnings-form-sg-sweep').addEventListener('submit', fun
         const cell = row.querySelector('td:first-child');
         cell.textContent = index + 1;
     });
-    showSuccessEffect('Singapore Sweep');
+    showSuccessEffect('Singapore Sweep winnings added!');
     updateWinningsTotal();
     const winning = {
         lottery_name: "Singapore Sweep",
@@ -487,7 +488,7 @@ document.getElementById('winnings-form-sg-sweep').addEventListener('submit', fun
         winning_prize: parseFloat(winningPrizeSgSweep),
         date_of_winning: winningDateSgSweep
     };
-    console.log(winning);
+    // console.log(winning);
     saveIndividualWinnings(winning);
 });
 
@@ -502,9 +503,24 @@ function saveIndividualWinnings(winning) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Winnings saved successfully!');
-                const lastRow = document.querySelector("#prizes-history-table tbody tr:last-child");
-                lastRow.setAttribute('data-id', 'winning-' + data.id);
+                console.log('Winnings saved successfully!');
+                showSuccessEffect('Winnings saved!');
+                // const lastRow = document.querySelector("#prizes-history-table tbody tr:last-child");
+                // lastRow.setAttribute('data-id', 'winning-' + data.id);
+                fetchWinningHistory(() => {
+                    const newRow = document.querySelector(`#prizes-history-table tbody tr[data-id="winning-${data.id}"]`);
+                    if (newRow) {
+                        newRow.classList.add('gradient-highlight');
+                        setTimeout(() => {
+                            newRow.classList.remove('gradient-highlight');
+                        }, 1400);
+                        // scroll to the new row
+                        newRow.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                });
             } else {
                 alert('Error saving winnings: ' + data.message);
             }
@@ -821,6 +837,9 @@ function addUploadedBetslipImage(type, imgSrc, betslipId) {
                         if (data.success) {
                             imgContainer.removeChild(imageDiv);
                             updateCount(type, imgContainer.children.length);
+                            for (const type of lotteryTypes) {
+                                checkButtonVisibility(type);
+                            }
                             if (imgContainer.querySelectorAll('div.image-div').length === 0) {
                                 const placeholderText = document.createElement('p');
                                 placeholderText.textContent = `You have not uploaded a ${type === "toto" ? "Toto" :
@@ -865,7 +884,11 @@ function uploadToServer(type, file, callback) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                callback(true, data.imgUrl);
+                const betslipId = data.ID;
+                callback(true, data.imgUrl, betslipId);
+                for (const type of lotteryTypes) {
+                    checkButtonVisibility(type);
+                }
             } else {
                 callback(false);
             }
@@ -896,11 +919,11 @@ function handleImageUpload(type, input) {
 
     reader.readAsDataURL(file);
 
-    uploadToServer(type, file, function (success, cloudinaryUrl) {
+    uploadToServer(type, file, function (success, cloudinaryUrl, betslipId) {
         document.getElementById('loadingSpinner').classList.add('hidden');
         if (success) {
-            // If upload was successful, display the image using Cloudinary URL
-            addUploadedBetslipImage(type, cloudinaryUrl);
+            // If upload was successful, display the image using Cloudinary URL and set its ID
+            addUploadedBetslipImage(type, cloudinaryUrl, betslipId);
         } else {
             alert('Error uploading image. Please try again later.');
         }
@@ -938,7 +961,7 @@ function updateCount(type, count) {
     countElement.textContent = count;
 }
 
-function showSuccessEffect(gameType) {
+function showSuccessEffect(message) {
     if (isAnimating) return;  // If animation is playing, ignore button clicks
 
     isAnimating = true;  // Set the flag to true
@@ -954,7 +977,7 @@ function showSuccessEffect(gameType) {
     timeouts.push(setTimeout(() => {
         tickElement.style.transform = 'scale(1)';
         successTextElement.style.opacity = '1';
-        successTextElement.innerText = `${gameType} entry added!`;
+        successTextElement.innerText = `${message}`;
     }, 100));
 
     // Flash the background
@@ -1086,7 +1109,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     editBtn.addEventListener('click', function () {
         if (selfNotes.hasAttribute('readonly')) {
-            console.log('here1')
             lockIcon.style.display = 'none';
             editingText.style.display = 'inline';
 
@@ -1101,7 +1123,6 @@ document.addEventListener('DOMContentLoaded', function () {
             editBtn.classList.add('fa-regular', 'fa-floppy-disk');
             cancelBtn.style.display = 'inline';
         } else {
-            console.log("here2")
             saveNotes(selfNotes.value);
 
             editingText.style.display = 'none';
@@ -1163,7 +1184,8 @@ function saveNotes(notesContent) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Note saved successfully!');
+                console.log('Note saved successfully!');
+                showSuccessEffect('Notes saved successfully!');
             } else {
                 alert('Error saving note: ' + data.message);
             }
@@ -1261,7 +1283,7 @@ function fetchPurchaseHistory(callback) {
         });
 }
 
-function fetchWinningHistory() {
+function fetchWinningHistory(callback) {
     fetch('/get-winnings')
         .then(response => response.json())
         .then(data => {
@@ -1269,6 +1291,8 @@ function fetchWinningHistory() {
                 winningHistoryData = data.data;
                 populateWinningTable(winningHistoryData);
                 updateWinningsTotal();
+
+                if (callback) callback();
             } else {
                 console.error('Error retrieving winning history:', data.message);
             }
@@ -1624,15 +1648,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!data.success) throw new Error(data.message);
                 document.getElementById('loadingSpinner').classList.add('hidden');
                 contactForm.reset();
-                setTimeout(() => {
-                    alert(data.message);
-                }, 50);
+                showSuccessEffect(`${data.message}`);
             })
             .catch(error => {
-                document.getElementById('loadingSpinner').classList.add('hidden');
                 setTimeout(() => {
+                    document.getElementById('loadingSpinner').classList.add('hidden');
                     alert(error.message);
-                }, 50);
+                }, 1000);
             });
     });
 });
@@ -1652,13 +1674,13 @@ document.addEventListener("DOMContentLoaded", function () {
         prevBtn.addEventListener('click', function () {
             checkButtonVisibility(type);
             container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
-            
+
         });
 
         nextBtn.addEventListener('click', function () {
             checkButtonVisibility(type);
             container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
-            
+
         });
 
         container.addEventListener('scroll', () => checkButtonVisibility(type));
@@ -1680,7 +1702,10 @@ function checkButtonVisibility(type) {
     }
 
     // Hide the "next" button if we're at the end
-    if (container.scrollWidth - container.scrollLeft <= container.clientWidth) {
+    // if (container.scrollWidth - container.scrollLeft <= container.clientWidth) {
+    const buffer = 5; // You can adjust this value based on your needs
+
+    if (container.scrollWidth - container.scrollLeft - buffer <= container.clientWidth) {
         nextBtn.style.visibility = 'hidden';
     } else {
         nextBtn.style.visibility = 'visible';

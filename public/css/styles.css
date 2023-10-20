@@ -282,7 +282,7 @@ td {
 .tick-wrapper {
     font-size: 60px;
     color: green;
-    background-color: rgba(14, 232, 14, 0.1);
+    background-color: rgba(14, 232, 14, 0.3);
     border-radius: 100px;
     transform: scale(0);
     transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -294,6 +294,9 @@ td {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
     color: rgb(18, 216, 18);
+    padding: 9px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.6);
 }
 
 body.effect-active {

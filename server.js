@@ -446,7 +446,7 @@ app.post('/upload-image', customJwtMiddleware, (req, res) => {
         console.error('Error saving image URL to the database:', err.stack);
         return res.status(500).json({ success: false, message: 'Error saving image URL to the database.' });
       }
-      res.json({ success: true, imgUrl: result.secure_url });
+      res.json({ success: true, imgUrl: result.secure_url , ID: results.insertId});
     });
   });
 });
