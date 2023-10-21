@@ -1247,7 +1247,7 @@ function updatePurchaseHistoryTotals() { // this version calculates the entire d
     document.getElementById('total-spend-all').textContent = `$${totalAll}`;
 }
 
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 10;
 let currentPage = 1;
 let totalRows = 0;
 let purchaseHistoryData = [];

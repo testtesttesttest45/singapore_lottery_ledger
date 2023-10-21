@@ -49,7 +49,7 @@ function setupDatabase() {
             // Create users table
             const createUsersTable = `
             CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT AUTO_INCREMENT PRIMARY KEY,
                 full_name VARCHAR(255) NOT NULL,
                 username VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
@@ -67,7 +67,7 @@ function setupDatabase() {
             // Create records table
             const createRecordsTable = `
             CREATE TABLE IF NOT EXISTS records (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                record_id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 lottery_name VARCHAR(255),
                 entry_type VARCHAR(255),
@@ -78,7 +78,7 @@ function setupDatabase() {
                 cost INT,
                 date_of_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isDeleted BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY (fk_user_id) REFERENCES users(id)
+                FOREIGN KEY (fk_user_id) REFERENCES users(user_id)
             );
             `;
 
@@ -90,10 +90,10 @@ function setupDatabase() {
             // Create notes table
             const createNotesTable = `
             CREATE TABLE IF NOT EXISTS notes (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                note_id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT UNIQUE,
                 notes_content TEXT,
-                FOREIGN KEY (fk_user_id) REFERENCES users(id)
+                FOREIGN KEY (fk_user_id) REFERENCES users(user_id)
             );
             `;
 
@@ -104,8 +104,8 @@ function setupDatabase() {
 
             // Create prizes table
             const createPrizesTable = `
-            CREATE TABLE IF NOT EXISTS prizes (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+            CREATE TABLE IF NOT EXISTS winnings (
+                winning_id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 lottery_name VARCHAR(255),
                 entry_type VARCHAR(255),
@@ -114,7 +114,7 @@ function setupDatabase() {
                 winning_prize INT,
                 date_of_winning DATE,
                 isDeleted BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY (fk_user_id) REFERENCES users(id)
+                FOREIGN KEY (fk_user_id) REFERENCES users(user_id)
             );
             `;
 
@@ -126,14 +126,14 @@ function setupDatabase() {
             // Create betslips table
             const createBetslipsTable = `
             CREATE TABLE IF NOT EXISTS betslips (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                betslip_id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 lottery_name VARCHAR(255),
                 image_url VARCHAR(255),
                 date_of_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isChecked BOOLEAN DEFAULT FALSE,
                 date_checked TIMESTAMP DEFAULT NULL,
-                FOREIGN KEY (fk_user_id) REFERENCES users(id)
+                FOREIGN KEY (fk_user_id) REFERENCES users(user_id)
             );
             `;
 
@@ -144,15 +144,15 @@ function setupDatabase() {
 
             // Create messages table
             const createMessagesTable = `
-            CREATE TABLE IF NOT EXISTS messages(
-                id INT AUTO_INCREMENT PRIMARY KEY,
+            CREATE TABLE IF NOT EXISTS messages (
+                message_id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
                 message_type VARCHAR(255),
                 message_content VARCHAR(1000),
                 sender_email VARCHAR(255),
                 date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isResolved BOOLEAN DEFAULT FALSE,
-                FOREIGN KEY (fk_user_id) REFERENCES users(id)
+                FOREIGN KEY (fk_user_id) REFERENCES users(user_id)
             );
             `;
 
@@ -162,7 +162,7 @@ function setupDatabase() {
             });
             const createAnnouncementsTable = `
             CREATE TABLE IF NOT EXISTS announcements (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                announcement_id INT AUTO_INCREMENT PRIMARY KEY,
                 announcement_content VARCHAR(500),
                 date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 isOutdated BOOLEAN DEFAULT FALSE
@@ -176,11 +176,11 @@ function setupDatabase() {
 
             const createAnnouncementUsersTable = `
             CREATE TABLE IF NOT EXISTS announcement_users (
-                announcement_id INT,
-                user_id INT,
-                PRIMARY KEY (announcement_id, user_id),
-                FOREIGN KEY (announcement_id) REFERENCES announcements(id),
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                fk_announcement_id INT,
+                fk_user_id INT,
+                PRIMARY KEY (fk_announcement_id, fk_user_id),
+                FOREIGN KEY ( fk_announcement_id) REFERENCES announcements(announcement_id),
+                FOREIGN KEY (fk_user_id) REFERENCES users(user_id)
             );
             `;
 

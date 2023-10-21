@@ -15,7 +15,7 @@ const jwtSECRET = 'password';
 const jwtMiddlewareFunction = jwt({
   secret: jwtSECRET,
   algorithms: ['HS256'],
-  requestProperty: "user",
+  requestProperty: "user", // so now can use req.user, before is req.auth
   getToken: function fromCookie(req) {
     if (req.cookies && req.cookies.token) {
       return req.cookies.token;

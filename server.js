@@ -52,7 +52,7 @@ app.use(express.json());
 //     path: '/'  // you had this in your previous config
 //   }
 // }));
-// no longer using the above session config because it doesn't work with Cordova
+// no longer using the above session config because it doesn't work with Cordova (I think)
 const jsonwebtoken = require('jsonwebtoken');
 
 app.use(fileUpload({
@@ -96,7 +96,7 @@ app.get('/users', (req, res) => {
       console.error('Error fetching users:', err.stack);
       return res.status(500).send('Error fetching users');
     }
-    res.json(results); // Send the results as JSON
+    res.json(results);
   });
 });
 
@@ -157,7 +157,7 @@ app.post('/login', (req, res) => {
 
       const userPayload = {
         username: results[0].username,
-        userId: results[0].ID,
+        userId: results[0].user_id,
         fullName: results[0].full_name
       };
       const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '1h' });
@@ -168,9 +168,8 @@ app.post('/login', (req, res) => {
         secure: true,
         sameSite: 'none'
       });
-      // Also set a regular cookie with the expiration timestamp
+      // Also set a regular cookie with the expiration timestamp, this is used by the frontend to check if the JWT has expired
       const expirationTimestamp = Math.floor(Date.now() / 1000) + 3600;
-      console.log('expirationTimestamp:', expirationTimestamp);
       res.cookie('tokenExpiration', expirationTimestamp, {
         secure: true,
         sameSite: 'none'
@@ -298,7 +297,7 @@ app.delete('/delete-purchase/:recordId', customJwtMiddleware, (req, res) => {
     return res.status(400).json({ success: false, message: 'Record ID is required.' });
   }
 
-  const sql = 'UPDATE records SET isDeleted = 1 WHERE id = ?';
+  const sql = 'UPDATE records SET isDeleted = 1 WHERE record_id = ?';
   connection.query(sql, [recordId], (err, results) => {
     if (err) {
       console.error('Error deleting purchase:', err.stack);
@@ -335,7 +334,7 @@ app.post('/save-winnings', customJwtMiddleware, (req, res) => {
   const placeholders = new Array(winnings.length).fill(placeholder).join(', ');
 
   const sql = `
-      INSERT INTO prizes 
+      INSERT INTO winnings 
       (fk_user_id, lottery_name, entry_type, pick_type, outlet, winning_prize, date_of_winning) 
       VALUES ${placeholders}
   `;
@@ -354,7 +353,7 @@ app.post('/save-winnings', customJwtMiddleware, (req, res) => {
 
 app.get('/get-winnings', customJwtMiddleware, (req, res) => {
   const userId = req.user.userId;
-  const sql = 'SELECT * FROM prizes WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_winning DESC';
+  const sql = 'SELECT * FROM winnings WHERE fk_user_id = ? AND isDeleted = 0 ORDER BY date_of_winning DESC';
   connection.query(sql, [userId], (err, results) => {
     if (err) {
       console.error('Error fetching winnings:', err.stack);
@@ -372,7 +371,7 @@ app.delete('/delete-winning/:recordId', (req, res) => {
     return res.status(400).json({ success: false, message: 'Record ID is required.' });
   }
 
-  const sql = 'UPDATE prizes SET isDeleted = 1 WHERE id = ?';
+  const sql = 'UPDATE winnings SET isDeleted = 1 WHERE winning_id = ?';
   connection.query(sql, [recordId], (err, results) => {
     if (err) {
       console.error('Error deleting winning:', err.stack);
@@ -408,7 +407,7 @@ app.put('/edit-purchase/:recordId', customJwtMiddleware, (req, res) => {
     return res.status(400).send({ message: 'Missing required fields.' });
   }
 
-  const sql = 'UPDATE records SET date_of_entry = ? WHERE id = ?';
+  const sql = 'UPDATE records SET date_of_entry = ? WHERE record_id = ?';
   connection.query(sql, [date_of_entry, recordId], (err, results) => {
     if (err) {
       console.error('Error editing purchase:', err.stack);
@@ -431,7 +430,7 @@ app.post('/upload-image', customJwtMiddleware, (req, res) => {
 
   const lotteryName = req.body.lotteryName;
 
-  cloudinary.uploader.upload(uploadedFile.tempFilePath, { folder: 'Singapore Lottery Ledger project/Betslips' }, (error, result) => {
+  cloudinary.uploader.upload(uploadedFile.tempFilePath, { folder: 'Singapore Lottery Ledger/Betslips' }, (error, result) => {
     if (error) {
       console.error('Error uploading to Cloudinary:', error);
       return res.status(500).json({ success: false, message: 'Error uploading image.' });
@@ -481,7 +480,7 @@ app.delete('/check-betslip/:id', customJwtMiddleware, (req, res) => {
   const sql = `
       UPDATE betslips 
       SET isChecked = 1, date_checked = CURRENT_TIMESTAMP
-      WHERE ID = ?;
+      WHERE betslip_id = ?;
   `;
 
   connection.query(sql, [betslipId], (err, results) => {
@@ -577,7 +576,7 @@ app.get('/get-announcements', customJwtMiddleware, (req, res) => {
   const username = req.user.username;
 
   // First, fetch the user's ID using the provided username.
-  connection.query('SELECT id FROM users WHERE username = ?', [username], (err, results) => {
+  connection.query('SELECT user_id FROM users WHERE username = ?', [username], (err, results) => {
     if (err) {
       return res.status(500).send('Error fetching user ID');
     }
@@ -586,31 +585,32 @@ app.get('/get-announcements', customJwtMiddleware, (req, res) => {
       return res.status(404).send('User not found');
     }
 
-    const userId = results[0].id;
+    const userId = results[0].user_id;
 
     // Next, fetch announcements targeted at the current user.
     // This includes general announcements that are not linked to any user 
     // and announcements specifically meant for this user.
     const announcementsQuery = `
     SELECT announcement_content, date_created 
-    FROM announcements 
+    FROM announcements
     WHERE isOutdated = 0 AND (
         NOT EXISTS (
             SELECT 1 
-            FROM announcement_users 
-            WHERE announcement_users.announcement_id = announcements.id
+            FROM announcement_users
+            WHERE announcement_users.fk_announcement_id = announcements.announcement_id
         ) 
         OR EXISTS (
             SELECT 1 
             FROM announcement_users 
-            WHERE announcement_users.announcement_id = announcements.id 
-            AND announcement_users.user_id = ?
+            WHERE announcement_users.fk_announcement_id = announcements.announcement_id
+            AND announcement_users.fk_user_id = ?
         )
     );
 `;
 
     connection.query(announcementsQuery, [userId], (err, announcementResults) => {
       if (err) {
+        console.error('Error fetching announcements:', err.stack);
         return res.status(500).send('Error fetching announcements');
       }
       const cleanResults = announcementResults.map(row => {
