@@ -169,7 +169,7 @@ app.post('/login', (req, res) => {
         sameSite: 'none'
       });
       // Also set a regular cookie with the expiration timestamp
-      const expirationTimestamp = Math.floor(Date.now() / 1000) + 10; // 10 seconds from now
+      const expirationTimestamp = Math.floor(Date.now() / 1000) + 20; // 10 seconds from now
       res.cookie('tokenExpiration', expirationTimestamp);
       res.status(200).send({ message: 'Logged in successfully.', token });
     });
