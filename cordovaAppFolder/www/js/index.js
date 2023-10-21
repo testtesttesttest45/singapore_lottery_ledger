@@ -47,33 +47,39 @@ function attemptConnection() {
     const serverMessage = document.getElementById('server-message');
     const cordovaInterface = document.getElementById('cordova-interface');
     const iframe = document.getElementById('contentFrame');
-    
+
     serverMessage.textContent = 'Checking connection...';
     serverMessage.style.backgroundColor = '#0eb3d8';
 
     // Use fetch with 'no-cors' mode to check if the server is responsive
-    fetch('https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io', { mode: 'no-cors' })
-    .then(() => {
-        // If successful, then load the iframe content
-        iframe.src = 'https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io';
-        
-        iframe.onload = function() {
-            setTimeout(function() {
-                serverMessage.textContent = 'Connection success! Redirecting...';
-                serverMessage.style.backgroundColor = '#3bd57c';
-                setTimeout(function() {
-                    cordovaInterface.style.display = 'none';
-                    iframe.style.display = 'block';
-                }, 1000);
-            }, 1200);
-        };
-    })
-    .catch(error => {
-        console.error(error); // Log the error for debugging
-        serverMessage.textContent = 'Connection error!';
-        serverMessage.style.backgroundColor = '#c51b5b';
-        document.getElementById('tryAgainButton').style.display = 'block';
-    });
+    fetch('https://singapore-lottery-ledger-v2.as.r.appspot.com')
+        .then(response => {
+            if (response.status === 200) {
+                // If status is 200 OK, then load the iframe content
+                iframe.src = 'https://singapore-lottery-ledger-v2.as.r.appspot.com';
+
+                iframe.onload = function () {
+                    setTimeout(function () {
+                        serverMessage.textContent = 'Connection success! Redirecting...';
+                        serverMessage.style.backgroundColor = '#3bd57c';
+                        setTimeout(function () {
+                            cordovaInterface.style.display = 'none';
+                            iframe.style.display = 'block';
+                        }, 1000);
+                    }, 1200);
+                };
+            } else {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+        })
+        .catch(error => {
+            console.error(error); // Log the error for debugging
+            setTimeout(function () {
+                serverMessage.textContent = 'Connection error!';
+                serverMessage.style.backgroundColor = '#c51b5b';
+                document.getElementById('tryAgainButton').style.display = 'block';
+            }, 500);
+        });
 }
 
 

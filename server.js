@@ -17,15 +17,15 @@ const { DateTime } = require('luxon');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// const corsOptions = {
-//   origin: true,
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//   credentials: true,
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   optionsSuccessStatus: 204
-// };
+const corsOptions = {
+  origin: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -160,7 +160,7 @@ app.post('/login', (req, res) => {
         userId: results[0].ID,
         fullName: results[0].full_name
       };
-      const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '20s' });
+      const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '1h' });
 
       // Set the JWT as an httpOnly cookie
       res.cookie('token', token, {
@@ -169,7 +169,8 @@ app.post('/login', (req, res) => {
         sameSite: 'none'
       });
       // Also set a regular cookie with the expiration timestamp
-      const expirationTimestamp = Math.floor(Date.now() / 1000) + 20; // 20 seconds from now
+      const expirationTimestamp = Math.floor(Date.now() / 1000) + 3600;
+      console.log('expirationTimestamp:', expirationTimestamp);
       res.cookie('tokenExpiration', expirationTimestamp, {
         secure: true,
         sameSite: 'none'
