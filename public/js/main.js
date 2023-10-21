@@ -1718,7 +1718,7 @@ const delay = tokenExpiration - Date.now();
 
 setTimeout(() => {
     alert('Your session has expired. Please log in again.');
-    location.reload();
+    window.location.href = '/login';
 }, delay);
 
 function getCookie(name) {
