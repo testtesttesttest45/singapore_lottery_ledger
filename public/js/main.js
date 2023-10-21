@@ -1711,3 +1711,18 @@ function checkButtonVisibility(type) {
         nextBtn.style.visibility = 'visible';
     }
 }
+
+const tokenExpiration = parseInt(getCookie('tokenExpiration')) * 1000; // convert to milliseconds
+console.log('tokenExpiration:', new Date(tokenExpiration));
+const delay = tokenExpiration - Date.now();
+
+setTimeout(() => {
+    alert('Your session has expired. Please log in again.');
+    location.reload();
+}, delay);
+
+function getCookie(name) {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+}

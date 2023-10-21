@@ -160,7 +160,7 @@ app.post('/login', (req, res) => {
         userId: results[0].ID,
         fullName: results[0].full_name
       };
-      const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '1h' });
+      const token = jsonwebtoken.sign(userPayload, jwtSECRET, { expiresIn: '20s' });
 
       // Set the JWT as an httpOnly cookie
       res.cookie('token', token, {
@@ -168,6 +168,9 @@ app.post('/login', (req, res) => {
         secure: true,
         sameSite: 'none'
       });
+      // Also set a regular cookie with the expiration timestamp
+      const expirationTimestamp = Math.floor(Date.now() / 1000) + 10; // 10 seconds from now
+      res.cookie('tokenExpiration', expirationTimestamp);
       res.status(200).send({ message: 'Logged in successfully.', token });
     });
   });
@@ -446,7 +449,7 @@ app.post('/upload-image', customJwtMiddleware, (req, res) => {
         console.error('Error saving image URL to the database:', err.stack);
         return res.status(500).json({ success: false, message: 'Error saving image URL to the database.' });
       }
-      res.json({ success: true, imgUrl: result.secure_url , ID: results.insertId});
+      res.json({ success: true, imgUrl: result.secure_url, ID: results.insertId });
     });
   });
 });

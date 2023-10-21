@@ -52,10 +52,10 @@ function attemptConnection() {
     serverMessage.style.backgroundColor = '#0eb3d8';
 
     // Use fetch with 'no-cors' mode to check if the server is responsive
-    fetch('https://singapore-lottery-ledger-v2.as.r.appspot.com', { mode: 'no-cors' })
+    fetch('https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io', { mode: 'no-cors' })
     .then(() => {
         // If successful, then load the iframe content
-        iframe.src = 'https://singapore-lottery-ledger-v2.as.r.appspot.com';
+        iframe.src = 'https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io';
         
         iframe.onload = function() {
             setTimeout(function() {
@@ -64,7 +64,7 @@ function attemptConnection() {
                 setTimeout(function() {
                     cordovaInterface.style.display = 'none';
                     iframe.style.display = 'block';
-                }, 2000);
+                }, 1000);
             }, 1200);
         };
     })
