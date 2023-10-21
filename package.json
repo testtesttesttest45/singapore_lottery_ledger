@@ -5,7 +5,7 @@
   "main": "electron-window.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ssserver.js",
+    "start": "node server.js",
     "server": "node server.js",
     "electron": "electron .",
     "package": "electron-packager . singapore_lottery_ledger --platform=win32 --arch=x64 --icon=public/assets/favicon.ico",

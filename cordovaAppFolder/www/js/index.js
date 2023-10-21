@@ -52,11 +52,11 @@ function attemptConnection() {
     serverMessage.style.backgroundColor = '#0eb3d8';
 
     // Use fetch with 'no-cors' mode to check if the server is responsive
-    fetch('https://singapore-lottery-ledger-v2.as.r.appspot.com')
+    fetch('https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io')
         .then(response => {
             if (response.status === 200) {
                 // If status is 200 OK, then load the iframe content
-                iframe.src = 'https://singapore-lottery-ledger-v2.as.r.appspot.com';
+                iframe.src = 'https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io';
 
                 iframe.onload = function () {
                     setTimeout(function () {
