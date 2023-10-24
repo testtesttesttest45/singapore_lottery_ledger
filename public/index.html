@@ -18,8 +18,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Orbitron:wght@900&family=Shadows+Into+Light&display=swap"
         rel="stylesheet">
-
-
+    <script src="js/main2.js"></script>
 </head>
 
 <body>
@@ -28,7 +27,7 @@
         <div class="header-banner">
             <div></div>
             <span>Welcome, <span id="user-name" style="color: limegreen;">User</span> !</span>
-            <span>First betted on <span id="first-betting" style="color: limegreen;">October 18, 2023</span></span>
+            <span>First betted on <span id="first-betting" style="color: limegreen;">September 24, 2023</span></span>
             <div class="btn-container">
                 <button id="refresh-btn" type="button" aria-label="refresh button">Refresh <i
                         class="fa-solid fa-rotate-right"></i></button>
@@ -49,10 +48,9 @@
         </div>
 
         <div id="sortable-container">
-
-            <section id="entry-sections">
+            <section id="section-new-entry">
                 <div class="sections-header">
-                    <h2>Lottery Entries</h2>
+                    <h2>New Lottery Entries</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
                 </div>
                 <h4 class="section-description">Just purchased your lottery tickets? Let's input the details here for
@@ -63,14 +61,12 @@
                         <div id="section-4d-view">
                             <h2>4D Entry</h2>
                             <form id="4d-form">
-
                                 <div class="form-row">
                                     <label for="4d-entry-type">Entry Type:</label>
                                     <select id="4d-entry-type">
                                         <option value="Ordinary">Ordinary</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="4d-pick-type">Pick Type:</label>
                                     <select id="4d-pick-type">
@@ -80,30 +76,30 @@
                                         <option value="Online Sites">Online Sites</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="4d-bet-big">Bet Amount (Big):</label>
                                     <input type="number" id="4d-bet-big" placeholder="e.g., $2" min="0">
                                 </div>
-
                                 <div class="form-row">
                                     <label for="4d-bet-small">Bet Amount (Small):</label>
                                     <input type="number" id="4d-bet-small" placeholder="e.g., $1" min="0">
                                 </div>
-
                                 <div class="form-row">
                                     <label for="4d-outlet">Outlet:</label>
-                                    <select id="4d-outlet">
+                                    <select id="4d-outlet" class="outlet-select">
                                         <option value="Woodlands N8">Woodlands N8</option>
                                         <option value="Online">Online</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
-
+                                <div class="form-row customOutletRow" style="display: none;">
+                                    <label>Custom Outlet:</label>
+                                    <input type="text" class="customOutlet" placeholder="Enter custom outlet">
+                                </div>
                                 <div class="form-row">
                                     <label for="4d-boards">Number of Boards:</label>
                                     <input type="number" id="4d-boards" placeholder="e.g., 1" min="1" required>
                                 </div>
-
                                 <button type="submit">Add Entry</button>
                             </form>
                         </div>
@@ -122,7 +118,6 @@
                                         <option value="System 12">System 12</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="toto-pick-type">Pick Type:</label>
                                     <select id="toto-pick-type">
@@ -132,27 +127,28 @@
                                         <option value="Online Sites">Online Sites</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="toto-outlet">Outlet:</label>
-                                    <select id="toto-outlet">
+                                    <select id="toto-outlet" class="outlet-select">
                                         <option value="Woodlands N8">Woodlands N8</option>
                                         <option value="Online">Online</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
-
+                                <div class="form-row customOutletRow" style="display: none;">
+                                    <label>Custom Outlet:</label>
+                                    <input type="text" class="customOutlet" placeholder="Enter custom outlet">
+                                </div>
                                 <div class="form-row">
                                     <label for="toto-boards">Number of Boards:</label>
                                     <input type="number" id="toto-boards" placeholder="e.g., 1" min="1" required>
                                 </div>
-
                                 <button type="submit">Add Entry</button>
                             </form>
                         </div>
                         <div id="section-sg-sweep-view">
                             <h2>Singapore Sweep Entry</h2>
                             <form id="sg-sweep-form">
-
                                 <div class="form-row">
                                     <label for="sg-sweep-pick-type">Pick Type:</label>
                                     <select id="sg-sweep-pick-type">
@@ -160,19 +156,21 @@
                                         <option value="Self Pick">Self Pick</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="sg-sweep-outlet">Outlet:</label>
-                                    <select id="sg-sweep-outlet">
+                                    <select id="sg-sweep-outlet" class="outlet-select">
                                         <option value="Woodlands N8">Woodlands N8</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
-
+                                <div class="form-row customOutletRow" style="display: none;">
+                                    <label>Custom Outlet:</label>
+                                    <input type="text" class="customOutlet" placeholder="Enter custom outlet">
+                                </div>
                                 <div class="form-row">
                                     <label for="sg-sweep-boards">Number of Boards:</label>
                                     <input type="number" id="sg-sweep-boards" placeholder="e.g., 1" min="1" required>
                                 </div>
-
                                 <button type="submit">Add Entry</button>
                             </form>
                         </div>
@@ -318,11 +316,11 @@
                             </table>
                         </div>
                     </div>
-                    <h3>Prizes History</h3>
+                    <h3>Winnings History</h3>
                     <button id="save-winnings-btn" type="button" style="color: limegreen; display: none;"
                         aria-label="Save winning entries">Save winnings</button>
                     <div class="long-table-container">
-                        <table id="prizes-history-table">
+                        <table id="winnings-history-table">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -337,7 +335,7 @@
                             </thead>
                             <tbody>
                                 <tr class="no-entry-row">
-                                    <td colspan="9">No prizes won.</td>
+                                    <td colspan="9">No winnings added.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -350,14 +348,12 @@
                                         class="fa-solid fa-caret-right"></i></p>
                             </div>
                             <form id="winnings-form-4d" class="winnings-form">
-
                                 <div class="form-row">
                                     <label for="winnings-entry-type-4d">Entry Type:</label>
                                     <select id="winnings-entry-type-4d">
                                         <option value="Ordinary">Ordinary</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-pick-type-4d">Pick Type:</label>
                                     <select id="winnings-pick-type-4d">
@@ -367,26 +363,27 @@
                                         <option value="Online Sites">Online Sites</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-outlet-4d">Outlet:</label>
-                                    <select id="winnings-outlet-4d">
+                                    <select id="winnings-outlet-4d" class="outlet-select">
                                         <option value="Woodlands N8">Woodlands N8</option>
                                         <option value="Online">Online</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
-
+                                <div class="form-row customOutletRow" style="display: none;">
+                                    <label>Custom Outlet:</label>
+                                    <input type="text" class="customOutlet" placeholder="Enter custom outlet">
+                                </div>
                                 <div class="form-row">
                                     <label for="winnings-prize-4d">Winning Prize:</label>
                                     <input type="number" id="winnings-prize-4d" placeholder="Minimum $60" min="60"
                                         required>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-date-4d">Date:</label>
                                     <input type="date" id="winnings-date-4d" required>
                                 </div>
-
                                 <div class="form-row button-row">
                                     <button type="submit" class="submit-btn">Add Winnings</button>
                                 </div>
@@ -399,7 +396,6 @@
                                         class="fa-solid fa-caret-right"></i></p>
                             </div>
                             <form id="winnings-form-toto" class="winnings-form">
-
                                 <div class="form-row">
                                     <label for="winnings-entry-type-toto">Entry Type:</label>
                                     <select id="winnings-entry-type-toto">
@@ -412,7 +408,6 @@
                                         <option value="System 12">System 12</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-pick-type-toto">Pick Type:</label>
                                     <select id="winnings-pick-type-toto">
@@ -422,26 +417,27 @@
                                         <option value="Online Sites">Online Sites</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-outlet-toto">Outlet:</label>
-                                    <select id="winnings-outlet-toto">
+                                    <select id="winnings-outlet-toto" class="outlet-select">
                                         <option value="Woodlands N8">Woodlands N8</option>
                                         <option value="Online">Online</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
-
+                                <div class="form-row customOutletRow" style="display: none;">
+                                    <label>Custom Outlet:</label>
+                                    <input type="text" class="customOutlet" placeholder="Enter custom outlet">
+                                </div>
                                 <div class="form-row">
                                     <label for="winnings-prize-toto">Winning Prize:</label>
                                     <input type="number" id="winnings-prize-toto" placeholder="Minimum $10" min="10"
                                         required>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-date-toto">Date:</label>
                                     <input type="date" id="winnings-date-toto" required>
                                 </div>
-
                                 <div class="form-row button-row">
                                     <button type="submit" class="submit-btn">Add Winnings</button>
                                 </div>
@@ -454,7 +450,6 @@
                                         class="fa-solid fa-caret-right"></i></p>
                             </div>
                             <form id="winnings-form-sg-sweep" class="winnings-form">
-
                                 <div class="form-row">
                                     <label for="winnings-pick-type-sg-sweep">Pick Type:</label>
                                     <select id="winnings-pick-type-sg-sweep">
@@ -462,25 +457,26 @@
                                         <option value="Self Pick">Self Pick</option>
                                     </select>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-outlet-sg-sweep">Outlet:</label>
-                                    <select id="winnings-outlet-sg-sweep">
+                                    <select id="winnings-outlet-sg-sweep" class="outlet-select">
                                         <option value="Woodlands N8">Woodlands N8</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
-
+                                <div class="form-row customOutletRow" style="display: none;">
+                                    <label>Custom Outlet:</label>
+                                    <input type="text" class="customOutlet" placeholder="Enter custom outlet">
+                                </div>
                                 <div class="form-row">
                                     <label for="winnings-prize-sg-sweep">Winning Prize:</label>
                                     <input type="number" id="winnings-prize-sg-sweep" placeholder="Minimum $6" min="6"
                                         required>
                                 </div>
-
                                 <div class="form-row">
                                     <label for="winnings-date-sg-sweep">Date:</label>
                                     <input type="date" id="winnings-date-sg-sweep" required>
                                 </div>
-
                                 <div class="form-row button-row">
                                     <button type="submit" class="submit-btn">Add Winnings</button>
                                 </div>
@@ -490,7 +486,7 @@
                 </div>
             </section>
 
-            <section id="notes">
+            <section id="section-notes">
                 <div class="sections-header">
                     <h2>
                         Notes to self
@@ -516,7 +512,7 @@
                 </div>
             </section>
 
-            <section id="purchase-history">
+            <section id="section-purchase-history">
                 <div class="sections-header">
                     <h2>Purchase History</h2>
                     <button id="sorting-btn" type="button" style="color: limegreen"
@@ -548,7 +544,6 @@
                         </div>
                     </div>
                     <div class="long-table-container">
-
                         <table id="purchase-history-table">
                             <thead>
                                 <tr>
@@ -580,7 +575,7 @@
                 </div>
             </section>
 
-            <section id="current-betslips">
+            <section id="section-current-betslips">
                 <div class="sections-header">
                     <h2>Current Betslips</h2>
                     <i class="fa-solid fa-up-down-left-right move-button"></i>
@@ -605,7 +600,6 @@
                         <input type="file" id="input4D" accept="image/*" style="display: none;">
                         <button id="upload4D" class="upload-betslip">Upload 4D Betslip</button>
                     </div>
-
                     <div class="betslip-section" id="toto-betslip-section">
                         <h3>Toto Betslip</h3>
                         <div class="betslip-pagination-container">
@@ -614,12 +608,12 @@
                             <button id="nextBtn-toto" class="betslip-pagination">&raquo;</button>
                         </div>
                         <div class="image-container" id="image-container-toto">
-                            <p class="betslip-placeholder-text">You have not uploaded a Toto betslip for the upcoming draw!</p>
+                            <p class="betslip-placeholder-text">You have not uploaded a Toto betslip for the upcoming
+                                draw!</p>
                         </div>
                         <input type="file" id="inputToto" accept="image/*" style="display: none;">
                         <button id="uploadToto" class="upload-betslip">Upload Toto Betslip</button>
                     </div>
-                    
                     <div class="betslip-section" id="sg-sweep-betslip-section">
                         <h3>Singapore Sweep Betslip</h3>
                         <div class="betslip-pagination-container">
@@ -628,7 +622,8 @@
                             <button id="nextBtn-sg-sweep" class="betslip-pagination">&raquo;</button>
                         </div>
                         <div class="image-container" id="image-container-sg-sweep">
-                            <p class="betslip-placeholder-text">You have not uploaded a Singapore Sweep betslip for the upcoming draw!</p>
+                            <p class="betslip-placeholder-text">You have not uploaded a Singapore Sweep betslip for the
+                                upcoming draw!</p>
                         </div>
                         <input type="file" id="inputSgSweep" accept="image/*" style="display: none;">
                         <button id="uploadSgSweep" class="upload-betslip">Upload Singapore Sweep Betslip</button>
@@ -638,7 +633,35 @@
         </div>
     </main>
 
-    <script src="js/main.js"></script>
+    <footer>
+        <div class="footer-div1">
+            <h4 style="visibility: hidden;">Made by Wei Lin from Singapore</h4>
+
+            <div class="footer-div2">
+                <img src="/assets/treasure.png" alt="treasure image">
+            </div>
+        </div>
+
+        <div class="contact-admin-form">
+            <h4>Contact Admin</h4>
+            <form action="/contact-admin" method="POST" id="contactForm">
+                <label for="messageType">Message Type:</label>
+                <select id="messageType" name="messageType">
+                    <option value="Request data change">Request data change</option>
+                    <option value="Report bug or improvements">Report bug or improvements</option>
+                    <option value="Request help">Request help</option>
+                    <option value="Others">Others</option>
+                </select>
+                <label for="messageContent">Message Content:</label>
+                <textarea id="messageContent" name="messageContent" rows="4" required></textarea>
+                <label for="senderEmail">Your email (for admin to reply):</label>
+                <input type="email" id="senderEmail" name="senderEmail" required
+                    title="Use real email so admin can reply back.">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </footer>
+
     <div id="success-message" class="hidden">
         <div class="tick-wrapper">
             <i class="fas fa-check"></i>
@@ -648,43 +671,6 @@
     <div class="spinner-container hidden" id="loadingSpinner">
         <div class="spinner"></div>
     </div>
-    <footer>
-        <div class="test2">
-            <h4>Made by Wei Lin from Singapore</h4>
-
-            <div class="test">
-                <img src="/assets/treasure.png" alt="treasure image">
-            </div>
-        </div>
-
-        <div class="contact-admin-form">
-            <h4>Contact Admin</h4>
-
-            <form action="/contact-admin" method="POST" id="contactForm">
-                <!-- Dropdown for message type -->
-                <label for="messageType">Message Type:</label>
-                <select id="messageType" name="messageType">
-                    <option value="Request data change">Request data change</option>
-                    <option value="Report bug or improvements">Report bug or improvements</option>
-                    <option value="Request help">Request help</option>
-                    <option value="Others">Others</option>
-                </select>
-
-                <!-- Input field for message content -->
-                <label for="messageContent">Message Content:</label>
-                <textarea id="messageContent" name="messageContent" rows="4" required></textarea>
-
-                <label for="senderEmail">Your email (for admin to reply):</label>
-                <input type="email" id="senderEmail" name="senderEmail" required
-                    title="Use real email so admin can reply back.">
-
-                <!-- Submit button -->
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    </footer>
-
-
 </body>
 
 </html>

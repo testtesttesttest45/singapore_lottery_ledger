@@ -55,7 +55,7 @@ function setupDatabase() {
                 password VARCHAR(255) NOT NULL,
                 first_day_betting DATE,
                 date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                sections_order VARCHAR(500) DEFAULT '["entry-sections", "section-today-entry",  "section-total-spendings", "section-total-winnings", "notes", "purchase-history", "current-betslips"]'
+                sections_order VARCHAR(500) DEFAULT '["section-new-entry", "section-today-entry",  "section-total-spendings", "section-total-winnings", "section-notes", "section-purchase-history", "section-current-betslips"]'
             );
             `;
 
@@ -102,8 +102,8 @@ function setupDatabase() {
                 console.log("notes table created.");
             });
 
-            // Create prizes table
-            const createPrizesTable = `
+            // Create winnings table
+            const createWinningsTable = `
             CREATE TABLE IF NOT EXISTS winnings (
                 winning_id INT AUTO_INCREMENT PRIMARY KEY,
                 fk_user_id INT,
@@ -118,9 +118,9 @@ function setupDatabase() {
             );
             `;
 
-            connection.query(createPrizesTable, err => {
+            connection.query(createWinningsTable, err => {
                 if (err) throw err;
-                console.log("prizes table created.");
+                console.log("winnings table created.");
             });
 
             // Create betslips table

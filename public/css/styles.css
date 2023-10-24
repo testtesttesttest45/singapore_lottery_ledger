@@ -73,7 +73,7 @@ td {
 #today-totals-table,
 #totals-table,
 #winnings-table,
-#prizes-history-table,
+#winnings-history-table,
 #purchase-history-table {
     width: 100%;
     border-collapse: collapse;
@@ -96,8 +96,8 @@ td {
 #totals-table td,
 #winnings-table th,
 #winnings-table td,
-#prizes-history-table th,
-#prizes-history-table td,
+#winnings-history-table th,
+#winnings-history-table td,
 #purchase-history-table th,
 #purchase-history-table td {
     padding: 8px 12px;
@@ -109,7 +109,7 @@ td {
 #today-totals-table th,
 #totals-table th,
 #winnings-table th,
-#prizes-history-table th,
+#winnings-history-table th,
 #purchase-history-table th {
     background-color: #333;
     color: white;
@@ -125,7 +125,7 @@ td {
 }
 
 #entries-table tbody tr:nth-child(odd),
-#prizes-history-table tbody tr:nth-child(odd),
+#winnings-history-table tbody tr:nth-child(odd),
 #purchase-history-table tbody tr:nth-child(odd) {
     background-color: #c5b4b4;
 }
@@ -134,7 +134,7 @@ td {
 #today-totals-table tbody tr td:hover:not(:nth-child(4)),
 #totals-table tbody tr td:hover,
 #winnings-table tbody tr td:hover,
-#prizes-history-table tbody tr:hover,
+#winnings-history-table tbody tr:hover,
 #purchase-history-table tbody tr:hover {
     background-color: #5a5050;
 }
@@ -144,13 +144,15 @@ td {
 #section-sg-sweep-view form {
     width: 100%;
     display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr auto;
+    grid-template-rows: 1fr 1fr 1fr auto auto;
     row-gap: 10px;
     align-items: center;
 }
 
 .form-row {
     width: 80%;
+    text-wrap: nowrap;
+    height: 100%;
 }
 
 .form-row label,
@@ -657,7 +659,7 @@ footer {
     justify-content: flex-end;
 }
 
-.test2 {
+.footer-div1 {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -671,7 +673,7 @@ footer {
     z-index: 1;
 }
 
-.test {
+.footer-div2 {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -962,7 +964,7 @@ footer img {
         justify-content: center;
     }
 
-    .test2 {
+    .footer-div1 {
         position: static;
         margin-bottom: 20px;
         margin-top: 200px;

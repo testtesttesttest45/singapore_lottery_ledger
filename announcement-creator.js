@@ -19,7 +19,7 @@
 // 10. Declare the announcement IDs to outdate in the outdateAnnoucements array on line 24
 // 11. Run this script with `node announcement-creator.js`
 
-const announcementContent = "ENTER ANNOUNCEMENT HERE";
+const announcementContent = "Welcome to Singapore Lottery Ledger! We are currently in beta, so please report any bugs to us.";
 const targetUsers = []; // Array of user IDs to target. Leave empty for all users.
 const outdateAnnoucements = []; // Array of announcement IDs to outdate, [1, 2, 3, 4, 5]
 
@@ -44,6 +44,7 @@ connection.connect(err => {
         return;
     }
     console.log('Connected to MySQL.');
+    // ensure only 1 function out of the 4 below is uncommented at a time
     getUsers();
     // getAnnouncements();
     // createAnnouncement();

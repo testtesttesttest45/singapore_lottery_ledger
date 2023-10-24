@@ -1,31 +1,4 @@
-function calculateCost(entryType, boards) {
-    let costPerBoard = 1;
 
-    switch (entryType) {
-        case "System 7":
-            costPerBoard = 7;
-            break;
-        case "System 8":
-            costPerBoard = 28;
-            break;
-        case "System 9":
-            costPerBoard = 84;
-            break;
-        case "System 10":
-            costPerBoard = 210;
-            break;
-        case "System 11":
-            costPerBoard = 462;
-            break;
-        case "System 12":
-            costPerBoard = 924;
-            break;
-        default:
-            break;
-    }
-
-    return costPerBoard * boards;
-}
 
 let currentOrder = [];
 
@@ -227,25 +200,6 @@ document.getElementById('sg-sweep-form').addEventListener('submit', function (ev
     updateTotals();
 });
 
-function updateRowNumbers(tableSelector) {
-    const rows = document.querySelectorAll(`${tableSelector} tbody tr:not(.no-entry-row)`);
-    rows.forEach((row, index) => {
-        row.cells[0].innerText = index + 1;  // Update the first cell with the row number
-    });
-}
-
-function updateButtonAppearance(hasEntries, sectionSelector) {
-    if (hasEntries) {
-        saveButton.classList.add('neon-button');
-        neonReflection.style.display = 'block';
-        // sectionSelecctor will be something like "#section-today-entry", so when used it we will change its background color to #95e495
-        document.querySelector(sectionSelector).style.backgroundColor = "#95e495";
-    } else {
-        saveButton.classList.remove('neon-button');
-        neonReflection.style.display = 'none';
-        document.querySelector(sectionSelector).style.backgroundColor = "";
-    }
-}
 
 
 const saveButton = document.getElementById('save-entries-btn');
@@ -281,73 +235,7 @@ document.getElementById('save-entries-btn').addEventListener('click', function (
     }
 });
 
-function saveEntries(entries) {
-    const previousPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
-        .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
 
-    fetch('/save-entries', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ entries }),
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Entries saved successfully!');
-                showSuccessEffect('Entries saved!');
-                const tableBody = document.querySelector('#entries-table tbody');
-                while (tableBody.firstChild) {
-                    tableBody.removeChild(tableBody.firstChild);
-                }
-                checkForNoEntries("#entries-table", 'entry', 'entries added');
-                updateTotals();
-                fetchPurchaseHistory(() => {
-                    const currentPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
-                        .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
-                    const newIds = currentPurchaseIds.filter(id => !previousPurchaseIds.includes(id));
-                    newIds.forEach(id => {
-                        const row = document.querySelector(`#purchase-history-table tbody tr:not(.no-entry-row)[data-id="purchase-${id}"]`);
-                        if (row) {
-                            row.classList.add('gradient-highlight')
-                            setTimeout(() => {
-                                row.classList.remove('gradient-highlight');
-                            }, 1400);
-                        }
-                    });
-                });
-                updateButtonAppearance(false, '#section-today-entry');
-                const purchaseHistorySection = document.querySelector('#purchase-history');
-                if (purchaseHistorySection) {
-                    purchaseHistorySection.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
-            } else {
-                alert('Error saving entries: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('There was a problem saving the entries.');
-        });
-}
-function checkForNoEntries(tableSelector, type, text) {
-    const tableBody = document.querySelector(tableSelector + " tbody");
-    if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-        const noEntryRow = `<tr class="no-entry-row"><td colspan="9">No ${text}.</td></tr>`;
-        tableBody.innerHTML = noEntryRow;
-    }
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-}
 const date = new Date();
 
 document.getElementById('winnings-form-4d').addEventListener('submit', function (event) {
@@ -491,6 +379,625 @@ document.getElementById('winnings-form-sg-sweep').addEventListener('submit', fun
     // console.log(winning);
     saveIndividualWinnings(winning);
 });
+
+
+
+
+// function setUpTableListener(tableSelector, options = {}) {
+//     document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
+//         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
+//             const message = options.confirmMessage || 'Are you sure you want to delete this entry?';
+//             const shouldDelete = confirm(message);
+//             if (shouldDelete) {
+//                 const row = event.target.closest('tr');
+//                 const tableBody = document.querySelector(tableSelector + " tbody");
+//                 if (options.serverDelete) {
+//                     // const recordId = row.getAttribute('data-id').replace('purchase-', ''); // need to do for 'winning-' too
+//                     const rowId = row.getAttribute('data-id').replace(options.rowType + '-', '');
+//                     options.deleteMethod(rowId).then((success) => {
+//                         if (success) {
+//                             row.remove();
+//                             // Check for empty table after row removal
+//                             const tableBody = document.querySelector(tableSelector + " tbody");
+//                             const colspan = options.colspan || 9;
+//                             if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+//                                 const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
+//                                 tableBody.innerHTML = noEntryRow;
+//                                 if (currentPage > 1) {
+//                                     currentPage--; // Go back to the previous page if the current one is empty
+//                                 }
+//                                 displayPurchaseHistory(purchaseHistoryData);
+//                             }
+//                             updatePurchaseHistoryTotals();
+//                             updatePaginationControls();
+//                         } else {
+//                             alert('Error deleting. Please try again later.');
+//                         }
+//                     });
+//                 } else {
+//                     row.remove();
+//                     if (options.afterDelete) {
+//                         options.afterDelete();
+//                     }
+//                     const rows = tableBody.querySelectorAll('tr:not(.no-entry-row)');
+//                     rows.forEach((row, index) => {
+//                         const firstCell = row.querySelector('td:first-child');
+//                         firstCell.textContent = index + 1;
+//                     });
+//                     const colspan = options.colspan || 8;
+//                     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+//                         const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
+//                         tableBody.innerHTML = noEntryRow;
+//                         updateButtonAppearance(false, '#section-today-entry');
+//                     }
+//                 }
+//             }
+//         } else if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
+//             console.log('edit');
+//             const td = event.target.closest('td');
+//             const dateText = td.querySelector('.date-text');
+//             const dateInput = td.querySelector('.date-input');
+//             const confirmBtn = td.querySelector('.confirm-btn');
+//             const cancelBtn = td.querySelector('.cancel-btn');
+
+//             // Hide date text and show input and buttons
+//             dateText.style.display = 'none';
+//             dateInput.style.display = 'block';
+//             confirmBtn.style.display = 'inline-block';
+//             cancelBtn.style.display = 'inline-block';
+//         }
+//         else if (event.target.classList.contains('confirm-btn') || event.target.closest('.confirm-btn')) {
+//             console.log('confirm');
+//             const td = event.target.closest('td');
+//             const dateText = td.querySelector('.date-text');
+//             const dateInput = td.querySelector('.date-input');
+//             const row = event.target.closest('tr');
+//             const rowId = row.getAttribute('data-id').replace('purchase-', '');
+
+//             // Update the date on the server
+//             editPurchase(rowId, dateInput.value).then((success) => {
+//                 if (success) {
+//                     // Update the date text and hide input and buttons
+//                     dateText.textContent = dateInput.value;
+//                     dateText.style.display = 'block';
+//                     dateInput.style.display = 'none';
+//                     td.querySelector('.confirm-btn').style.display = 'none';
+//                     td.querySelector('.cancel-btn').style.display = 'none';
+//                 } else {
+//                     alert('Error updating. Please try again later.');
+//                 }
+//             });
+//         }
+//         else if (event.target.classList.contains('cancel-btn') || event.target.closest('.cancel-btn')) {
+//             console.log('cancel');
+//             const td = event.target.closest('td');
+//             const dateText = td.querySelector('.date-text');
+//             const dateInput = td.querySelector('.date-input');
+
+//             // Reset input value and hide input and buttons
+//             dateInput.value = dateText.textContent;
+//             dateText.style.display = 'block';
+//             dateInput.style.display = 'none';
+//             td.querySelector('.confirm-btn').style.display = 'none';
+//             td.querySelector('.cancel-btn').style.display = 'none';
+//         }
+//     });
+// }
+
+setUpTableListener("#entries-table", {
+    confirmMessage: 'Are you sure you want to delete this entry?',
+    afterDelete: updateTotals,
+    noDataText: 'entries added',
+    colspan: 9
+});
+
+setUpTableListener("#purchase-history-table", {
+    rowType: 'purchase',
+    confirmMessage: 'Are you sure you want to delete this purchase?',
+    serverDelete: true,
+    deleteMethod: deletePurchase,
+    editMethod: editPurchase,
+    noDataText: 'purchases found',
+    colspan: 10
+});
+
+setUpTableListener("#prizes-history-table", {
+    rowType: 'winning',
+    confirmMessage: 'Are you sure you want to delete this prize entry?',
+    serverDelete: true,
+    deleteMethod: deleteWinnings,
+    afterDelete: updateWinningsTotal,
+    noDataText: 'prize entries found',
+    colspan: 8
+});
+
+// Set default order or load from saved preference
+function setOrder(order) {
+    const container = document.getElementById('sortable-container');
+    order.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            container.appendChild(element);
+        }
+    });
+}
+
+// Utility function to check if two arrays are equal
+function arraysEqual(a, b) {
+    return a.length === b.length && a.every((val, index) => val === b[index]);
+}
+
+function updateSectionOrderInDatabase(newOrder) {
+    fetch('/update-section-order', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newOrder: newOrder })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(message => {
+            console.log(message);
+        })
+        .catch(error => {
+            console.error('Error updating section order:', error);
+            alert('There was a problem updating the section order.');
+        });
+}
+
+function checkButtonVisibility(type) {
+    const container = document.getElementById(`image-container-${type}`);
+    const prevBtn = document.getElementById(`prevBtn-${type}`);
+    const nextBtn = document.getElementById(`nextBtn-${type}`);
+
+    // Hide the "previous" button if we're at the start
+    if (container.scrollLeft <= 0) {
+        prevBtn.style.visibility = 'hidden';
+    } else {
+        prevBtn.style.visibility = 'visible';
+    }
+
+    // Hide the "next" button if we're at the end
+    // if (container.scrollWidth - container.scrollLeft <= container.clientWidth) {
+    const buffer = 5; // You can adjust this value based on your needs
+
+    if (container.scrollWidth - container.scrollLeft - buffer <= container.clientWidth) {
+        nextBtn.style.visibility = 'hidden';
+    } else {
+        nextBtn.style.visibility = 'visible';
+    }
+}
+
+function getCookie(name) {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+let isAnimating = false;  // Flag to check if animation is currently playing
+let timeouts = [];  // Store active timeout IDs to clear them if needed
+
+
+
+document.getElementById('upload4D').addEventListener('click', function () {
+    // addPlaceholderImage('4d');
+    document.getElementById('input4D').click();
+});
+
+document.getElementById('uploadToto').addEventListener('click', function () {
+    // addPlaceholderImage('toto');
+    document.getElementById('inputToto').click();
+});
+
+document.getElementById('uploadSgSweep').addEventListener('click', function () {
+    // addPlaceholderImage('sg-sweep');
+    document.getElementById('inputSgSweep').click();
+});
+
+
+
+document.getElementById('input4D').addEventListener('change', function () {
+    handleImageUpload('4d', this);
+});
+
+document.getElementById('inputToto').addEventListener('change', function () {
+    handleImageUpload('toto', this);
+});
+
+document.getElementById('inputSgSweep').addEventListener('change', function () {
+    handleImageUpload('sg-sweep', this);
+});
+
+
+
+document.addEventListener('DOMContentLoaded', fetchBetslips);
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleButtons = document.querySelectorAll('.toggle-form');
+
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const targetFormId = btn.getAttribute('data-target');
+            const targetForm = document.getElementById(targetFormId);
+
+            if (targetForm.style.display === 'none' || !targetForm.style.display) {
+                targetForm.style.display = 'block';
+                btn.innerHTML = 'Hide Form <i class="fa-solid fa-caret-right"></i>';
+            } else {
+                targetForm.style.display = 'none';
+                btn.innerHTML = 'Show Form <i class="fa-solid fa-caret-right"></i>';
+            }
+        });
+    });
+});
+
+
+
+const sections = ['#section-new-entry', '#section-today-entry', '#section-total-spendings', '#section-total-winnings', '#section-notes', '#purchase-history', '#current-betslips'];
+
+sections.forEach(sectionId => {
+    const section = document.querySelector(sectionId);
+    const btn = section.querySelector('.toggle-button');
+
+    btn.addEventListener('click', function () {
+        toggleSectionVisibility(sectionId);
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const editBtn = document.getElementById('edit-note-button');
+    const cancelBtn = document.getElementById('cancel-note-button');
+    const selfNotes = document.getElementById('self-notes');
+    const lockIcon = document.getElementById('lock-icon');
+    const editingText = document.getElementById('editing-text');
+    let originalContent = selfNotes.value;
+
+    // Hide cancel button initially
+    cancelBtn.style.display = 'none';
+
+    fetchNotesAndDisplay();
+
+    editBtn.addEventListener('click', function () {
+        if (selfNotes.hasAttribute('readonly')) {
+            lockIcon.style.display = 'none';
+            editingText.style.display = 'inline';
+
+            // Store the current content
+            originalContent = selfNotes.value;
+
+            // Make textarea editable
+            selfNotes.removeAttribute('readonly');
+            selfNotes.focus();
+
+            editBtn.classList.remove('fa-pen-to-square');
+            editBtn.classList.add('fa-regular', 'fa-floppy-disk');
+            cancelBtn.style.display = 'inline';
+        } else {
+            saveNotes(selfNotes.value);
+
+            editingText.style.display = 'none';
+            lockIcon.style.display = 'inline';
+
+            selfNotes.setAttribute('readonly', true);
+
+            // Hide the cancel button and change the save button back to edit
+            editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
+            editBtn.classList.add('fa-pen-to-square');
+            cancelBtn.style.display = 'none';
+        }
+    });
+
+    cancelBtn.addEventListener('click', function () {
+        // Restore the original content
+        selfNotes.value = originalContent;
+
+        // Hide editing text and show lock icon
+        editingText.style.display = 'none';
+        lockIcon.style.display = 'inline';
+
+        // Make textarea non-editable
+        selfNotes.setAttribute('readonly', true);
+
+        // Hide the cancel button and change the save button back to edit
+        editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
+        editBtn.classList.add('fa-pen-to-square');
+        cancelBtn.style.display = 'none';
+    });
+});
+
+
+
+const ROWS_PER_PAGE = 10;
+let currentPage = 1;
+let totalRows = 0;
+let purchaseHistoryData = [];
+let winningHistoryData = [];
+let filteredAndSortedData = [];
+let currentFilter = 'All'; // Default
+let currentSort = 'latest'; // Default
+
+// Initial data fetch
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPurchaseHistory();
+    fetchWinningHistory();
+});
+
+// Bindings for sorting and filtering
+bindSortingAndFiltering();
+
+// Bindings for pagination
+bindPaginationControls();
+
+
+
+document.getElementById('sorting-btn').addEventListener('click', function () {
+    const sortingMenu = document.getElementById('sorting-menu');
+    const isHidden = sortingMenu.style.display === 'none';
+    sortingMenu.style.display = isHidden ? 'block' : 'none';
+    this.textContent = isHidden ? 'Hide Menu' : 'Sort';
+});
+
+document.getElementById('sorting-menu').addEventListener('click', function (e) {
+    const button = e.target.closest('BUTTON');
+    if (button) {
+        const siblingButtons = button.closest('.menu-row').querySelectorAll('button');
+
+        siblingButtons.forEach(btn => btn.classList.remove('selected'));
+
+        button.classList.add('selected');
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize SortableJS
+    const sortable = new Sortable(document.getElementById('sortable-container'), {
+        animation: 700,
+        scroll: true,
+        direction: 'vertical', // restricts movement to vertical direction
+        handle: ".move-button", // Only elements with this class will trigger dragging
+        onUpdate: function (evt) {
+            const newOrder = [];
+            const items = document.getElementById('sortable-container').children;
+            for (let item of items) {
+                newOrder.push(item.id);
+            }
+            if (!arraysEqual(newOrder, currentOrder)) {
+                updateSectionOrderInDatabase(newOrder);
+                currentOrder = newOrder.slice(); // Update currentOrder with the new order. Using slice() to make a copy of newOrder.
+            }
+        }
+    });
+});
+
+
+
+
+document.getElementById('reset-order-btn').addEventListener('click', function () {
+    const defaultOrder = [
+        "section-new-entry",
+        "section-today-entry",
+        "section-total-spendings",
+        "section-total-winnings",
+        "section-notes",
+        "purchase-history",
+        "current-betslips"
+    ];
+    setOrder(defaultOrder);
+    if (!arraysEqual(defaultOrder, currentOrder)) {
+        updateSectionOrderInDatabase(defaultOrder);
+        currentOrder = defaultOrder.slice();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const contactForm = document.getElementById('contactForm');
+
+    contactForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        document.getElementById('loadingSpinner').classList.remove('hidden');
+        // Extract values from the form
+        const messageType = document.getElementById('messageType').value;
+        const messageContent = document.getElementById('messageContent').value;
+        const senderEmail = document.getElementById('senderEmail').value;
+
+        // Create POST request payload
+        const payload = {
+            messageType: messageType,
+            messageContent: messageContent,
+            senderEmail: senderEmail
+        };
+
+        // Send POST request
+        fetch('/contact-admin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) throw new Error(data.message);
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                contactForm.reset();
+                showSuccessEffect(`${data.message}`);
+            })
+            .catch(error => {
+                setTimeout(() => {
+                    document.getElementById('loadingSpinner').classList.add('hidden');
+                    alert(error.message);
+                }, 1000);
+            });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const refreshButton = document.getElementById('refresh-btn');
+
+    refreshButton.addEventListener('click', function () {
+        location.reload();
+    });
+
+    for (const type of lotteryTypes) {
+        const container = document.getElementById(`image-container-${type}`);
+        const prevBtn = document.getElementById(`prevBtn-${type}`);
+        const nextBtn = document.getElementById(`nextBtn-${type}`);
+
+        prevBtn.addEventListener('click', function () {
+            checkButtonVisibility(type);
+            container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+
+        });
+
+        nextBtn.addEventListener('click', function () {
+            checkButtonVisibility(type);
+            container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+
+        });
+
+        container.addEventListener('scroll', () => checkButtonVisibility(type));
+    }
+});
+
+const lotteryTypes = ['4d', 'toto', 'sg-sweep'];
+
+
+const tokenExpiration = parseInt(getCookie('tokenExpiration')) * 1000; // convert to milliseconds
+console.log('Session token will expire at', new Date(tokenExpiration));
+const delay = tokenExpiration - Date.now();
+
+setTimeout(() => {
+    alert('Your session has expired. Please log in again.');
+    window.location.href = '/login';
+}, delay);
+
+
+
+function calculateCost(entryType, boards) {
+    let costPerBoard = 1;
+
+    switch (entryType) {
+        case "System 7":
+            costPerBoard = 7;
+            break;
+        case "System 8":
+            costPerBoard = 28;
+            break;
+        case "System 9":
+            costPerBoard = 84;
+            break;
+        case "System 10":
+            costPerBoard = 210;
+            break;
+        case "System 11":
+            costPerBoard = 462;
+            break;
+        case "System 12":
+            costPerBoard = 924;
+            break;
+        default:
+            break;
+    }
+
+    return costPerBoard * boards;
+}
+
+function updateRowNumbers(tableSelector) {
+    const rows = document.querySelectorAll(`${tableSelector} tbody tr:not(.no-entry-row)`);
+    rows.forEach((row, index) => {
+        row.cells[0].innerText = index + 1;  // Update the first cell with the row number
+    });
+}
+
+function updateButtonAppearance(hasEntries, sectionSelector) {
+    if (hasEntries) {
+        saveButton.classList.add('neon-button');
+        neonReflection.style.display = 'block';
+        // sectionSelecctor will be something like "#section-today-entry", so when used it we will change its background color to #95e495
+        document.querySelector(sectionSelector).style.backgroundColor = "#95e495";
+    } else {
+        saveButton.classList.remove('neon-button');
+        neonReflection.style.display = 'none';
+        document.querySelector(sectionSelector).style.backgroundColor = "";
+    }
+}
+
+function saveEntries(entries) {
+    const previousPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
+        .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
+
+    fetch('/save-entries', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ entries }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Entries saved successfully!');
+                showSuccessEffect('Entries saved!');
+                const tableBody = document.querySelector('#entries-table tbody');
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                }
+                checkForNoEntries("#entries-table", 'entry', 'entries added');
+                updateTotals();
+                fetchPurchaseHistory(() => {
+                    const currentPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
+                        .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
+                    const newIds = currentPurchaseIds.filter(id => !previousPurchaseIds.includes(id));
+                    newIds.forEach(id => {
+                        const row = document.querySelector(`#purchase-history-table tbody tr:not(.no-entry-row)[data-id="purchase-${id}"]`);
+                        if (row) {
+                            row.classList.add('gradient-highlight')
+                            setTimeout(() => {
+                                row.classList.remove('gradient-highlight');
+                            }, 1400);
+                        }
+                    });
+                });
+                updateButtonAppearance(false, '#section-today-entry');
+                const purchaseHistorySection = document.querySelector('#purchase-history');
+                if (purchaseHistorySection) {
+                    purchaseHistorySection.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            } else {
+                alert('Error saving entries: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was a problem saving the entries.');
+        });
+}
+function checkForNoEntries(tableSelector, type, text) {
+    const tableBody = document.querySelector(tableSelector + " tbody");
+    if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
+        const noEntryRow = `<tr class="no-entry-row"><td colspan="9">No ${text}.</td></tr>`;
+        tableBody.innerHTML = noEntryRow;
+    }
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
 
 function saveIndividualWinnings(winning) {
     fetch('/save-winnings', {
@@ -654,159 +1161,48 @@ function setUpTableListener(tableSelector, options = {}) {
     });
 }
 
+function handleImageUpload(type, input) {
+    const file = input.files[0];
+    if (!file) return;
+    document.getElementById('loadingSpinner').classList.remove('hidden');
+    const reader = new FileReader();
 
-// function setUpTableListener(tableSelector, options = {}) {
-//     document.querySelector(tableSelector + " tbody").addEventListener('click', function (event) {
-//         if (event.target.classList.contains('delete-btn') || event.target.closest('.delete-btn')) {
-//             const message = options.confirmMessage || 'Are you sure you want to delete this entry?';
-//             const shouldDelete = confirm(message);
-//             if (shouldDelete) {
-//                 const row = event.target.closest('tr');
-//                 const tableBody = document.querySelector(tableSelector + " tbody");
-//                 if (options.serverDelete) {
-//                     // const recordId = row.getAttribute('data-id').replace('purchase-', ''); // need to do for 'winning-' too
-//                     const rowId = row.getAttribute('data-id').replace(options.rowType + '-', '');
-//                     options.deleteMethod(rowId).then((success) => {
-//                         if (success) {
-//                             row.remove();
-//                             // Check for empty table after row removal
-//                             const tableBody = document.querySelector(tableSelector + " tbody");
-//                             const colspan = options.colspan || 9;
-//                             if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-//                                 const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
-//                                 tableBody.innerHTML = noEntryRow;
-//                                 if (currentPage > 1) {
-//                                     currentPage--; // Go back to the previous page if the current one is empty
-//                                 }
-//                                 displayPurchaseHistory(purchaseHistoryData);
-//                             }
-//                             updatePurchaseHistoryTotals();
-//                             updatePaginationControls();
-//                         } else {
-//                             alert('Error deleting. Please try again later.');
-//                         }
-//                     });
-//                 } else {
-//                     row.remove();
-//                     if (options.afterDelete) {
-//                         options.afterDelete();
-//                     }
-//                     const rows = tableBody.querySelectorAll('tr:not(.no-entry-row)');
-//                     rows.forEach((row, index) => {
-//                         const firstCell = row.querySelector('td:first-child');
-//                         firstCell.textContent = index + 1;
-//                     });
-//                     const colspan = options.colspan || 8;
-//                     if (!tableBody.querySelector("tr:not(.no-entry-row)")) {
-//                         const noEntryRow = `<tr class="no-entry-row"><td colspan="${colspan}">No ${options.noDataText || 'entries'}.</td></tr>`;
-//                         tableBody.innerHTML = noEntryRow;
-//                         updateButtonAppearance(false, '#section-today-entry');
-//                     }
-//                 }
-//             }
-//         } else if (event.target.classList.contains('edit-btn') || event.target.closest('.edit-btn')) {
-//             console.log('edit');
-//             const td = event.target.closest('td');
-//             const dateText = td.querySelector('.date-text');
-//             const dateInput = td.querySelector('.date-input');
-//             const confirmBtn = td.querySelector('.confirm-btn');
-//             const cancelBtn = td.querySelector('.cancel-btn');
+    reader.readAsDataURL(file);
 
-//             // Hide date text and show input and buttons
-//             dateText.style.display = 'none';
-//             dateInput.style.display = 'block';
-//             confirmBtn.style.display = 'inline-block';
-//             cancelBtn.style.display = 'inline-block';
-//         }
-//         else if (event.target.classList.contains('confirm-btn') || event.target.closest('.confirm-btn')) {
-//             console.log('confirm');
-//             const td = event.target.closest('td');
-//             const dateText = td.querySelector('.date-text');
-//             const dateInput = td.querySelector('.date-input');
-//             const row = event.target.closest('tr');
-//             const rowId = row.getAttribute('data-id').replace('purchase-', '');
+    uploadToServer(type, file, function (success, cloudinaryUrl, betslipId) {
+        document.getElementById('loadingSpinner').classList.add('hidden');
+        if (success) {
+            // If upload was successful, display the image using Cloudinary URL and set its ID
+            addUploadedBetslipImage(type, cloudinaryUrl, betslipId);
+        } else {
+            alert('Error uploading image. Please try again later.');
+        }
+    });
 
-//             // Update the date on the server
-//             editPurchase(rowId, dateInput.value).then((success) => {
-//                 if (success) {
-//                     // Update the date text and hide input and buttons
-//                     dateText.textContent = dateInput.value;
-//                     dateText.style.display = 'block';
-//                     dateInput.style.display = 'none';
-//                     td.querySelector('.confirm-btn').style.display = 'none';
-//                     td.querySelector('.cancel-btn').style.display = 'none';
-//                 } else {
-//                     alert('Error updating. Please try again later.');
-//                 }
-//             });
-//         }
-//         else if (event.target.classList.contains('cancel-btn') || event.target.closest('.cancel-btn')) {
-//             console.log('cancel');
-//             const td = event.target.closest('td');
-//             const dateText = td.querySelector('.date-text');
-//             const dateInput = td.querySelector('.date-input');
-
-//             // Reset input value and hide input and buttons
-//             dateInput.value = dateText.textContent;
-//             dateText.style.display = 'block';
-//             dateInput.style.display = 'none';
-//             td.querySelector('.confirm-btn').style.display = 'none';
-//             td.querySelector('.cancel-btn').style.display = 'none';
-//         }
-//     });
-// }
-
-setUpTableListener("#entries-table", {
-    confirmMessage: 'Are you sure you want to delete this entry?',
-    afterDelete: updateTotals,
-    noDataText: 'entries added',
-    colspan: 9
-});
-
-setUpTableListener("#purchase-history-table", {
-    rowType: 'purchase',
-    confirmMessage: 'Are you sure you want to delete this purchase?',
-    serverDelete: true,
-    deleteMethod: deletePurchase,
-    editMethod: editPurchase,
-    noDataText: 'purchases found',
-    colspan: 10
-});
-
-setUpTableListener("#prizes-history-table", {
-    rowType: 'winning',
-    confirmMessage: 'Are you sure you want to delete this prize entry?',
-    serverDelete: true,
-    deleteMethod: deleteWinnings,
-    afterDelete: updateWinningsTotal,
-    noDataText: 'prize entries found',
-    colspan: 8
-});
-
-let isAnimating = false;  // Flag to check if animation is currently playing
-let timeouts = [];  // Store active timeout IDs to clear them if needed
-
-function clearExistingTimeouts() {
-    for (let timeout of timeouts) {
-        clearTimeout(timeout);
-    }
-    timeouts = [];
+    // Clear the input to ensure the change event is triggered next time, even for the same file.
+    input.value = "";
 }
 
-document.getElementById('upload4D').addEventListener('click', function () {
-    // addPlaceholderImage('4d');
-    document.getElementById('input4D').click();
-});
+function fetchBetslips() {
+    fetch('/retrieve-betslips')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                for (let betslip of data.data) {
+                    addUploadedBetslipImage(betslip.lottery_name.toLowerCase(), betslip.image_url, betslip.ID);
+                }
 
-document.getElementById('uploadToto').addEventListener('click', function () {
-    // addPlaceholderImage('toto');
-    document.getElementById('inputToto').click();
-});
-
-document.getElementById('uploadSgSweep').addEventListener('click', function () {
-    // addPlaceholderImage('sg-sweep');
-    document.getElementById('inputSgSweep').click();
-});
+                for (const type of lotteryTypes) {
+                    checkButtonVisibility(type);
+                }
+            } else {
+                console.error('Error retrieving betslips:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching the betslips:', error);
+        });
+}
 
 function addUploadedBetslipImage(type, imgSrc, betslipId) {
     const imgContainer = document.getElementById(`image-container-${type}`);
@@ -898,63 +1294,6 @@ function uploadToServer(type, file, callback) {
             callback(false);
         });
 }
-
-document.getElementById('input4D').addEventListener('change', function () {
-    handleImageUpload('4d', this);
-});
-
-document.getElementById('inputToto').addEventListener('change', function () {
-    handleImageUpload('toto', this);
-});
-
-document.getElementById('inputSgSweep').addEventListener('change', function () {
-    handleImageUpload('sg-sweep', this);
-});
-
-function handleImageUpload(type, input) {
-    const file = input.files[0];
-    if (!file) return;
-    document.getElementById('loadingSpinner').classList.remove('hidden');
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-
-    uploadToServer(type, file, function (success, cloudinaryUrl, betslipId) {
-        document.getElementById('loadingSpinner').classList.add('hidden');
-        if (success) {
-            // If upload was successful, display the image using Cloudinary URL and set its ID
-            addUploadedBetslipImage(type, cloudinaryUrl, betslipId);
-        } else {
-            alert('Error uploading image. Please try again later.');
-        }
-    });
-
-    // Clear the input to ensure the change event is triggered next time, even for the same file.
-    input.value = "";
-}
-
-function fetchBetslips() {
-    fetch('/retrieve-betslips')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                for (let betslip of data.data) {
-                    addUploadedBetslipImage(betslip.lottery_name.toLowerCase(), betslip.image_url, betslip.ID);
-                }
-
-                for (const type of lotteryTypes) {
-                    checkButtonVisibility(type);
-                }
-            } else {
-                console.error('Error retrieving betslips:', data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching the betslips:', error);
-        });
-}
-
-document.addEventListener('DOMContentLoaded', fetchBetslips);
 
 function updateCount(type, count) {
     const countElement = document.getElementById(`${type}-count`);
@@ -1051,24 +1390,12 @@ function updateWinningsTotal() {
     document.getElementById("total-winnings-all").textContent = `$${totalAll}`;
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const toggleButtons = document.querySelectorAll('.toggle-form');
-
-    toggleButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const targetFormId = btn.getAttribute('data-target');
-            const targetForm = document.getElementById(targetFormId);
-
-            if (targetForm.style.display === 'none' || !targetForm.style.display) {
-                targetForm.style.display = 'block';
-                btn.innerHTML = 'Hide Form <i class="fa-solid fa-caret-right"></i>';
-            } else {
-                targetForm.style.display = 'none';
-                btn.innerHTML = 'Show Form <i class="fa-solid fa-caret-right"></i>';
-            }
-        });
-    });
-});
+function clearExistingTimeouts() {
+    for (let timeout of timeouts) {
+        clearTimeout(timeout);
+    }
+    timeouts = [];
+}
 
 function toggleSectionVisibility(sectionId) {
     const section = document.querySelector(sectionId);
@@ -1081,79 +1408,6 @@ function toggleSectionVisibility(sectionId) {
         section.querySelector('.toggle-button').textContent = "Show Contents";
     }
 }
-
-const sections = ['#entry-sections', '#section-today-entry', '#section-total-spendings', '#section-total-winnings', '#notes', '#purchase-history', '#current-betslips'];
-
-sections.forEach(sectionId => {
-    const section = document.querySelector(sectionId);
-    const btn = section.querySelector('.toggle-button');
-
-    btn.addEventListener('click', function () {
-        toggleSectionVisibility(sectionId);
-    });
-});
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    const editBtn = document.getElementById('edit-note-button');
-    const cancelBtn = document.getElementById('cancel-note-button');
-    const selfNotes = document.getElementById('self-notes');
-    const lockIcon = document.getElementById('lock-icon');
-    const editingText = document.getElementById('editing-text');
-    let originalContent = selfNotes.value;
-
-    // Hide cancel button initially
-    cancelBtn.style.display = 'none';
-
-    fetchNotesAndDisplay();
-
-    editBtn.addEventListener('click', function () {
-        if (selfNotes.hasAttribute('readonly')) {
-            lockIcon.style.display = 'none';
-            editingText.style.display = 'inline';
-
-            // Store the current content
-            originalContent = selfNotes.value;
-
-            // Make textarea editable
-            selfNotes.removeAttribute('readonly');
-            selfNotes.focus();
-
-            editBtn.classList.remove('fa-pen-to-square');
-            editBtn.classList.add('fa-regular', 'fa-floppy-disk');
-            cancelBtn.style.display = 'inline';
-        } else {
-            saveNotes(selfNotes.value);
-
-            editingText.style.display = 'none';
-            lockIcon.style.display = 'inline';
-
-            selfNotes.setAttribute('readonly', true);
-
-            // Hide the cancel button and change the save button back to edit
-            editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
-            editBtn.classList.add('fa-pen-to-square');
-            cancelBtn.style.display = 'none';
-        }
-    });
-
-    cancelBtn.addEventListener('click', function () {
-        // Restore the original content
-        selfNotes.value = originalContent;
-
-        // Hide editing text and show lock icon
-        editingText.style.display = 'none';
-        lockIcon.style.display = 'inline';
-
-        // Make textarea non-editable
-        selfNotes.setAttribute('readonly', true);
-
-        // Hide the cancel button and change the save button back to edit
-        editBtn.classList.remove('fa-regular', 'fa-floppy-disk');
-        editBtn.classList.add('fa-pen-to-square');
-        cancelBtn.style.display = 'none';
-    });
-});
 
 function fetchNotesAndDisplay() {
     fetch('/get-notes')
@@ -1246,27 +1500,6 @@ function updatePurchaseHistoryTotals() { // this version calculates the entire d
     document.getElementById('total-spend-sg-sweep').textContent = `$${totalSgSweep}`;
     document.getElementById('total-spend-all').textContent = `$${totalAll}`;
 }
-
-const ROWS_PER_PAGE = 10;
-let currentPage = 1;
-let totalRows = 0;
-let purchaseHistoryData = [];
-let winningHistoryData = [];
-let filteredAndSortedData = [];
-let currentFilter = 'All'; // Default
-let currentSort = 'latest'; // Default
-
-// Initial data fetch
-document.addEventListener('DOMContentLoaded', () => {
-    fetchPurchaseHistory();
-    fetchWinningHistory();
-});
-
-// Bindings for sorting and filtering
-bindSortingAndFiltering();
-
-// Bindings for pagination
-bindPaginationControls();
 
 function fetchPurchaseHistory(callback) {
     fetch('/get-purchase-history')
@@ -1378,7 +1611,7 @@ function displayPurchaseHistory(history) {
     history.forEach((record, index) => {
         const row = document.createElement('tr');
         const rowNumber = (currentPage - 1) * ROWS_PER_PAGE + index + 1;
-        row.setAttribute('data-id', 'purchase-' + record.ID);
+        row.setAttribute('data-id', 'purchase-' + record.record_id);
         row.innerHTML = `
             <td>${rowNumber}</td>
             <td>${record.lottery_name}</td>
@@ -1423,7 +1656,7 @@ function populateWinningTable(winnings) {
     winnings.forEach((winning, index) => {
         const row = document.createElement('tr');
         const rowNumber = index + 1;
-        row.setAttribute('data-id', 'winning-' + winning.ID); // Assuming winnings have an ID attribute. If not, adjust accordingly.
+        row.setAttribute('data-id', 'winning-' + winning.winning_id); // Assuming winnings have an ID attribute. If not, adjust accordingly.
         row.innerHTML = `
             <td>${rowNumber}</td>
             <td>${winning.lottery_name}</td>
@@ -1518,211 +1751,4 @@ function editPurchase(recordId, newDate) {
             console.error('Error:', error);
             return false;
         });
-}
-
-document.getElementById('sorting-btn').addEventListener('click', function () {
-    const sortingMenu = document.getElementById('sorting-menu');
-    const isHidden = sortingMenu.style.display === 'none';
-    sortingMenu.style.display = isHidden ? 'block' : 'none';
-    this.textContent = isHidden ? 'Hide Menu' : 'Sort';
-});
-
-document.getElementById('sorting-menu').addEventListener('click', function (e) {
-    const button = e.target.closest('BUTTON');
-    if (button) {
-        const siblingButtons = button.closest('.menu-row').querySelectorAll('button');
-
-        siblingButtons.forEach(btn => btn.classList.remove('selected'));
-
-        button.classList.add('selected');
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize SortableJS
-    const sortable = new Sortable(document.getElementById('sortable-container'), {
-        animation: 700,
-        scroll: true,
-        direction: 'vertical', // restricts movement to vertical direction
-        handle: ".move-button", // Only elements with this class will trigger dragging
-        onUpdate: function (evt) {
-            const newOrder = [];
-            const items = document.getElementById('sortable-container').children;
-            for (let item of items) {
-                newOrder.push(item.id);
-            }
-            if (!arraysEqual(newOrder, currentOrder)) {
-                updateSectionOrderInDatabase(newOrder);
-                currentOrder = newOrder.slice(); // Update currentOrder with the new order. Using slice() to make a copy of newOrder.
-            }
-        }
-    });
-});
-
-
-// Set default order or load from saved preference
-function setOrder(order) {
-    const container = document.getElementById('sortable-container');
-    order.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            container.appendChild(element);
-        }
-    });
-}
-
-// Utility function to check if two arrays are equal
-function arraysEqual(a, b) {
-    return a.length === b.length && a.every((val, index) => val === b[index]);
-}
-
-function updateSectionOrderInDatabase(newOrder) {
-    fetch('/update-section-order', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ newOrder: newOrder })
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(message => {
-            console.log(message);
-        })
-        .catch(error => {
-            console.error('Error updating section order:', error);
-            alert('There was a problem updating the section order.');
-        });
-}
-
-document.getElementById('reset-order-btn').addEventListener('click', function () {
-    const defaultOrder = [
-        "entry-sections",
-        "section-today-entry",
-        "section-total-spendings",
-        "section-total-winnings",
-        "notes",
-        "purchase-history",
-        "current-betslips"
-    ];
-    setOrder(defaultOrder);
-    if (!arraysEqual(defaultOrder, currentOrder)) {
-        updateSectionOrderInDatabase(defaultOrder);
-        currentOrder = defaultOrder.slice();
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const contactForm = document.getElementById('contactForm');
-
-    contactForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        document.getElementById('loadingSpinner').classList.remove('hidden');
-        // Extract values from the form
-        const messageType = document.getElementById('messageType').value;
-        const messageContent = document.getElementById('messageContent').value;
-        const senderEmail = document.getElementById('senderEmail').value;
-
-        // Create POST request payload
-        const payload = {
-            messageType: messageType,
-            messageContent: messageContent,
-            senderEmail: senderEmail
-        };
-
-        // Send POST request
-        fetch('/contact-admin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) throw new Error(data.message);
-                document.getElementById('loadingSpinner').classList.add('hidden');
-                contactForm.reset();
-                showSuccessEffect(`${data.message}`);
-            })
-            .catch(error => {
-                setTimeout(() => {
-                    document.getElementById('loadingSpinner').classList.add('hidden');
-                    alert(error.message);
-                }, 1000);
-            });
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const refreshButton = document.getElementById('refresh-btn');
-
-    refreshButton.addEventListener('click', function () {
-        location.reload();
-    });
-
-    for (const type of lotteryTypes) {
-        const container = document.getElementById(`image-container-${type}`);
-        const prevBtn = document.getElementById(`prevBtn-${type}`);
-        const nextBtn = document.getElementById(`nextBtn-${type}`);
-
-        prevBtn.addEventListener('click', function () {
-            checkButtonVisibility(type);
-            container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
-
-        });
-
-        nextBtn.addEventListener('click', function () {
-            checkButtonVisibility(type);
-            container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
-
-        });
-
-        container.addEventListener('scroll', () => checkButtonVisibility(type));
-    }
-});
-
-const lotteryTypes = ['4d', 'toto', 'sg-sweep'];
-
-function checkButtonVisibility(type) {
-    const container = document.getElementById(`image-container-${type}`);
-    const prevBtn = document.getElementById(`prevBtn-${type}`);
-    const nextBtn = document.getElementById(`nextBtn-${type}`);
-
-    // Hide the "previous" button if we're at the start
-    if (container.scrollLeft <= 0) {
-        prevBtn.style.visibility = 'hidden';
-    } else {
-        prevBtn.style.visibility = 'visible';
-    }
-
-    // Hide the "next" button if we're at the end
-    // if (container.scrollWidth - container.scrollLeft <= container.clientWidth) {
-    const buffer = 5; // You can adjust this value based on your needs
-
-    if (container.scrollWidth - container.scrollLeft - buffer <= container.clientWidth) {
-        nextBtn.style.visibility = 'hidden';
-    } else {
-        nextBtn.style.visibility = 'visible';
-    }
-}
-
-const tokenExpiration = parseInt(getCookie('tokenExpiration')) * 1000; // convert to milliseconds
-console.log('tokenExpiration:', new Date(tokenExpiration));
-const delay = tokenExpiration - Date.now();
-
-setTimeout(() => {
-    alert('Your session has expired. Please log in again.');
-    window.location.href = '/login';
-}, delay);
-
-function getCookie(name) {
-    const value = "; " + document.cookie;
-    const parts = value.split("; " + name + "=");
-    if (parts.length == 2) return parts.pop().split(";").shift();
 }
