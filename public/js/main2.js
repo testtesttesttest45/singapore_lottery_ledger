@@ -164,8 +164,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const noEntryRow = tableBody.querySelector('.no-entry-row');
         if (noEntryRow) {
             noEntryRow.remove();
-            updateButtonNeon(true, '#section-today-entry');
         }
+        updateButtonNeon(true, '#section-today-entry');
         const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
         const newRow = `
             <tr>
@@ -213,8 +213,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const noEntryRow = tableBody.querySelector('.no-entry-row');
         if (noEntryRow) {
             noEntryRow.remove();
-            updateButtonNeon(true, '#section-today-entry');
         }
+        updateButtonNeon(true, '#section-today-entry');
         const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
         const newRow = `
             <tr>
@@ -259,8 +259,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const noEntryRow = tableBody.querySelector('.no-entry-row');
         if (noEntryRow) {
             noEntryRow.remove();
-            updateButtonNeon(true, '#section-today-entry');
         }
+        updateButtonNeon(true, '#section-today-entry');
         const nextRowNumber = tableBody.querySelectorAll('tr').length + 1;
         const newRow = `
             <tr>
@@ -859,7 +859,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // const lastRow = document.querySelector("#winnings-history-table tbody tr:last-child");
                     // lastRow.setAttribute('data-id', 'winning-' + data.id);
                     fetchWinningHistory(() => {
-                        const newRow = document.querySelector(`#winnings-history-table tbody tr[data-id="winning-${data.winning_id}"]`);
+                        const newRow = document.querySelector(`#winnings-history-table tbody tr[data-id="winning-${data.id}"]`);
                         if (newRow) {
                             newRow.classList.add('gradient-highlight');
                             setTimeout(() => {
