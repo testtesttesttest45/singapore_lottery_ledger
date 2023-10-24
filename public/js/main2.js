@@ -1358,7 +1358,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log(data.data)
                     purchaseHistoryData = data.data;
                     updateView();
                     updatePurchaseHistoryTotals();
@@ -1465,7 +1464,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const row = document.createElement('tr');
             const rowNumber = (currentPage - 1) * ROWS_PER_PAGE + index + 1;
             row.setAttribute('data-id', 'purchase-' + record.record_id);
-            console.log(record.date_of_entry)
             row.innerHTML = `
                 <td>${rowNumber}</td>
                 <td>${record.lottery_name}</td>
