@@ -915,7 +915,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const dateText = td.querySelector('.date-text');
             const dateInput = td.querySelector('.date-input');
             const newDate = dateInput.value;
-            console.log(purchaseHistoryData)
             const rowDate = purchaseHistoryData[rowIndex].date_of_entry;
             if (newDate === formatDateToLocalDateString(rowDate)) {
                 alert('Date unchanged.');
@@ -1359,6 +1358,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    console.log(data.data)
                     purchaseHistoryData = data.data;
                     updateView();
                     updatePurchaseHistoryTotals();
@@ -1465,6 +1465,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const row = document.createElement('tr');
             const rowNumber = (currentPage - 1) * ROWS_PER_PAGE + index + 1;
             row.setAttribute('data-id', 'purchase-' + record.record_id);
+            console.log(record.date_of_entry)
             row.innerHTML = `
                 <td>${rowNumber}</td>
                 <td>${record.lottery_name}</td>
