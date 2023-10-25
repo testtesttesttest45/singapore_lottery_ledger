@@ -1,7 +1,7 @@
 # Singapore Lottery Ledger
 
 Welcome to the Singapore Lottery Ledger - a personal project designed to help you meticulously track your lottery expenditures at Singapore Pools. Whether you’re using an Android device, a computer, or prefer a web browser, this application ensures you have the insights you need, right at your fingertips.
-- Accessible on Android, computers, and web browsers [here]('https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io').
+- Accessible on Android, computers, and web browsers [here](https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io).
 
 ## Key Features
 - **Track Lottery Spendings**: Easily log and view your spendings and winnings.
@@ -35,13 +35,11 @@ Welcome to the Singapore Lottery Ledger - a personal project designed to help yo
 2. Follow the standard installation procedure for APK files on your Android device.
 
 ### Web Browsers
-Access the application directly from your web browsers [here]('https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io'). No installation required.
+Access the application directly from your web browsers [here](https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io). No installation required.
 
 ## Documentation
-A comprehensive guide and detailed documentation are available in the PDF file within this repository. This includes:
-- Installation instructions
+A comprehensive guide and detailed documentation are available in `documentation.docx` within this repository. This includes:
+- Installation instructions across all platforms
 - User guide
 - Environment setup
-- Troubleshooting tips
-
-Thank you for choosing Singapore Lottery Ledger!
+- Misc notes
