@@ -1,11 +1,11 @@
 # Singapore Lottery Ledger
 
-Welcome to the Singapore Lottery Ledger - a personal project designed to help you meticulously track your lottery expenditures at Singapore Pools. Whether you’re using an Android device, a computer, or prefer a web browser, this application ensures you have the insights you need, right at your fingertips.
-- Accessible on Android, computers, and web browsers [here](https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io).
+Welcome to the Singapore Lottery Ledger - a personal project designed to help you meticulously track your lottery expenditures at Singapore Pools. Whether you’re using an Android device, Windows computer, or prefer a web browser, this application ensures you have the insights you need, right at your fingertips.
+- Accessible on Android, Windows, and web browsers.
 
 ## Key Features
 - **Track Lottery Spendings**: Easily log and view your spendings and winnings.
-- **Cross-Platform Accessibility**: Available on Android, computers, and web browsers.
+- **Cross-Platform Accessibility**: Available on Android, Windows, and web browsers.
 - **User-Friendly Interface**: Intuitive and easy-to-use design for a seamless user experience.
 - **Detailed Reporting**: Get insights and statistics on your lottery spendings and trends over time.
 
@@ -31,11 +31,13 @@ Welcome to the Singapore Lottery Ledger - a personal project designed to help yo
 ## Installation
 
 ### Android
-1. Download the APK file from this repository.
-2. Follow the standard installation procedure for APK files on your Android device.
+1. Download the APK file <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/singapore_lottery_ledger_apk.zip" download>here</a>.
+
+### Windows
+1. Download the Windows installer <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/desktop_installer.zip" download>here</a>.
 
 ### Web Browsers
-Access the application directly from your web browsers [here](https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io). No installation required.
+Access the application directly from your web browser <a href="https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io" target="_blank">here</a>. No installation required.
 
 ## Documentation
 A comprehensive guide and detailed documentation are available in `documentation.docx` within this repository. This includes:
