@@ -31,10 +31,10 @@ Welcome to the Singapore Lottery Ledger - a personal project designed to help yo
 ## Installation
 
 ### Android
-1. Download the APK file <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/singapore_lottery_ledger_apk.zip" download>here</a>.
+1. Download the APK file <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/singapore_lottery_ledger.apk" download>here</a>.
 
 ### Windows
-1. Download the Windows installer <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/desktop_installer.zip" download>here</a>.
+1. Download the Windows installer <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/singapore_lottery_ledger.exe" download>here</a>.
 
 ### Web Browsers
 Access the application directly from your web browser <a href="https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io" target="_blank">here</a>. No installation required.
