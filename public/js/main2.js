@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.querySelectorAll('.outlet-select').forEach(dropdown => {
-        dropdown.addEventListener('change', function() { // attach event listener to each dropdown with class 'outlet-select'
+        dropdown.addEventListener('change', function () { // attach event listener to each dropdown with class 'outlet-select'
             const customOutletRow = this.parentElement.nextElementSibling; // gets the .customOutletRow
             if (this.value === 'Others') {
                 customOutletRow.style.display = 'grid';
@@ -198,9 +198,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const entryTypeToto = document.getElementById('toto-entry-type').value;
         const pickTypeToto = document.getElementById('toto-pick-type').value;
         // const outletToto = document.getElementById('toto-outlet').value;
-        const cost = calculateCost(entryType, numberOfBoards);
+        const draws = document.getElementById('toto-draws').value;
+        let cost = calculateCost(entryType, numberOfBoards);
+        if (draws !== "0") {
+            cost = cost * draws;  
+        }
         let outlet = this.querySelector('.outlet-select').value;
-
         if (outlet === 'Others') {
             outlet = this.querySelector('.customOutlet').value;
             if (!outlet.trim()) {
@@ -208,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
         }
-        
+
         const tableBody = document.querySelector("#entries-table tbody");
         const noEntryRow = tableBody.querySelector('.no-entry-row');
         if (noEntryRow) {
@@ -733,7 +736,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function calculateCost(entryType, boards) {
         let costPerBoard = 1; // ordinary and default cost per board
-    
+
         switch (entryType) {
             case "System 7":
                 costPerBoard = 7;
@@ -756,25 +759,25 @@ document.addEventListener('DOMContentLoaded', function () {
             default:
                 break;
         }
-    
+
         return costPerBoard * boards;
     }
-    
+
     function formatDate(date) {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
         const year = date.getFullYear();
-    
+
         return `${day}/${month}/${year}`;
     }
-    
+
     function updateRowNumbers(tableSelector) {
         const rows = document.querySelectorAll(`${tableSelector} tbody tr:not(.no-entry-row)`);
         rows.forEach((row, index) => {
             row.cells[0].innerText = index + 1;  // Update the first cell with the row number
         });
     }
-    
+
     function updateButtonNeon(hasEntries, sectionSelector) {
         const neonReflection = document.querySelector('.neon-reflection');
         const saveButton = document.getElementById('save-entries-btn');
@@ -789,11 +792,11 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector(sectionSelector).style.backgroundColor = "";
         }
     }
-    
+
     function saveEntries(entries) {
         const previousPurchaseIds = Array.from(document.querySelectorAll('#purchase-history-table tbody tr:not(.no-entry-row)'))
             .map(row => parseInt(row.getAttribute('data-id').replace('purchase-', '')));
-    
+
         fetch('/save-entries', {
             method: 'POST',
             headers: {
@@ -842,7 +845,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('There was a problem saving the entries.');
             });
     }
-    
+
     function saveIndividualWinnings(winning, lottery_name) {
         fetch('/save-winnings', {
             method: 'POST',
@@ -881,17 +884,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('There was a problem saving the winnings.');
             });
     }
-    
+
     function setUpTableListener(tableSelector, options = {}) {
         const tbody = document.querySelector(tableSelector + " tbody");
-    
+
         function toggleEditMode(td, isEditing) {
             const dateText = td.querySelector('.date-text');
             const dateInput = td.querySelector('.date-input');
             const confirmBtn = td.querySelector('.confirm-btn');
             const cancelBtn = td.querySelector('.cancel-btn');
             const editBtn = td.querySelector('.edit-btn');
-    
+
             if (isEditing) {
                 dateText.style.display = 'none';
                 dateInput.style.display = 'block';
@@ -906,11 +909,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 editBtn.style.display = 'flex';
             }
         }
-    
+
         function handleEdit(td) {
             toggleEditMode(td, true);
         }
-    
+
         function handleConfirm(td, rowId, rowIndex) {
             const dateText = td.querySelector('.date-text');
             const dateInput = td.querySelector('.date-input');
@@ -930,15 +933,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
-    
+
         function handleCancel(td) {
             const dateText = td.querySelector('.date-text');
             const dateInput = td.querySelector('.date-input');
-    
+
             dateInput.value = dateText.textContent;
             toggleEditMode(td, false);
         }
-    
+
         tbody.addEventListener('click', function (event) {
             const td = event.target.closest('td');
             const row = event.target.closest('tr');
@@ -1004,15 +1007,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
+
     function handleImageUpload(type, input) {
         const file = input.files[0];
         if (!file) return;
         document.getElementById('loadingSpinner').classList.remove('hidden');
         const reader = new FileReader();
-    
+
         reader.readAsDataURL(file);
-    
+
         uploadToServer(type, file, function (success, cloudinaryUrl, betslipId) {
             document.getElementById('loadingSpinner').classList.add('hidden');
             if (success) {
@@ -1023,11 +1026,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Error uploading image. Please try again later.');
             }
         });
-    
+
         // Clear the input to ensure the change event is triggered next time, even for the same file.
         input.value = "";
     }
-    
+
     function fetchBetslips() {
         fetch('/retrieve-betslips')
             .then(response => response.json())
@@ -1036,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     for (let betslip of data.data) {
                         addUploadedBetslipImage(betslip.lottery_name.toLowerCase(), betslip.image_url, betslip.betslip_id);
                     }
-    
+
                     for (const type of lotteryTypes) {
                         checkButtonVisibility(type);
                     }
@@ -1048,21 +1051,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error fetching the betslips:', error);
             });
     }
-    
+
     function addUploadedBetslipImage(type, imgSrc, betslipId) {
         const imgContainer = document.getElementById(`image-container-${type}`);
         const divChildrenCount = imgContainer.querySelectorAll('div.image-div').length;
-    
+
         if (divChildrenCount < 5) {
             const imageDiv = document.createElement('div');
             imageDiv.classList.add('image-div');
-    
+
             const uploadedImg = document.createElement('img');
             uploadedImg.src = imgSrc;
             uploadedImg.alt = `${type} betslip`;
             imageDiv.appendChild(uploadedImg);
             imageDiv.setAttribute('data-id', `betslip-${betslipId}`);
-    
+
             const checkedButton = document.createElement('button');
             checkedButton.innerHTML = `Checked finish <i class="fa-solid fa-check"></i>`;
             checkedButton.classList.add('checked-btn');
@@ -1105,22 +1108,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                 }
             });
-    
+
             imageDiv.appendChild(checkedButton);
-    
+
             imgContainer.appendChild(imageDiv);
             updateCount(type, divChildrenCount + 1);
         } else {
             alert(`Maximum of 5 images allowed for ${type}!`);
         }
-    
+
         // If there were placeholder text, remove it
         const placeholderText = imgContainer.querySelector('p');
         if (placeholderText) {
             imgContainer.removeChild(placeholderText);
         }
     }
-    
+
     function uploadToServer(type, file, callback) {
         const formData = new FormData();
         formData.append('image', file);
@@ -1146,37 +1149,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 callback(false);
             });
     }
-    
+
     function updateCount(type, count) {
         const countElement = document.getElementById(`${type}-count`);
         countElement.textContent = count;
     }
-    
+
     function showSuccessEffect(message) {
         if (isAnimating) return;  // If animation is playing, ignore button clicks
-    
+
         isAnimating = true;  // Set the flag to true
-    
+
         clearExistingTimeouts();  // Clear any existing timeouts
-    
+
         const successElement = document.getElementById('success-message');
         const tickElement = successElement.querySelector('.tick-wrapper');
         const successTextElement = successElement.querySelector('.success-text');
-    
+
         successElement.classList.remove('hidden');
-    
+
         timeouts.push(setTimeout(() => {
             tickElement.style.transform = 'scale(1)';
             successTextElement.style.opacity = '1';
             successTextElement.innerText = `${message}`;
         }, 100));
-    
+
         // Flash the background
         document.body.classList.add('effect-active');
         timeouts.push(setTimeout(() => {
             document.body.classList.remove('effect-active');
         }, 500));
-    
+
         // Hide the success message after a short duration
         timeouts.push(setTimeout(() => {
             tickElement.style.transform = 'scale(0)';
@@ -1187,17 +1190,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 700));
         }, 1000));
     }
-    
+
     function updateTotals() {
         const rows = document.querySelectorAll("#entries-table tbody tr:not(.no-entry-row)");
         let total4D = 0;
         let totalToto = 0;
         let totalSgSweep = 0;
-    
+
         rows.forEach(row => {
             const lotteryName = row.children[1].textContent; // the first td
             const costValue = parseFloat(row.children[7].textContent.replace("$", "")); // the 7th td and remove the $ sign
-    
+
             if (lotteryName === "4D") {
                 total4D += costValue;
             } else if (lotteryName === "Toto") {
@@ -1206,25 +1209,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalSgSweep += costValue;
             }
         });
-    
+
         const totalAll = total4D + totalToto + totalSgSweep;
-    
+
         document.getElementById("total-cost-4d").textContent = `$${total4D}`;
         document.getElementById("total-cost-toto").textContent = `$${totalToto}`;
         document.getElementById("total-cost-sg-sweep").textContent = `$${totalSgSweep}`;
         document.getElementById("total-cost-all").textContent = `$${totalAll}`;
     }
-    
+
     function updateWinningsTotal() {
         const rows = document.querySelectorAll("#winnings-history-table tbody tr:not(.no-entry-row)");
         let total4D = 0;
         let totalToto = 0;
         let totalSgSweep = 0;
-    
+
         rows.forEach(row => {
             const lotteryName = row.children[1].textContent;
             const costValue = parseFloat(row.children[5].textContent.replace("$", ""));
-    
+
             if (lotteryName === "4D") {
                 total4D += costValue;
             } else if (lotteryName === "Toto") {
@@ -1233,22 +1236,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalSgSweep += costValue;
             }
         });
-    
+
         const totalAll = total4D + totalToto + totalSgSweep;
-    
+
         document.getElementById("total-winnings-4d").textContent = `$${total4D}`;
         document.getElementById("total-winnings-toto").textContent = `$${totalToto}`;
         document.getElementById("total-winnings-sg-sweep").textContent = `$${totalSgSweep}`;
         document.getElementById("total-winnings-all").textContent = `$${totalAll}`;
     }
-    
+
     function clearExistingTimeouts() {
         for (let timeout of timeouts) {
             clearTimeout(timeout);
         }
         timeouts = [];
     }
-    
+
     function toggleSectionVisibility(sectionId) {
         const section = document.querySelector(sectionId);
         const hidable = section.querySelector('.hidable');
@@ -1260,7 +1263,7 @@ document.addEventListener('DOMContentLoaded', function () {
             section.querySelector('.toggle-button').textContent = "Show Contents";
         }
     }
-    
+
     function fetchNotesAndDisplay() {
         fetch('/get-notes')
             .then(response => response.json())
@@ -1278,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('There was a problem fetching the notes.');
             });
     }
-    
+
     function saveNotes(notesContent) {
         fetch('/save-notes', {
             method: 'POST',
@@ -1301,41 +1304,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('There was a problem saving the note.');
             });
     }
-    
+
     // function updatePurchaseHistoryTotals() {
     //     const purchaseTable = document.getElementById('purchase-history-table');
     //     const rows = purchaseTable.querySelectorAll('tbody tr:not(.no-entry-row)');
-    
+
     //     let total4D = 0;
     //     let totalToto = 0;
-    
+
     //     rows.forEach(row => {
     //         const lotteryName = row.querySelector('td:nth-child(2)').textContent.trim();
     //         const cost = parseFloat(row.querySelector('td:nth-child(8)').textContent.replace('$', ''));
-    
+
     //         if (lotteryName === '4D') {
     //             total4D += cost;
     //         } else if (lotteryName === 'Toto') {
     //             totalToto += cost;
     //         }
     //     });
-    
+
     //     const totalAll = total4D + totalToto;
-    
+
     //     document.getElementById('total-spend-4d').textContent = `$${total4D}`;
     //     document.getElementById('total-spend-toto').textContent = `$${totalToto}`;
     //     document.getElementById('total-spend-all').textContent = `$${totalAll}`;
     // }
-    
+
     function updatePurchaseHistoryTotals() { // this version calculates the entire dataset instead of just the table
         let total4D = 0;
         let totalToto = 0;
         let totalSgSweep = 0;
-    
+
         purchaseHistoryData.forEach(purchase => {
             const lotteryName = purchase.lottery_name;
             const cost = purchase.cost;
-    
+
             if (lotteryName === '4D') {
                 total4D += cost;
             } else if (lotteryName === 'Toto') {
@@ -1344,15 +1347,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalSgSweep += cost;
             }
         });
-    
+
         const totalAll = total4D + totalToto + totalSgSweep;
-    
+
         document.getElementById('total-spend-4d').textContent = `$${total4D}`;
         document.getElementById('total-spend-toto').textContent = `$${totalToto}`;
         document.getElementById('total-spend-sg-sweep').textContent = `$${totalSgSweep}`;
         document.getElementById('total-spend-all').textContent = `$${totalAll}`;
     }
-    
+
     function fetchPurchaseHistory(callback) {
         fetch('/get-purchase-history')
             .then(response => response.json())
@@ -1367,7 +1370,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     }
-    
+
     function fetchWinningHistory(callback) {
         fetch('/get-winnings')
             .then(response => response.json())
@@ -1376,90 +1379,90 @@ document.addEventListener('DOMContentLoaded', function () {
                     winningHistoryData = data.data;
                     populateWinningTable(winningHistoryData);
                     updateWinningsTotal();
-    
+
                     if (callback) callback();
                 } else {
                     console.error('Error retrieving winning history:', data.message);
                 }
             });
     }
-    
+
     function bindSortingAndFiltering() {
         document.querySelectorAll('#sorting-menu button[data-filter]').forEach(btn => btn.addEventListener('click', handleFilterClick));
         document.querySelectorAll('#sorting-menu button[data-sort]').forEach(btn => btn.addEventListener('click', handleSortClick));
     }
-    
+
     function bindPaginationControls() {
         document.querySelector('.prev').addEventListener('click', handlePrevClick);
         document.querySelector('.next').addEventListener('click', handleNextClick);
     }
-    
+
     function handleFilterClick() {
         currentFilter = this.getAttribute('data-filter');
         updateButtonSelection('#sorting-menu button[data-filter]', this); // this = the button that was clicked
         updateView();
     }
-    
+
     function handleSortClick() {
         currentSort = this.getAttribute('data-sort');
         updateButtonSelection('#sorting-menu button[data-sort]', this);
         updateView();
     }
-    
+
     function handlePrevClick() {
         if (currentPage > 1) {
             currentPage--;
             displayPurchaseHistoryPaginated();
         }
     }
-    
+
     function handleNextClick() {
         if (currentPage * ROWS_PER_PAGE < totalRows) {
             currentPage++;
             displayPurchaseHistoryPaginated();
         }
     }
-    
+
     function updateButtonSelection(selector, currentButton) {
         document.querySelectorAll(selector).forEach(btn => btn.classList.remove('selected'));
         currentButton.classList.add('selected');
     }
-    
+
     function updateView() {
         filteredAndSortedData = (currentFilter === 'All')
             ? [...purchaseHistoryData]
             : purchaseHistoryData.filter(entry => entry.lottery_name === currentFilter);
-    
+
         if (currentSort === 'oldest') {
             filteredAndSortedData.sort((a, b) => new Date(a.date_of_entry) - new Date(b.date_of_entry));
         } else { // latest
             filteredAndSortedData.sort((a, b) => new Date(b.date_of_entry) - new Date(a.date_of_entry));
         }
-    
+
         currentPage = 1;
         totalRows = filteredAndSortedData.length;
-    
+
         displayPurchaseHistoryPaginated();
     }
-    
+
     function displayPurchaseHistoryPaginated() {
         totalRows = filteredAndSortedData.length;
         const startIndex = (currentPage - 1) * ROWS_PER_PAGE;
         const paginatedData = filteredAndSortedData.slice(startIndex, startIndex + ROWS_PER_PAGE);
-    
+
         displayPurchaseHistory(paginatedData);
         updatePaginationControls();
     }
-    
+
     function displayPurchaseHistory(history) {
         const tableBody = document.querySelector('#purchase-history-table tbody');
         tableBody.innerHTML = '';
-    
+
         if (!history.length) {
             tableBody.innerHTML = '<tr class="no-entry-row"><td colspan="10">No purchases found.</td></tr>';
             return;
         }
-    
+
         history.forEach((record, index) => {
             const row = document.createElement('tr');
             const rowNumber = (currentPage - 1) * ROWS_PER_PAGE + index + 1;
@@ -1495,16 +1498,16 @@ document.addEventListener('DOMContentLoaded', function () {
         updatePurchaseHistoryTotals();
         updatePaginationControls();
     }
-    
+
     function populateWinningTable(winnings) {
         const tableBody = document.querySelector('#winnings-history-table tbody');
         tableBody.innerHTML = '';
-    
+
         if (!winnings.length) {
             tableBody.innerHTML = '<tr class="no-entry-row"><td colspan="8">No winnings added.</td></tr>';
             return;
         }
-    
+
         winnings.forEach((winning, index) => {
             const row = document.createElement('tr');
             const rowNumber = index + 1;
@@ -1523,10 +1526,10 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             tableBody.appendChild(row);
         });
-    
+
         updateWinningsTotal();
     }
-    
+
     function formatDateToLocalDateString(dateString) {
         const date = new Date(dateString);
         const year = date.getUTCFullYear();
@@ -1534,16 +1537,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const day = String(date.getUTCDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
-    
+
     function updatePaginationControls() {
         const totalPages = totalRows === 0 ? 1 : Math.ceil(totalRows / ROWS_PER_PAGE);
         document.querySelector('.prev').disabled = currentPage === 1;
         document.querySelector('.next').disabled = currentPage === totalPages;
-    
+
         document.querySelector('.page-number').textContent = currentPage;
         document.querySelector('.total-pages').textContent = totalPages;
     }
-    
+
     function deletePurchase(recordId) {
         return fetch(`/delete-purchase/${recordId}`, { method: 'DELETE' })
             .then(response => response.json())
@@ -1552,14 +1555,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 showSuccessEffect('Purchase deleted!');
                 purchaseHistoryData = purchaseHistoryData.filter(item => item.record_id !== parseInt(recordId));
                 filteredAndSortedData = filteredAndSortedData.filter(item => item.record_id !== parseInt(recordId));
-    
+
                 totalRows = filteredAndSortedData.length;
-    
+
                 const totalPages = Math.ceil(totalRows / ROWS_PER_PAGE);
                 if (currentPage > totalPages) currentPage--;
                 if (currentPage < 1) currentPage = 1;
                 displayPurchaseHistoryPaginated();
-    
+
                 return true;
             })
             .catch(error => {
@@ -1567,13 +1570,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 return false;
             });
     }
-    
+
     function deleteWinnings(recordId) {
         return fetch(`/delete-winning/${recordId}`, { method: 'DELETE' })
             .then(response => response.json())
             .then(data => {
                 if (!data.success) throw new Error(data.message);
-    
+
                 winningHistoryData = winningHistoryData.filter(item => item.winning_id !== parseInt(recordId));
                 populateWinningTable(winningHistoryData);
                 updateWinningsTotal();
@@ -1584,7 +1587,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return false;
             });
     }
-    
+
     function editPurchase(recordId, newDate) {
         return fetch(`/edit-purchase/${recordId}`, {
             method: 'PUT',
@@ -1614,12 +1617,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
+
     // Utility function to check if two arrays are equal
     function arraysEqual(a, b) {
         return a.length === b.length && a.every((val, index) => val === b[index]);
     }
-    
+
     function updateSectionOrderInDatabase(newOrder) {
         fetch('/update-section-order', {
             method: 'PUT',
@@ -1642,40 +1645,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('There was a problem updating the section order.');
             });
     }
-    
+
     function checkButtonVisibility(type) {
         const container = document.getElementById(`image-container-${type}`);
         const prevBtn = document.getElementById(`prevBtn-${type}`);
         const nextBtn = document.getElementById(`nextBtn-${type}`);
-    
+
         // Hide the "previous" button if we're at the start
         if (container.scrollLeft <= 0) {
             prevBtn.style.visibility = 'hidden';
         } else {
             prevBtn.style.visibility = 'visible';
         }
-    
+
         // Hide the "next" button if we're at the end
         // if (container.scrollWidth - container.scrollLeft <= container.clientWidth) {
         const buffer = 5; // You can adjust this value based on your needs
-    
+
         if (container.scrollWidth - container.scrollLeft - buffer <= container.clientWidth) {
             nextBtn.style.visibility = 'hidden';
         } else {
             nextBtn.style.visibility = 'visible';
         }
     }
-    
+
     function getCookie(name) {
         const value = "; " + document.cookie;
         const parts = value.split("; " + name + "=");
         if (parts.length == 2) return parts.pop().split(";").shift();
     }
-    
+
 });
-
-// Below are all functions
-
 
 
 // function setUpTableListener(tableSelector, options = {}) {
