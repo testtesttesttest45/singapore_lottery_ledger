@@ -7,8 +7,8 @@
   </author>
   <content src="index.html" />
   <allow-intent href="http://*/*" />
-  <access origin="https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io/" />
-  <allow-navigation href="https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io/*" />
+  <access origin="https://singapore-lottery-ledger.onrender.com/" />
+  <allow-navigation href="https://singapore-lottery-ledger.onrender.com/*" />
   <platform name="android">
    <icon src="resources/treasure3.png" />
   </platform>
