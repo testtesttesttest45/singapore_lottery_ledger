@@ -28,6 +28,9 @@ Welcome to the Singapore Lottery Ledger - a personal project designed to help yo
 - **Cross-Platform Development**: Electron for desktop applications and Cordova for Android
 - **Backend deployment**: FL0
 
+### Demo
+A demo of the application is available on YouTube <a href="https://youtu.be/88G-0jvbONA" target="_blank">here</a>.
+
 ## Installation
 
 ### Android
