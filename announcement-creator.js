@@ -32,7 +32,7 @@ const connectionConfig = {
     host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,
     user: isDevEnvironment ? process.env.DB_USER : process.env.DB_USER_PROD,
     password: isDevEnvironment ? process.env.DB_PASSWORD : process.env.DB_PASSWORD_PROD,
-    database: process.env.DB_NAME
+    database: isDevEnvironment ? process.env.DB_NAME : process.env.DB_NAME_PROD
 };
 
 const connection = mysql.createConnection(connectionConfig);
