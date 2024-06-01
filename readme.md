@@ -22,11 +22,12 @@ Welcome to the Singapore Lottery Ledger - a personal project designed to help yo
 ## Technology Stack
 - **Frontend**: HTML, CSS, and Javascript
 - **Backend**: Node.js with ExpressJS
-- **Database**: MySQL with Amazon RDS integration
+- ~~**Database**: MySQL with Amazon RDS integration~~
+- **Database**: Hostinger MySQL
 - **Sending emails**: Google Cloud Platform Gmail API
 - **Image file systems**: Cloudinary
 - **Cross-Platform Development**: Electron for desktop applications and Cordova for Android
-- **Backend deployment**: FL0
+- **Backend deployment**: Render
 
 ### Demo
 A demo of the application is available on YouTube <a href="https://youtu.be/88G-0jvbONA" target="_blank">here</a>.
@@ -40,10 +41,10 @@ A demo of the application is available on YouTube <a href="https://youtu.be/88G-
 1. Download the Windows installer <a href="https://github.com/testtesttesttest45/singapore_lottery_ledger/releases/download/v1/singapore_lottery_ledger.exe" download>here</a>.
 
 ### Web Browsers
-Access the application directly from your web browser <a href="https://singapore-lottery-ledger-dev-qhcc.2.sg-1.fl0.io" target="_blank">here</a>. No installation required.
+Access the application directly from your web browser <a href="https://singapore-lottery-ledger.onrender.com/" target="_blank">here</a>. No installation required.
 
 ## Documentation
-A comprehensive guide and detailed documentation are available in `documentation.docx` within this repository. This includes:
+A comprehensive guide and detailed documentation are available in `documentation.docx` which can be found in the Releases. This includes:
 - Installation instructions across all platforms
 - User guide
 - Environment setup
