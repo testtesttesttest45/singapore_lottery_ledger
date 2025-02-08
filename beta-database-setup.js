@@ -6,7 +6,8 @@ const isDevEnvironment = true; // change this to false when using it to populate
 const connectionConfig = {
     host: isDevEnvironment ? process.env.DB_HOST : process.env.DB_HOST_PROD,
     user: isDevEnvironment ? process.env.DB_USER : process.env.DB_USER_PROD,
-    password: isDevEnvironment ? process.env.DB_PASSWORD : process.env.DB_PASSWORD_PROD
+    password: isDevEnvironment ? process.env.DB_PASSWORD : process.env.DB_PASSWORD_PROD,
+    timezone: 'Asia/Singapore'
 };
 
 const connection = mysql.createConnection(connectionConfig);
@@ -205,3 +206,11 @@ function setupDatabase() {
         });
     });
 }
+
+
+// ALTER TABLE users MODIFY date_joined TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+// ALTER TABLE records MODIFY date_of_entry TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+// ALTER TABLE betslips MODIFY date_of_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+// ALTER TABLE winnings MODIFY date_of_winning DATE;
+// ALTER TABLE messages MODIFY date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+// ALTER TABLE announcements MODIFY date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;

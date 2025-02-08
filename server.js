@@ -113,8 +113,12 @@ app.post('/register', (req, res) => {
       return res.status(500).send({ message: 'Server error. Please try again later.' });
     }
 
+    let sgTime = DateTime.fromISO(first_day_betting, { zone: 'UTC' })
+      .setZone('Asia/Singapore')
+      .toFormat('yyyy-MM-dd');
+
     const sql = 'INSERT INTO users (full_name, username, password, first_day_betting) VALUES (?, ?, ?, ?)';
-    connection.query(sql, [full_name, username, hashedPassword, first_day_betting], (err, results) => {
+    connection.query(sql, [full_name, username, hashedPassword, sgTime], (err, results) => {
       if (err) {
         console.error('Error inserting new user:', err.stack);
         return res.status(500).send({ message: 'Server error. Please try again later.' });
@@ -207,6 +211,7 @@ app.post('/save-entries', customJwtMiddleware, (req, res) => {
   // Preparing the data for bulk insert
   const values = [];
   entries.forEach(entry => {
+    let sgDateTime = DateTime.now().setZone('Asia/Singapore').toFormat('yyyy-MM-dd HH:mm:ss');
     values.push([
       req.user.userId,
       entry.lottery_name,
@@ -215,16 +220,17 @@ app.post('/save-entries', customJwtMiddleware, (req, res) => {
       entry.bet_amount,
       entry.outlet,
       entry.number_of_boards,
-      entry.cost
+      entry.cost,
+      sgDateTime
     ]);
   });
 
-  const placeholder = "(?, ?, ?, ?, ?, ?, ?, ?)";
+  const placeholder = "(?, ?, ?, ?, ?, ?, ?, ?, ?)";
   const placeholders = new Array(entries.length).fill(placeholder).join(', ');
 
   const sql = `
       INSERT INTO records 
-      (fk_user_id, lottery_name, entry_type, pick_type, bet_amount, outlet, number_of_boards, cost) 
+      (fk_user_id, lottery_name, entry_type, pick_type, bet_amount, outlet, number_of_boards, cost, date_of_entry)
       VALUES ${placeholders}
   `;
 
@@ -286,6 +292,12 @@ app.get('/get-purchase-history', customJwtMiddleware, (req, res) => {
       return res.status(500).send({ message: 'Server error. Please try again later.' });
     }
 
+    results.forEach(record => {
+      record.date_of_entry = DateTime.fromJSDate(record.date_of_entry, { zone: 'UTC' })
+        .setZone('Asia/Singapore')
+        .toFormat('yyyy-MM-dd HH:mm:ss');
+    });
+
     res.json({ success: true, data: results });
   });
 });
@@ -320,6 +332,10 @@ app.post('/save-winnings', customJwtMiddleware, (req, res) => {
 
   // Preparing the data for bulk insert
   const values = [];
+  let sgDate = DateTime.fromISO(winnings.date_of_winning, { zone: 'UTC' })
+    .setZone('Asia/Singapore')
+    .toFormat('yyyy-MM-dd');
+
   values.push([
     req.user.userId,
     winnings.lottery_name,
@@ -327,7 +343,7 @@ app.post('/save-winnings', customJwtMiddleware, (req, res) => {
     winnings.pick_type,
     winnings.outlet,
     winnings.winning_prize,
-    winnings.date_of_winning
+    sgDate
   ]);
 
   const placeholder = "(?, ?, ?, ?, ?, ?, ?)";
